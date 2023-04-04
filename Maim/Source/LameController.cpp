@@ -68,6 +68,7 @@ bool LameController::init(const int sampleRate,
 
     lame_dec_handler = hip_decode_init();
     bInitialized = true;
+    bendFlagsAndData = getBendStruct((lame_global_flags *)lame_enc_handler);
     return true;
 }
 

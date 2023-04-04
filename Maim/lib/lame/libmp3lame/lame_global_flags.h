@@ -24,7 +24,13 @@ typedef enum short_block_e {
 *
 *
 ***********************************************************************/
+typedef struct bend_flags_and_data {
+    int temp;
+} BendFlagsAndData;
+
+
 struct lame_global_struct {
+    BendFlagsAndData* bendFlagsAndData;
     unsigned int class_id;
 
     /* input description */

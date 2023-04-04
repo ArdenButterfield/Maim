@@ -144,6 +144,11 @@ typedef enum buffer_constraint_e {
 
 struct lame_global_struct;
 typedef struct lame_global_struct lame_global_flags;
+
+struct bend_flags_and_data;
+typedef struct bend_flags_and_data BendFlagsAndData;
+BendFlagsAndData* getBendStruct(lame_global_flags* gfp);
+
 typedef lame_global_flags *lame_t;
 
 

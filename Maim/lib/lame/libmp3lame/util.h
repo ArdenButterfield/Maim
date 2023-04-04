@@ -464,6 +464,7 @@ extern  "C" {
 
 
     struct lame_internal_flags {
+        BendFlagsAndData* bendFlagsAndData;
 
   /********************************************************************
    * internal variables NOT set by calling program, and should not be *
@@ -484,6 +485,7 @@ extern  "C" {
          *     of this element will be otherwise misinterpreted as an init.
          */
 #  define  LAME_ID   0xFFF88E3B
+
         unsigned long class_id;
 
         int     lame_encode_frame_init;

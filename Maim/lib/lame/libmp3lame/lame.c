@@ -2314,6 +2314,9 @@ lame_init_old(lame_global_flags * gfp)
     if (NULL == (gfc = gfp->internal_flags = calloc(1, sizeof(lame_internal_flags))))
         return -1;
 
+    if (NULL == (gfc->bendFlagsAndData = calloc(1, sizeof(BendFlagsAndData))))
+        return -1;
+    gfp->bendFlagsAndData = gfc->bendFlagsAndData;
     cfg = &gfc->cfg;
 
     /* Global flags.  set defaults here for non-zero values */
@@ -2609,6 +2612,11 @@ lame_bitrate_block_type_hist(const lame_global_flags * gfp, int bitrate_btype_co
             }
         }
     }
+}
+
+BendFlagsAndData* getBendStruct(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData;
 }
 
 /* end of lame.c */

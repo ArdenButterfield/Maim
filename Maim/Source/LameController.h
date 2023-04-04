@@ -37,6 +37,7 @@ public:
     bool initialFlush();
     
 private:
+    BendFlagsAndData* bendFlagsAndData;
     bool bInitialized = false;
     void *lame_enc_handler = nullptr;
     void *lame_dec_handler = nullptr;
