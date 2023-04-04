@@ -6,6 +6,10 @@
               pluginName="Maim" headerPath="../lib/lame/include">
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
+      <FILE id="P31oi2" name="LameController.cpp" compile="1" resource="0"
+            file="Source/LameController.cpp"/>
+      <FILE id="OdqKO6" name="LameController.h" compile="0" resource="0"
+            file="Source/LameController.h"/>
       <FILE id="EO4hAP" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="pxdszu" name="PluginProcessor.h" compile="0" resource="0"
