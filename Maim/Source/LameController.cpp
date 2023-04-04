@@ -94,7 +94,6 @@ bool LameController::initialFlush()
     }
     
     int dec_result = hip_decode(lame_dec_handler,
-    int dec_result = hip_decode(lame_dec_handler,
                                 mp3Buffer.data(),
                                 enc_result,
                                 decodedLeftChannel.data(),
