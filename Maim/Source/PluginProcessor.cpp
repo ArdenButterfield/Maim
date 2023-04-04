@@ -95,7 +95,7 @@ void MaimAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    lameController.init(sampleRate, samplesPerBlock, 16);
+    lameController.init(sampleRate, samplesPerBlock, 128);
 }
 
 void MaimAudioProcessor::releaseResources()

@@ -28,6 +28,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <stdio.h>
 
 
 #include "lame.h"
@@ -403,6 +404,16 @@ lame_encode_mp3_frame(       /* Output */
     /* polyphase filtering / mdct */
     mdct_sub48(gfc, inbuf[0], inbuf[1]);
 
+    /*
+    // TESTT: print output of mdct
+    for (int i = 0; i < 512; ++i) {
+        printf("%f ", gfc->l3_side.tt[0][0].xr[i]);
+    }
+    printf("\n");
+    // Result: some small numbers, between -1ish and 1, mostly very small magnitude, and then
+    // all zeros above the lowpass filter cutoff
+    */
+
 
     /****************************************
     *   Stage 3: MS/LR decision             *
@@ -458,7 +469,6 @@ lame_encode_mp3_frame(       /* Output */
         masking = (const III_psy_ratio (*)[2])masking_LR; /* use LR masking */
         pe_use = pe;
     }
-
 
     /* copy data for MP3 frame analyzer */
     if (cfg->analysis && gfc->pinfo != NULL) {

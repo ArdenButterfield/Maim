@@ -36,3 +36,5 @@ Maim/maim\ audiohost\ setup.filtergraph
 *.exe
 *.out
 *.app
+Maim/lib/lame/frontend/lame
+
