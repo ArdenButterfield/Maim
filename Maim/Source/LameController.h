@@ -39,8 +39,8 @@ public:
 private:
     BendFlagsAndData* bendFlagsAndData;
     bool bInitialized = false;
-    void *lame_enc_handler = nullptr;
-    void *lame_dec_handler = nullptr;
+    lame_global_flags *lame_enc_handler = nullptr;
+    hip_global_flags *lame_dec_handler = nullptr;
     std::vector<unsigned char> mp3Buffer;
     std::array<short, 20000> decodedLeftChannel = {0};
     std::array<short, 20000> decodedRightChannel = {0};
