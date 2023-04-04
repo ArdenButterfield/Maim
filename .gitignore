@@ -4,7 +4,8 @@
 # Compiled Object files
 *.slo
 *.lo
-*.o
+**/*.o
+**/*.a
 *.obj
 
 # Precompiled Headers
@@ -22,8 +23,8 @@
 
 # Compiled Static libraries
 *.lai
-*.la
-*.a
+**/*.la
+**/*.a
 *.lib
 
 # Executables
