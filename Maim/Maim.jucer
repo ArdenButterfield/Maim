@@ -6,6 +6,7 @@
               pluginName="Maim" headerPath="../lib/lame/include">
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
+      <FILE id="uYkYsx" name="QueueBuffer.h" compile="0" resource="0" file="Source/QueueBuffer.h"/>
       <FILE id="P31oi2" name="LameController.cpp" compile="1" resource="0"
             file="Source/LameController.cpp"/>
       <FILE id="OdqKO6" name="LameController.h" compile="0" resource="0"

@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 
+#include "LameController.h"
+
 //==============================================================================
 /**
 */
@@ -57,6 +59,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    LameController lameController;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessor)
 };

@@ -1,6 +1,7 @@
 # Juce stuff
 Maim/Builds
 Maim/JuceLibraryCode
+Maim/maim\ audiohost\ setup.filtergraph
 
 # Prerequisites
 *.d
