@@ -2037,6 +2037,9 @@ CBR_iteration_loop(lame_internal_flags * gfc, const FLOAT pe[2][2],
                  *  find some good quantization in outer_loop
                  */
                 (void) calc_xmin(gfc, &ratio[gr][ch], cod_info, l3_xmin);
+                
+                // TESTT: l3_xmin is mostly small values, close to 0. changing it does not
+                // seem to have much affect at all.
                 (void) outer_loop(gfc, cod_info, l3_xmin, xrpow, ch, targ_bits[ch]);
             }
 

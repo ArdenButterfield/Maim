@@ -3,6 +3,11 @@ Maim/Builds
 Maim/JuceLibraryCode
 Maim/maim\ audiohost\ setup.filtergraph
 
+# Audio stuff
+**/*.wav
+**/*.mp3
+**/*.flac
+
 # Prerequisites
 *.d
 
