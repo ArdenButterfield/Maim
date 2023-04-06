@@ -10,13 +10,15 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
+        AudioProcessorEditor (&p),
+        audioProcessor (p),
+        dragBox (p.getValueTreeState(), "butterfly_uu", "butterfly_du")
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (300, 300);
-    addAndMakeVisible(butterflyUUslider);
+    addAndMakeVisible(dragBox);
     // addAndMakeVisible(mainArea);
 }
 
@@ -35,7 +37,6 @@ void MaimAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    // mainArea.setBounds(10, 10, getWidth() - 10, getHeight() - 10);
+    dragBox.setBounds(10, 10, getWidth() - 20, getHeight() - 20);
     
-    butterflyUUslider.setBounds(getLocalBounds());
 }

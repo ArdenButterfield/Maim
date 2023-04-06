@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "GUIelements/MainArea.h"
+#include "GUIelements/DragBox.h"
 
 //==============================================================================
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
@@ -33,17 +34,7 @@ private:
     MaimAudioProcessor& audioProcessor;
     
     MainArea mainArea;
-
-    juce::Slider butterflyUUslider {
-        juce::Slider::LinearBarVertical,
-        juce::Slider::NoTextBox
-    };
-    
-    SliderAttachment butterflyAttachment {
-        audioProcessor.getValueTreeState(),
-        "butterfly_uu",
-        butterflyUUslider
-    };
+    DragBox dragBox;
 
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessorEditor)
