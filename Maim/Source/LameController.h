@@ -35,6 +35,7 @@ public:
     bool copyOutput(float* left, float* right, const int num_block_samples);
     int samples_in_output_queue();
     bool initialFlush();
+    void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd);
     
 private:
     BendFlagsAndData* bendFlagsAndData;

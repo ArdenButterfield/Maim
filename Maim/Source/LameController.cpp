@@ -176,3 +176,8 @@ int LameController::samples_in_output_queue()
 {
     return outputBufferL->num_items();
 }
+
+void LameController::setButterflyBends(float uu, float ud, float du, float dd)
+{
+    lame_set_butterfly_bends(lame_enc_handler, uu, ud, du, dd);
+}

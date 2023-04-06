@@ -64,6 +64,13 @@
 #define LAME_DEFAULT_QUALITY 3
 
 
+void lame_set_butterfly_bends(lame_global_flags* gfp, float buinbu, float buinbd, float bdinbu, float bdinbd)
+{
+    gfp->bendFlagsAndData->butterfly_bubu = buinbu;
+    gfp->bendFlagsAndData->butterfly_bubd = buinbd;
+    gfp->bendFlagsAndData->butterfly_bdbu = bdinbu;
+    gfp->bendFlagsAndData->butterfly_bdbd = bdinbd;
+}
 
 int
 is_lame_global_flags_valid(const lame_global_flags * gfp)

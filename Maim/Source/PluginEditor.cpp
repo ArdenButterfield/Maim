@@ -15,8 +15,9 @@ MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (900, 600);
-    addAndMakeVisible(mainArea);
+    setSize (300, 300);
+    addAndMakeVisible(butterflyUUslider);
+    // addAndMakeVisible(mainArea);
 }
 
 MaimAudioProcessorEditor::~MaimAudioProcessorEditor()
@@ -34,5 +35,7 @@ void MaimAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    mainArea.setBounds(10, 10, getWidth() - 10, getHeight() - 10);
+    // mainArea.setBounds(10, 10, getWidth() - 10, getHeight() - 10);
+    
+    butterflyUUslider.setBounds(getLocalBounds());
 }

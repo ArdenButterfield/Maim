@@ -13,9 +13,11 @@
 #include "GUIelements/MainArea.h"
 
 //==============================================================================
-/**
-*/
-class MaimAudioProcessorEditor  : public juce::AudioProcessorEditor
+typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
+
+class MaimAudioProcessorEditor  :
+        public juce::AudioProcessorEditor
 {
 public:
     MaimAudioProcessorEditor (MaimAudioProcessor&);
@@ -32,5 +34,17 @@ private:
     
     MainArea mainArea;
 
+    juce::Slider butterflyUUslider {
+        juce::Slider::LinearBarVertical,
+        juce::Slider::NoTextBox
+    };
+    
+    SliderAttachment butterflyAttachment {
+        audioProcessor.getValueTreeState(),
+        "butterfly_uu",
+        butterflyUUslider
+    };
+
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessorEditor)
 };

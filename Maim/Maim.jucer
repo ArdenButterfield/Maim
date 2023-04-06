@@ -7,7 +7,6 @@
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
       <GROUP id="{0D544590-D22F-C70E-E1F7-D80B68DB01F0}" name="GUIelements">
-        <FILE id="lEMCkl" name="LineGraph.cpp" compile="1" resource="0" file="Source/GUIelements/LineGraph.cpp"/>
         <FILE id="gxRlcI" name="LineGraph.h" compile="0" resource="0" file="Source/GUIelements/LineGraph.h"/>
         <FILE id="woCWId" name="MainArea.cpp" compile="1" resource="0" file="Source/GUIelements/MainArea.cpp"/>
         <FILE id="jGe62S" name="MainArea.h" compile="0" resource="0" file="Source/GUIelements/MainArea.h"/>

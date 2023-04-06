@@ -1051,6 +1051,7 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                         // either/both 0: very thin, but transients pop through
                         mdct_enc[-1 - k] = gfc->bendFlagsAndData->butterfly_bubu * bu + gfc->bendFlagsAndData->butterfly_bdbu * bd;
                         mdct_enc[k] = gfc->bendFlagsAndData->butterfly_bubd * bu + gfc->bendFlagsAndData->butterfly_bdbd * bd;
+                        printf("%f\n", gfc->bendFlagsAndData->butterfly_bubu);
                     }
                 }
             }

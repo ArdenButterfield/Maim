@@ -23,38 +23,55 @@ MaimAudioProcessor::MaimAudioProcessor()
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"),
                {
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("buinbu"),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterfly_uu", 1},
                                                     "MDCT Butterfly up in up",
                                                     -1.0f,
                                                     2.0f,
                                                     1.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("buinbd"),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterfly_ud", 1},
                                                     "MDCT Butterfly up in donwn",
                                                     -1.0f,
                                                     2.0f,
                                                     0.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("bdinbu"),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"butterfly_du", 1},
                                                     "MDCT Butterfly down in up",
                                                     -1.0f,
                                                     2.0f,
                                                     0.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("bdinbd"),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"butterfly_dd", 1},
                                                     "MDCT Butterfly down in down",
                                                     -1.0f,
                                                     2.0f,
                                                     1.0f)
     })
 {
+    parameters.addParameterListener("butterfly_uu", this);
+    parameters.addParameterListener("butterfly_ud", this);
+    parameters.addParameterListener("butterfly_du", this);
+    parameters.addParameterListener("butterfly_dd", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
-}
+    parameters.removeParameterListener("butterfly_uu", this);
+    parameters.removeParameterListener("butterfly_ud", this);
+    parameters.removeParameterListener("butterfly_du", this);
+    parameters.removeParameterListener("butterfly_dd", this);}
 
 //==============================================================================
 const juce::String MaimAudioProcessor::getName() const
 {
     return JucePlugin_Name;
+}
+
+juce::AudioProcessorValueTreeState& MaimAudioProcessor::getValueTreeState()
+{
+    return parameters;
+}
+
+void MaimAudioProcessor::parameterChanged (const juce::String &parameterID, float newValue)
+{
+    parametersNeedUpdating = true;
 }
 
 bool MaimAudioProcessor::acceptsMidi() const
@@ -119,6 +136,7 @@ void MaimAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     lameController.init(sampleRate, samplesPerBlock, 128);
+    parametersNeedUpdating = true;
 }
 
 void MaimAudioProcessor::releaseResources()
@@ -153,8 +171,23 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 }
 #endif
 
-void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void MaimAudioProcessor::updateParameters()
 {
+    lameController.setButterflyBends(
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_uu"))->get(),
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_ud"))->get(),
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_du"))->get(),
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_dd"))->get()
+    );
+    parametersNeedUpdating = false;
+}
+
+void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
+                                       juce::MidiBuffer& midiMessages)
+{
+    if (parametersNeedUpdating) {
+        updateParameters();
+    }
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -194,15 +227,18 @@ juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
 //==============================================================================
 void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml (state.createXml());
+    copyXmlToBinary (*xml, destData);
 }
 
 void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName (parameters.state.getType()))
+            parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
 }
 
 //==============================================================================

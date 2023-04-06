@@ -149,6 +149,8 @@ struct bend_flags_and_data;
 typedef struct bend_flags_and_data BendFlagsAndData;
 BendFlagsAndData* getBendStruct(lame_global_flags* gfp);
 
+void lame_set_butterfly_bends(lame_global_flags* gfp, float buinbu, float buinbd, float bdinbu, float bdinbd);
+
 typedef lame_global_flags *lame_t;
 
 
