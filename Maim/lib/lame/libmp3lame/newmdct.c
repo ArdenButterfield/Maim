@@ -949,6 +949,7 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
     int     gr, k, ch;
     const sample_t *wk;
 
+
     wk = w0 + 286;
     /* thinking cache performance, ch->gr loop is better than gr->ch loop */
     for (ch = 0; ch < cfg->channels_out; ch++) {
@@ -957,15 +958,20 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
             gr_info *const gi = &(gfc->l3_side.tt[gr][ch]);
             FLOAT  *mdct_enc = gi->xr;
             FLOAT  *samp = esv->sb_sample[ch][1 - gr][0];
-
             for (k = 0; k < 18 / 2; k++) {
                 window_subband(wk, samp);
                 window_subband(wk + 32, samp + 32);
+                // TEST samp icr of smaller amounts: thick buzzes. below 32 is segfault territory. UNLESS you incr samp before the inner loop.
                 samp += 64;
+                // TESTT: wk increment less than samp: low, gravelly. more: high, gravelly
+                // above 80ish: segfault
+                // close to 0: really cool tone thing
+                // -64: also cool, but you need to change `wk = w0 + 286;` to `wk = w0 + 286 + 18 * 64` and same for wk = w1 below. 
                 wk += 64;
                 /*
                  * Compensate for inversion in the analysis filter
                  */
+                // TESTT: changing the multiplier gives it some minor whooping noises.
                 for (band = 1; band < 32; band += 2) {
                     samp[band - 32] *= -1;
                 }
@@ -975,6 +981,8 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
              * Perform imdct of 18 previous subband samples
              * + 18 current subband samples
              */
+            // smaller + for mdct_enc: similar scrub pan type sound.
+            // band count down instead of up: segfault
             for (band = 0; band < 32; band++, mdct_enc += 18) {
                 int     type = gi->block_type;
                 FLOAT const *const band0 = esv->sb_sample[ch][gr][0] + order[band];
@@ -1012,6 +1020,12 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                             work[k + 9] = a - b * tantab_l[k + 9];
                             work[k + 18] = a * tantab_l[k + 9] + b;
                         }
+                        for (int ctr = 0; ctr < 18; ++ctr) {
+                            ;
+                            // TESTT: add const: very buzzy, clipping, not good
+                            // times scalar: boring
+                            // work[ctr] = work[(ctr + 1) % 18]; -- white noisy, similar mod istoriton
+                        }
 
                         mdct_long(mdct_enc, work);
                     }
@@ -1019,12 +1033,18 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                 /*
                  * Perform aliasing reduction butterfly
                  */
+                // TESTT:
+                // switching to short type instead: mangles the hits.
                 if (type != SHORT_TYPE && band != 0) {
+                    // start k loop at 16: loud pops at drum hits, sounds like scrubbing a pot
+                    // no loop or shorter loop: a bit noisy but not much change
                     for (k = 7; k >= 0; --k) {
                         FLOAT   bu, bd;
                         bu = mdct_enc[k] * ca[k] + mdct_enc[-1 - k] * cs[k];
                         bd = mdct_enc[k] * cs[k] - mdct_enc[-1 - k] * ca[k];
 
+                        // swap bd bu: cool flangery sound
+                        // either/both 0: very thin, but transients pop through
                         mdct_enc[-1 - k] = bu;
                         mdct_enc[k] = bd;
                     }

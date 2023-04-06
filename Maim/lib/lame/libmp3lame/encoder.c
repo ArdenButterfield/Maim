@@ -411,8 +411,9 @@ lame_encode_mp3_frame(       /* Output */
     // shift x: robot voice
     for (gr = 0; gr < cfg->mode_gr; gr++) {
         for (ch = 0; ch < cfg->channels_out; ch++) {
-            for (int i = 0; i < 576; ++i) {
-                gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i-10)%576];
+            for (int i = 0; i < 512; ++i) {
+                gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+30)%512];
+                // gfc->l3_side.tt[gr][ch].xr[i] *= 0.01;
             }
         }
     }
