@@ -23,40 +23,27 @@ MaimAudioProcessor::MaimAudioProcessor()
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"),
                {
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterfly_uu", 1},
-                                                    "MDCT Butterfly up in up",
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterflystandard", 1},
+                                                    "MDCT Butterfly standard",
                                                     -1.0f,
                                                     2.0f,
                                                     1.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterfly_ud", 1},
-                                                    "MDCT Butterfly up in donwn",
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterflycrossed", 1},
+                                                    "MDCT Butterfly crossed",
                                                     -1.0f,
                                                     2.0f,
-                                                    0.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"butterfly_du", 1},
-                                                    "MDCT Butterfly down in up",
-                                                    -1.0f,
-                                                    2.0f,
-                                                    0.0f),
-        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"butterfly_dd", 1},
-                                                    "MDCT Butterfly down in down",
-                                                    -1.0f,
-                                                    2.0f,
-                                                    1.0f)
+                                                    0.0f)
     })
 {
-    parameters.addParameterListener("butterfly_uu", this);
-    parameters.addParameterListener("butterfly_ud", this);
-    parameters.addParameterListener("butterfly_du", this);
-    parameters.addParameterListener("butterfly_dd", this);
+    parameters.addParameterListener("butterflystandard", this);
+    parameters.addParameterListener("butterflycrossed", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
-    parameters.removeParameterListener("butterfly_uu", this);
-    parameters.removeParameterListener("butterfly_ud", this);
-    parameters.removeParameterListener("butterfly_du", this);
-    parameters.removeParameterListener("butterfly_dd", this);}
+    parameters.removeParameterListener("butterflystandard", this);
+    parameters.removeParameterListener("butterflycrossed", this);
+}
 
 //==============================================================================
 const juce::String MaimAudioProcessor::getName() const
@@ -174,10 +161,10 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 void MaimAudioProcessor::updateParameters()
 {
     lameController.setButterflyBends(
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_uu"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_ud"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_du"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterfly_dd"))->get()
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
+        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
     );
     parametersNeedUpdating = false;
 }

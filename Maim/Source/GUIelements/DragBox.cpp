@@ -34,6 +34,30 @@ DragBox::~DragBox()
     parameters.removeParameterListener(yParamID, this);
 }
 
+void DragBox::calculateGridLines(float minVal,
+                                 float maxVal,
+                                 float step,
+                                 float outMax,
+                                 std::vector<int>* v)
+{
+    v->clear();
+    auto minGridlineIndex = ceil(minVal / step);
+    for (auto i = minGridlineIndex; i * step < maxVal; ++i) {
+        v->push_back(((float)i - minVal) / (maxVal - minVal) * outMax);
+    }
+}
+
+void DragBox::drawGridlines(juce::Graphics& g)
+{
+    g.setColour(juce::Colours::lightgrey);
+    for (const auto x: verticalGridlines) {
+        g.drawVerticalLine(x, 0, getHeight());
+    }
+    for (const auto y: horizontalGridlines) {
+        g.drawHorizontalLine(y, 0, getWidth());
+    }
+}
+
 void DragBox::paint (juce::Graphics& g)
 {
     int x = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum()) * getWidth();
@@ -42,6 +66,8 @@ void DragBox::paint (juce::Graphics& g)
 
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
 
+    drawGridlines(g);
+    
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
@@ -70,9 +96,16 @@ void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
 
 void DragBox::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
+    calculateGridLines(xSlider->getMinimum(),
+                       xSlider->getMaximum(),
+                       gridStep,
+                       getWidth(),
+                       &verticalGridlines);
+    calculateGridLines(ySlider->getMinimum(),
+                       ySlider->getMaximum(),
+                       gridStep,
+                       getHeight(),
+                       &horizontalGridlines);
 }
 
 void DragBox::mouseMove(const juce::MouseEvent& event)
@@ -92,6 +125,7 @@ void DragBox::mouseMove(const juce::MouseEvent& event)
 void DragBox::mouseDrag(const juce::MouseEvent& event)
 {
     thumbDragged = true;
+    thumbHovered = true;
     xSlider->setValue(((float)event.x / getWidth()) * (xSlider->getMaximum() - xSlider->getMinimum()) + xSlider->getMinimum());
     ySlider->setValue(((float)event.y / getHeight()) * (ySlider->getMaximum() - ySlider->getMinimum()) + ySlider->getMinimum());
     repaint();

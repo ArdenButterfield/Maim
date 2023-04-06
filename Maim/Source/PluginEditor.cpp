@@ -13,7 +13,7 @@
 MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
         AudioProcessorEditor (&p),
         audioProcessor (p),
-        dragBox (p.getValueTreeState(), "butterfly_uu", "butterfly_du")
+        dragBox (p.getValueTreeState(), "butterflystandard", "butterflycrossed")
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.

@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include <memory>
+#include <cmath>
 
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 //==============================================================================
@@ -26,7 +27,7 @@ public:
             const juce::String& xParamID,
             const juce::String& yParamID);
     ~DragBox() override;
-
+    
     void paint (juce::Graphics&) override;
     void resized() override;
 
@@ -38,6 +39,14 @@ private:
     juce::Point<int> thumb;
     const int thumbDrawRadius = 5;
     const int thumbSensitivityRadius = 10;
+    
+    const float gridStep = 2.0f;
+    std::vector<int> horizontalGridlines;
+    std::vector<int> verticalGridlines;
+    void calculateGridLines(float minVal, float maxVal, float step, float outMax, std::vector<int>* v);
+    
+    void drawGridlines(juce::Graphics&);
+    
     bool thumbHovered;
     bool thumbDragged;
     
