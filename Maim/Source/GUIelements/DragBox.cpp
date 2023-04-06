@@ -45,11 +45,21 @@ void DragBox::paint (juce::Graphics& g)
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
+    if (thumbHovered) {
+        g.setColour (juce::Colours::red);
+        g.fillEllipse(x - thumbDrawRadius,
+                      y - thumbDrawRadius,
+                      thumbDrawRadius * 2,
+                      thumbDrawRadius * 2);
+
+    }
+    
     g.setColour (juce::Colours::magenta);
     g.drawEllipse(x - thumbDrawRadius,
                   y - thumbDrawRadius,
                   thumbDrawRadius * 2,
-                  thumbDrawRadius * 2, 2);
+                  thumbDrawRadius * 2,
+                  2);
 }
 
 void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
@@ -63,4 +73,38 @@ void DragBox::resized()
     // This method is where you should set the bounds of any child
     // components that your component contains..
 
+}
+
+void DragBox::mouseMove(const juce::MouseEvent& event)
+{
+    bool inRange = (thumb.getDistanceSquaredFrom(event.getPosition()) <
+                    thumbSensitivityRadius * thumbSensitivityRadius);
+    if (inRange and not thumbHovered) {
+        thumbHovered = true;
+        repaint();
+    }
+    if (thumbHovered and not inRange) {
+        thumbHovered = false;
+        repaint();
+    }
+}
+
+void DragBox::mouseDrag(const juce::MouseEvent& event)
+{
+    thumbDragged = true;
+    xSlider->setValue(((float)event.x / getWidth()) * (xSlider->getMaximum() - xSlider->getMinimum()) + xSlider->getMinimum());
+    ySlider->setValue(((float)event.y / getHeight()) * (ySlider->getMaximum() - ySlider->getMinimum()) + ySlider->getMinimum());
+    repaint();
+}
+
+
+void DragBox::mouseDoubleClick(const juce::MouseEvent& event)
+{
+    if (xSlider->isDoubleClickReturnEnabled()) {
+        xSlider->setValue(xSlider->getDoubleClickReturnValue());
+    }
+    if (ySlider->isDoubleClickReturnEnabled()) {
+        ySlider->setValue(ySlider->getDoubleClickReturnValue());
+    }
+    
 }

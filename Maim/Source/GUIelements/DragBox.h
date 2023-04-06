@@ -17,7 +17,9 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 //==============================================================================
 /*
 */
-class DragBox  : public juce::Component, public juce::AudioProcessorValueTreeState::Listener
+class DragBox  :
+        public juce::Component,
+        public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     DragBox(juce::AudioProcessorValueTreeState& p,
@@ -28,12 +30,17 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void mouseMove (const juce::MouseEvent &event) override;
+    void mouseDrag (const juce::MouseEvent &event) override;
+    void mouseDoubleClick (const juce::MouseEvent &event) override;
+
 private:
     juce::Point<int> thumb;
     const int thumbDrawRadius = 5;
     const int thumbSensitivityRadius = 10;
     bool thumbHovered;
     bool thumbDragged;
+    
     
     const juce::String xParamID;
     const juce::String yParamID;
