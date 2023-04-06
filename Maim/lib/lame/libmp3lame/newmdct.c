@@ -873,6 +873,8 @@ mdct_long(FLOAT * out, FLOAT const *in)
     {
         FLOAT   tc1, tc2, tc3, tc4, ts5, ts6, ts7, ts8;
         /* 1,2, 5,6, 9,10, 13,14, 17 */
+        // Changing + and - mangles the sound some, adds some noise, but
+        // nothing lifechanging
         tc1 = in[17] - in[9];
         tc3 = in[15] - in[11];
         tc4 = in[14] - in[12];
@@ -983,6 +985,8 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
              */
             // smaller + for mdct_enc: similar scrub pan type sound.
             // band count down instead of up: segfault
+            // mdct_enc += 18 * 32; and mdct_enc -= 18 in the for loop: flip script, very tinny
+            // change that 18 to a smaller number (down to 7 works): high freq stuff, but kinda cool, tambourine like
             for (band = 0; band < 32; band++, mdct_enc += 18) {
                 int     type = gi->block_type;
                 FLOAT const *const band0 = esv->sb_sample[ch][gr][0] + order[band];
@@ -1045,8 +1049,8 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
 
                         // swap bd bu: cool flangery sound
                         // either/both 0: very thin, but transients pop through
-                        mdct_enc[-1 - k] = bu;
-                        mdct_enc[k] = bd;
+                        mdct_enc[-1 - k] = gfc->bendFlagsAndData->butterfly_bubu * bu + gfc->bendFlagsAndData->butterfly_bdbu * bd;
+                        mdct_enc[k] = gfc->bendFlagsAndData->butterfly_bubd * bu + gfc->bendFlagsAndData->butterfly_bdbd * bd;
                     }
                 }
             }

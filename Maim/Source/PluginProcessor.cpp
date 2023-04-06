@@ -19,8 +19,31 @@ MaimAudioProcessor::MaimAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
 #endif
+    parameters(*this, nullptr, juce::Identifier("Maim"),
+               {
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("buinbu"),
+                                                    "MDCT Butterfly up in up",
+                                                    -1.0f,
+                                                    2.0f,
+                                                    1.0f),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("buinbd"),
+                                                    "MDCT Butterfly up in donwn",
+                                                    -1.0f,
+                                                    2.0f,
+                                                    0.0f),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("bdinbu"),
+                                                    "MDCT Butterfly down in up",
+                                                    -1.0f,
+                                                    2.0f,
+                                                    0.0f),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID("bdinbd"),
+                                                    "MDCT Butterfly down in down",
+                                                    -1.0f,
+                                                    2.0f,
+                                                    1.0f)
+    })
 {
 }
 
