@@ -45,7 +45,12 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                     "Lowpass filter",
                                                     100.f,
                                                     20000.f,
-                                                    18000.f)
+                                                    18000.f),
+        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctpostshift", 1},
+                                                    "MDCT post shift",
+                                                    -100.f,
+                                                    100.f,
+                                                    0.f)
     })
 {
     parameters.addParameterListener("butterflystandard", this);
@@ -53,6 +58,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("mdctstep", this);
     parameters.addParameterListener("mdctinvert", this);
     parameters.addParameterListener("lopass", this);
+    parameters.addParameterListener("mdctpostshift", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -62,6 +68,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctstep", this);
     parameters.removeParameterListener("mdctinvert", this);
     parameters.removeParameterListener("lopass", this);
+    parameters.removeParameterListener("mdctpostshift", this);
 }
 
 //==============================================================================
@@ -188,6 +195,9 @@ void MaimAudioProcessor::updateParameters()
         ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
         ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
     );
+    
+    lameController.setMDCTpostshiftBends(((juce::AudioParameterInt*) parameters.getParameter("mdctpostshift"))->get());
+    
     parametersNeedUpdating = false;
     
     for (auto &f: postFilter) {

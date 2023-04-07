@@ -78,6 +78,11 @@ void lame_set_mdct_step_bends(lame_global_flags* gfp, int invert, int step)
     gfp->bendFlagsAndData->mdct_band_step = step;
 }
 
+void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int shift)
+{
+    gfp->bendFlagsAndData->mdct_post_shift = shift;
+}
+
 int
 is_lame_global_flags_valid(const lame_global_flags * gfp)
 {

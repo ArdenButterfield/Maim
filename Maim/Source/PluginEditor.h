@@ -70,5 +70,14 @@ private:
         postFilterSlider
     };
     
+    juce::Slider mdctPostShiftSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    SliderAttachment mdctPostShiftAttachment {
+        audioProcessor.getValueTreeState(),
+        "mdctpostshift",
+        mdctPostShiftSlider
+    };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessorEditor)
 };

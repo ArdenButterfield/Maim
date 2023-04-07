@@ -405,21 +405,32 @@ lame_encode_mp3_frame(       /* Output */
     mdct_sub48(gfc, inbuf[0], inbuf[1]);
 
 
-    /*
+    
     // TESTT: print output of mdct
     // scale y: boring. shift y: grating tone
     // shift x: robot voice
-    for (gr = 0; gr < cfg->mode_gr; gr++) {
-        for (ch = 0; ch < cfg->channels_out; ch++) {
-            for (int i = 0; i < 512; ++i) {
-                gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+30)%512];
-                // gfc->l3_side.tt[gr][ch].xr[i] *= 0.01;
+    int mdct_shift = gfc->bendFlagsAndData->mdct_post_shift;
+    if (mdct_shift > 0) {
+        for (gr = 0; gr < cfg->mode_gr; gr++) {
+            for (ch = 0; ch < cfg->channels_out; ch++) {
+                for (int i = 0; i < 512; ++i) {
+                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i-mdct_shift)%512];
+                }
+            }
+        }
+    } else if (mdct_shift < 0) {
+        for (gr = 0; gr < cfg->mode_gr; gr++) {
+            for (ch = 0; ch < cfg->channels_out; ch++) {
+                for (int i = 512; i >= 0; --i) {
+                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+512-mdct_shift)%512];
+                }
             }
         }
     }
+    
     // Result: some small numbers, between -1ish and 1, mostly very small magnitude, and then
     // all zeros above the lowpass filter cutoff
-    */
+    
 
 
     /****************************************

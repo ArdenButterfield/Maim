@@ -37,6 +37,7 @@ public:
     bool initialFlush();
     void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd);
     void setMDCTbandstepBends(bool invert, int step);
+    void setMDCTpostshiftBends(int shift);
     
 private:
     BendFlagsAndData* bendFlagsAndData;

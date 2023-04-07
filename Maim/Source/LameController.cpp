@@ -186,3 +186,8 @@ void LameController::setMDCTbandstepBends(bool invert, int step)
 {
     lame_set_mdct_step_bends(lame_enc_handler, (int)invert, step);
 }
+
+void LameController::setMDCTpostshiftBends(int shift)
+{
+    lame_set_mdct_post_shift_bends(lame_enc_handler, shift);
+}

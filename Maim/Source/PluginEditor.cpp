@@ -22,6 +22,7 @@ MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
     addAndMakeVisible(mdctBandStepSlider);
     addAndMakeVisible(mdctBandInvertSlider);
     addAndMakeVisible(postFilterSlider);
+    addAndMakeVisible(mdctPostShiftSlider);
     // addAndMakeVisible(mainArea);
 }
 
@@ -44,4 +45,5 @@ void MaimAudioProcessorEditor::resized()
     mdctBandStepSlider.setBounds(300, 10, 150, 140);
     mdctBandInvertSlider.setBounds(300, 150, 150, 140);
     postFilterSlider.setBounds(450, 0, 150, 150);
+    mdctPostShiftSlider.setBounds(450, 150, 150, 150);
 }

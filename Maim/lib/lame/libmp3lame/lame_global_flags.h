@@ -34,6 +34,8 @@ typedef struct bend_flags_and_data {
     // mdct band step flags
     int mdct_band_step;
     int mdct_invert;
+
+    int mdct_post_shift;
 } BendFlagsAndData;
 
 
