@@ -12,11 +12,10 @@
 #include "StageWindow.h"
 
 //==============================================================================
-StageWindow::StageWindow()
+StageWindow::StageWindow(juce::AudioProcessorValueTreeState& p) :
+    parameters(p)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
-
+    
 }
 
 StageWindow::~StageWindow()
@@ -32,20 +31,8 @@ void StageWindow::paint (juce::Graphics& g)
        drawing code..
     */
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll (juce::Colours::grey);   // clear the background
 
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-    g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("StageWindow", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
-}
-
-void StageWindow::resized()
-{
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
+    g.setColour (juce::Colours::lightgrey);
+    g.drawRect (getLocalBounds(), 5);   // draw an outline around the component
 }

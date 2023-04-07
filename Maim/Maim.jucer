@@ -12,6 +12,10 @@
         <FILE id="gxRlcI" name="LineGraph.h" compile="0" resource="0" file="Source/GUIelements/LineGraph.h"/>
         <FILE id="woCWId" name="MainArea.cpp" compile="1" resource="0" file="Source/GUIelements/MainArea.cpp"/>
         <FILE id="jGe62S" name="MainArea.h" compile="0" resource="0" file="Source/GUIelements/MainArea.h"/>
+        <FILE id="dxNREa" name="MDCTSection.cpp" compile="1" resource="0" file="Source/GUIelements/MDCTSection.cpp"/>
+        <FILE id="gi2n9P" name="MDCTSection.h" compile="0" resource="0" file="Source/GUIelements/MDCTSection.h"/>
+        <FILE id="wBXH3Q" name="PostSection.cpp" compile="1" resource="0" file="Source/GUIelements/PostSection.cpp"/>
+        <FILE id="YxRK6X" name="PostSection.h" compile="0" resource="0" file="Source/GUIelements/PostSection.h"/>
         <FILE id="JnJcVp" name="StageWindow.cpp" compile="1" resource="0" file="Source/GUIelements/StageWindow.cpp"/>
         <FILE id="QyWlgw" name="StageWindow.h" compile="0" resource="0" file="Source/GUIelements/StageWindow.h"/>
       </GROUP>

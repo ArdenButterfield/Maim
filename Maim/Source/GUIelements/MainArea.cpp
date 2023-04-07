@@ -12,12 +12,13 @@
 #include "MainArea.h"
 
 //==============================================================================
-MainArea::MainArea() :
-    testLineGraph(0, 4, 3)
+MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
+    mdctSection(p),
+    postSection(p),
+    parameters(p)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
-    addAndMakeVisible(testLineGraph);
+    addAndMakeVisible(mdctSection);
+    addAndMakeVisible(postSection);
 }
 
 MainArea::~MainArea()
@@ -37,18 +38,10 @@ void MainArea::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
-    g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("MainArea", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
 }
 
 void MainArea::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-    testLineGraph.setBounds(0,0,100,100);
-    std::vector<int> testData({1,3,2});
-    testLineGraph.loadData(testData.data());
+    mdctSection.setBounds(getLocalBounds().withTrimmedRight(100));
+    postSection.setBounds(getLocalBounds().withTrimmedLeft(getWidth() - 100));
 }

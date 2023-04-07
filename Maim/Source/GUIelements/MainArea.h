@@ -12,7 +12,9 @@
 
 #include <JuceHeader.h>
 
-#include "LineGraph.h"
+#include "MDCTSection.h"
+#include "PostSection.h"
+#include "StageWindow.h"
 
 //==============================================================================
 /*
@@ -20,13 +22,15 @@
 class MainArea  : public juce::Component
 {
 public:
-    MainArea();
+    MainArea(juce::AudioProcessorValueTreeState& p);
     ~MainArea() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    LineGraph<int> testLineGraph;
+    MDCTSection mdctSection;
+    PostSection postSection;
+    juce::AudioProcessorValueTreeState& parameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainArea)
 };

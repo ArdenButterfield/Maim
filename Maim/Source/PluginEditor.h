@@ -59,17 +59,6 @@ private:
         mdctBandInvertSlider
     };
     
-    juce::Slider postFilterSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    SliderAttachment postFilterAttatchment {
-        audioProcessor.getValueTreeState(),
-        "lopass",
-        postFilterSlider
-    };
-    
     juce::Slider mdctPostShiftSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
