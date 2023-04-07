@@ -191,3 +191,8 @@ void LameController::setMDCTpostshiftBends(int shift)
 {
     lame_set_mdct_post_shift_bends(lame_enc_handler, shift);
 }
+
+void LameController::setMDCTwindowincrBends(int winc)
+{
+    lame_set_mdct_window_increment_bends(lame_enc_handler, winc);
+}

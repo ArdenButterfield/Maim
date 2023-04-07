@@ -11,9 +11,24 @@
 #include <JuceHeader.h>
 #include "MDCTSection.h"
 
+
+MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
+        : StageWindow(p)
+{
+    addAndMakeVisible(mdctBandStepSlider);
+    addAndMakeVisible(mdctBandInvertSlider);
+    addAndMakeVisible(mdctPostShiftSlider);
+    addAndMakeVisible(mdctWindowIncrementSlider);
+}
+
+
 void MDCTSection::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+    int halfHeight = getHeight() / 2;
+    int halfWidth = getWidth() / 2;
+    mdctBandStepSlider.setBounds(getLocalBounds().withTrimmedBottom(halfHeight).withTrimmedRight(halfWidth));
+    mdctBandInvertSlider.setBounds(getLocalBounds().withTrimmedBottom(halfHeight).withTrimmedLeft(halfWidth));
+    mdctPostShiftSlider.setBounds(getLocalBounds().withTrimmedTop(halfHeight).withTrimmedLeft(halfWidth));
+    mdctWindowIncrementSlider.setBounds(getLocalBounds().withTrimmedTop(halfHeight).withTrimmedRight(halfWidth));
 
 }

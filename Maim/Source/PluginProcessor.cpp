@@ -48,9 +48,14 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                     18000.f),
         std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctpostshift", 1},
                                                     "MDCT post shift",
-                                                    -100.f,
-                                                    100.f,
-                                                    0.f)
+                                                    -100,
+                                                    100,
+                                                    0),
+        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctwindowincr", 1},
+                                                  "MDCT window increment",
+                                                  -64,
+                                                  64,
+                                                  64)
     })
 {
     parameters.addParameterListener("butterflystandard", this);
@@ -59,6 +64,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("mdctinvert", this);
     parameters.addParameterListener("lopass", this);
     parameters.addParameterListener("mdctpostshift", this);
+    parameters.addParameterListener("mdctwindowincr", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -69,6 +75,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctinvert", this);
     parameters.removeParameterListener("lopass", this);
     parameters.removeParameterListener("mdctpostshift", this);
+    parameters.removeParameterListener("mdctwindowincr", this);
 }
 
 //==============================================================================
@@ -196,7 +203,11 @@ void MaimAudioProcessor::updateParameters()
         ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
     );
     
-    lameController.setMDCTpostshiftBends(((juce::AudioParameterInt*) parameters.getParameter("mdctpostshift"))->get());
+    lameController.setMDCTpostshiftBends(
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctpostshift"))->get());
+    
+    lameController.setMDCTwindowincrBends(
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get());
     
     parametersNeedUpdating = false;
     

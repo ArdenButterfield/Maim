@@ -953,6 +953,10 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
 
 
     wk = w0 + 286;
+    int wk_incr = gfc->bendFlagsAndData->mdct_window_increment;
+    if (wk_incr < 0) {
+        wk += (18 / 2) * cfg->mode_gr * 64;
+    }
     /* thinking cache performance, ch->gr loop is better than gr->ch loop */
     for (ch = 0; ch < cfg->channels_out; ch++) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
@@ -969,7 +973,7 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                 // above 80ish: segfault
                 // close to 0: really cool tone thing
                 // -64: also cool, but you need to change `wk = w0 + 286;` to `wk = w0 + 286 + 18 * 64` and same for wk = w1 below. 
-                wk += 64;
+                wk += wk_incr;
                 /*
                  * Compensate for inversion in the analysis filter
                  */
@@ -1063,6 +1067,9 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
             }
         }
         wk = w1 + 286;
+        if (wk_incr < 0) {
+            wk += (18 / 2) * cfg->mode_gr * 64;
+        }
         if (cfg->mode_gr == 1) {
             memcpy(esv->sb_sample[ch][0], esv->sb_sample[ch][1], 576 * sizeof(FLOAT));
         }

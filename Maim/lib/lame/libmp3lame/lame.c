@@ -83,6 +83,11 @@ void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int shift)
     gfp->bendFlagsAndData->mdct_post_shift = shift;
 }
 
+void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int increment)
+{
+    gfp->bendFlagsAndData->mdct_window_increment = increment;
+}
+
 int
 is_lame_global_flags_valid(const lame_global_flags * gfp)
 {

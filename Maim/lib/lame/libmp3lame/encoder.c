@@ -414,7 +414,7 @@ lame_encode_mp3_frame(       /* Output */
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
                 for (int i = 0; i < 512; ++i) {
-                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i-mdct_shift)%512];
+                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+512-mdct_shift)%512];
                 }
             }
         }
