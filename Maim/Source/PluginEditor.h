@@ -37,6 +37,26 @@ private:
     MainArea mainArea;
     DragBox dragBox;
 
+    juce::Slider mdctBandStepSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
     
+    SliderAttachment mdctBandStepAttachment {
+        audioProcessor.getValueTreeState(),
+        "mdctstep",
+        mdctBandStepSlider
+    };
+    
+    juce::Slider mdctBandInvertSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    
+    SliderAttachment mdctBandInvertAttachment {
+        audioProcessor.getValueTreeState(),
+        "mdctinvert",
+        mdctBandInvertSlider
+    };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessorEditor)
 };

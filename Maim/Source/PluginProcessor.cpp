@@ -35,7 +35,7 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                     0.0f),
         std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctstep", 1},
                                                   "MDCT band step",
-                                                  7,
+                                                  8,
                                                   18,
                                                   18),
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"mdctinvert", 1},
