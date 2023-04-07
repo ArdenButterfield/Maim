@@ -421,8 +421,8 @@ lame_encode_mp3_frame(       /* Output */
     } else if (mdct_shift < 0) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
-                for (int i = 512; i >= 0; --i) {
-                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+512-mdct_shift)%512];
+                for (int i = 511; i >= 0; --i) {
+                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i-mdct_shift)%512];
                 }
             }
         }
