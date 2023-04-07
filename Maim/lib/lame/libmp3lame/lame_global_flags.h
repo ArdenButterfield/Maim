@@ -30,6 +30,10 @@ typedef struct bend_flags_and_data {
     float butterfly_bubd;
     float butterfly_bdbu;
     float butterfly_bdbd;
+
+    // mdct band step flags
+    int mdct_band_step;
+    int mdct_invert;
 } BendFlagsAndData;
 
 

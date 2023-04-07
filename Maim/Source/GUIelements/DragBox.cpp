@@ -148,9 +148,8 @@ void DragBox::mouseDrag(const juce::MouseEvent& event)
 {
     thumbDragged = true;
     thumbHovered = true;
-    // TODO: rescale stuff, maybe with a separate lerpy function
-    xSlider->setValue(rescaleRange(event.x, activeZone.getX(), activeZone.getRight(), xSlider->getMinimum(), xSlider->getMaximum()));
-    ySlider->setValue(rescaleRange(event.y, activeZone.getY(), activeZone.getBottom(), ySlider->getMinimum(), ySlider->getMaximum()));
+    xSlider->setValue(rescaleRange(event.position.getX(), activeZone.getX(), activeZone.getRight(), xSlider->getMinimum(), xSlider->getMaximum()));
+    ySlider->setValue(rescaleRange(event.position.getY(), activeZone.getY(), activeZone.getBottom(), ySlider->getMinimum(), ySlider->getMaximum()));
     repaint();
 }
 

@@ -72,6 +72,12 @@ void lame_set_butterfly_bends(lame_global_flags* gfp, float buinbu, float buinbd
     gfp->bendFlagsAndData->butterfly_bdbd = bdinbd;
 }
 
+void lame_set_mdct_step_bends(lame_global_flags* gfp, int invert, int step)
+{
+    gfp->bendFlagsAndData->mdct_invert = invert;
+    gfp->bendFlagsAndData->mdct_band_step = step;
+}
+
 int
 is_lame_global_flags_valid(const lame_global_flags * gfp)
 {
