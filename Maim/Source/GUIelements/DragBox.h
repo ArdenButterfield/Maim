@@ -14,6 +14,7 @@
 #include <memory>
 #include <cmath>
 
+
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 //==============================================================================
 /*
@@ -37,13 +38,20 @@ public:
 
 private:
     juce::Point<int> thumb;
-    const int thumbDrawRadius = 5;
+    const int thumbDrawRadius = 10;
     const int thumbSensitivityRadius = 10;
+    
+    juce::Rectangle<int> activeZone;
     
     const float gridStep = 2.0f;
     std::vector<int> horizontalGridlines;
     std::vector<int> verticalGridlines;
-    void calculateGridLines(float minVal, float maxVal, float step, float outMax, std::vector<int>* v);
+    void calculateGridLines(const float minVal,
+                            const float maxVal,
+                            const float step,
+                            const float outMin,
+                            const float outMax,
+                            std::vector<int>* v);
     
     void drawGridlines(juce::Graphics&);
     

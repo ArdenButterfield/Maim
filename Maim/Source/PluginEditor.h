@@ -17,6 +17,7 @@
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
 
+
 class MaimAudioProcessorEditor  :
         public juce::AudioProcessorEditor
 {
