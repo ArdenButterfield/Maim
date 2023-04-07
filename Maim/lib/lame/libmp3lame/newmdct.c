@@ -987,10 +987,13 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
             // band count down instead of up: segfault
             // mdct_enc += 18 * 32; and mdct_enc -= 18 in the for loop: flip script, very tinny
             // change that 18 to a smaller number (down to 7 works): high freq stuff, but kinda cool, tambourine like
+            int mdct_step = gfc->bendFlagsAndData->mdct_band_step;
+            memset(mdct_enc, 0, 18 * 32 * sizeof(FLOAT));
             if (gfc->bendFlagsAndData->mdct_invert) {
                 mdct_enc += 32 * gfc->bendFlagsAndData->mdct_band_step;
+                mdct_step *= -1;
             }
-            for (band = 0; band < 32; band++, mdct_enc += gfc->bendFlagsAndData->mdct_band_step) {
+            for (band = 0; band < 32; band++, mdct_enc += mdct_step) {
                 int     type = gi->block_type;
                 FLOAT const *const band0 = esv->sb_sample[ch][gr][0] + order[band];
                 FLOAT  *const band1 = esv->sb_sample[ch][1 - gr][0] + order[band];

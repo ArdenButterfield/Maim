@@ -181,3 +181,8 @@ void LameController::setButterflyBends(float uu, float ud, float du, float dd)
 {
     lame_set_butterfly_bends(lame_enc_handler, uu, ud, du, dd);
 }
+
+void LameController::setMDCTbandstepBends(bool invert, int step)
+{
+    lame_set_mdct_step_bends(lame_enc_handler, (int)invert, step);
+}

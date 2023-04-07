@@ -32,17 +32,29 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                     "MDCT Butterfly crossed",
                                                     0.0f,
                                                     1.0f,
-                                                    0.0f)
+                                                    0.0f),
+        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctstep", 1},
+                                                  "MDCT band step",
+                                                  7,
+                                                  18,
+                                                  18),
+        std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"mdctinvert", 1},
+                                                   "MDCT band invert",
+                                                   false)
     })
 {
     parameters.addParameterListener("butterflystandard", this);
     parameters.addParameterListener("butterflycrossed", this);
+    parameters.addParameterListener("mdctstep", this);
+    parameters.addParameterListener("mdctinvert", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
     parameters.removeParameterListener("butterflystandard", this);
     parameters.removeParameterListener("butterflycrossed", this);
+    parameters.removeParameterListener("mdctstep", this);
+    parameters.removeParameterListener("mdctinvert", this);
 }
 
 //==============================================================================
@@ -165,6 +177,10 @@ void MaimAudioProcessor::updateParameters()
         ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
         ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
         ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
+    );
+    lameController.setMDCTbandstepBends(
+        ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
+        ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
     );
     parametersNeedUpdating = false;
 }
