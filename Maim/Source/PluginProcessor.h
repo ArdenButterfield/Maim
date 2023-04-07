@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <array>
 
 #include "LameController.h"
 
@@ -63,11 +64,14 @@ public:
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     
 private:
+    double sampleRate;
     void updateParameters();
     bool parametersNeedUpdating;
     juce::AudioProcessorValueTreeState parameters;
     
     LameController lameController;
+    
+    std::array<juce::IIRFilter, 2> postFilter;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessor)
 };

@@ -40,13 +40,19 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                   18),
         std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"mdctinvert", 1},
                                                    "MDCT band invert",
-                                                   false)
+                                                   false),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"lopass", 1},
+                                                    "Lowpass filter",
+                                                    100.f,
+                                                    20000.f,
+                                                    18000.f)
     })
 {
     parameters.addParameterListener("butterflystandard", this);
     parameters.addParameterListener("butterflycrossed", this);
     parameters.addParameterListener("mdctstep", this);
     parameters.addParameterListener("mdctinvert", this);
+    parameters.addParameterListener("lopass", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -55,6 +61,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("butterflycrossed", this);
     parameters.removeParameterListener("mdctstep", this);
     parameters.removeParameterListener("mdctinvert", this);
+    parameters.removeParameterListener("lopass", this);
 }
 
 //==============================================================================
@@ -130,10 +137,9 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 }
 
 //==============================================================================
-void MaimAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    sampleRate = fs;
     lameController.init(sampleRate, samplesPerBlock, 128);
     parametersNeedUpdating = true;
 }
@@ -183,6 +189,10 @@ void MaimAudioProcessor::updateParameters()
         ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
     );
     parametersNeedUpdating = false;
+    
+    for (auto &f: postFilter) {
+        f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));
+    }
 }
 
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
@@ -206,13 +216,8 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         samplesR = buffer.getWritePointer(1);
         lameController.addNextInput(samplesL, samplesR, buffer.getNumSamples());
         lameController.copyOutput(samplesL, samplesR, buffer.getNumSamples());
-    }
-    
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        postFilter[0].processSamples(samplesL, buffer.getNumSamples());
+        postFilter[1].processSamples(samplesR, buffer.getNumSamples());
     }
 }
 

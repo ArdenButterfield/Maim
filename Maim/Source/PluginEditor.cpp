@@ -21,6 +21,7 @@ MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
     addAndMakeVisible(dragBox);
     addAndMakeVisible(mdctBandStepSlider);
     addAndMakeVisible(mdctBandInvertSlider);
+    addAndMakeVisible(postFilterSlider);
     // addAndMakeVisible(mainArea);
 }
 
@@ -40,7 +41,7 @@ void MaimAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     dragBox.setBounds(10, 10, 300 - 20, getHeight() - 20);
-    mdctBandStepSlider.setBounds(300, 10, 300, 140);
-    mdctBandInvertSlider.setBounds(300, 150, 300, 140);
-    
+    mdctBandStepSlider.setBounds(300, 10, 150, 140);
+    mdctBandInvertSlider.setBounds(300, 150, 150, 140);
+    postFilterSlider.setBounds(450, 0, 150, 150);
 }

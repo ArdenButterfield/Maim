@@ -35,6 +35,7 @@ public:
     void mouseMove (const juce::MouseEvent &event) override;
     void mouseDrag (const juce::MouseEvent &event) override;
     void mouseDoubleClick (const juce::MouseEvent &event) override;
+    void mouseDown(const juce::MouseEvent &event) override;
 
 private:
     juce::Point<int> thumb;

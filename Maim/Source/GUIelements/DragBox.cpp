@@ -16,7 +16,9 @@ float rescaleRange(const float v,
                    const float oldMax,
                    const float newMin,
                    const float newMax)
-{    return (juce::jmax(juce::jmin(v, oldMax), oldMin) - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
+{
+    float v2 = juce::jmax(juce::jmin(v, oldMax), oldMin);
+    return (v2 - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
 }
 
 //==============================================================================
@@ -146,11 +148,7 @@ void DragBox::mouseMove(const juce::MouseEvent& event)
 
 void DragBox::mouseDrag(const juce::MouseEvent& event)
 {
-    thumbDragged = true;
-    thumbHovered = true;
-    xSlider->setValue(rescaleRange(event.position.getX(), activeZone.getX(), activeZone.getRight(), xSlider->getMinimum(), xSlider->getMaximum()));
-    ySlider->setValue(rescaleRange(event.position.getY(), activeZone.getY(), activeZone.getBottom(), ySlider->getMinimum(), ySlider->getMaximum()));
-    repaint();
+    mouseDown(event);
 }
 
 
@@ -162,5 +160,14 @@ void DragBox::mouseDoubleClick(const juce::MouseEvent& event)
     if (ySlider->isDoubleClickReturnEnabled()) {
         ySlider->setValue(ySlider->getDoubleClickReturnValue());
     }
-    
+}
+
+void DragBox::mouseDown(const juce::MouseEvent &event)
+{
+    thumbDragged = true;
+    thumbHovered = true;
+    xSlider->setValue(rescaleRange(event.position.getX(), activeZone.getX(), activeZone.getRight(), xSlider->getMinimum(), xSlider->getMaximum()));
+    ySlider->setValue(rescaleRange(event.position.getY(), activeZone.getY(), activeZone.getBottom(), ySlider->getMinimum(), ySlider->getMaximum()));
+    repaint();
+
 }
