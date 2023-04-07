@@ -25,13 +25,13 @@ MaimAudioProcessor::MaimAudioProcessor()
                {
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterflystandard", 1},
                                                     "MDCT Butterfly standard",
-                                                    -1.0f,
-                                                    2.0f,
+                                                    0.0f,
+                                                    1.0f,
                                                     1.0f),
         std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterflycrossed", 1},
                                                     "MDCT Butterfly crossed",
-                                                    -1.0f,
-                                                    2.0f,
+                                                    0.0f,
+                                                    1.0f,
                                                     0.0f)
     })
 {

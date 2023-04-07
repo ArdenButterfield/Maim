@@ -11,6 +11,14 @@
 #include <JuceHeader.h>
 #include "DragBox.h"
 
+float rescaleRange(const float v,
+                   const float oldMin,
+                   const float oldMax,
+                   const float newMin,
+                   const float newMax)
+{    return (juce::jmax(juce::jmin(v, oldMax), oldMin) - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
+}
+
 //==============================================================================
 DragBox::DragBox(juce::AudioProcessorValueTreeState& p,
                  const juce::String& xID,
@@ -34,16 +42,17 @@ DragBox::~DragBox()
     parameters.removeParameterListener(yParamID, this);
 }
 
-void DragBox::calculateGridLines(float minVal,
-                                 float maxVal,
-                                 float step,
-                                 float outMax,
+void DragBox::calculateGridLines(const float minVal,
+                                 const float maxVal,
+                                 const float step,
+                                 const float outMin,
+                                 const float outMax,
                                  std::vector<int>* v)
 {
     v->clear();
     auto minGridlineIndex = ceil(minVal / step);
     for (auto i = minGridlineIndex; i * step < maxVal; ++i) {
-        v->push_back(((float)i - minVal) / (maxVal - minVal) * outMax);
+        v->push_back(rescaleRange(i, minVal, maxVal, outMin, outMax));
     }
 }
 
@@ -60,8 +69,16 @@ void DragBox::drawGridlines(juce::Graphics& g)
 
 void DragBox::paint (juce::Graphics& g)
 {
-    int x = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum()) * getWidth();
-    int y = (ySlider->getValue() - ySlider->getMinimum()) / (ySlider->getMaximum() - ySlider->getMinimum()) * getHeight();
+    int x = rescaleRange(xSlider->getValue(),
+                         xSlider->getMinimum(),
+                         xSlider->getMaximum(),
+                         activeZone.getX(),
+                         activeZone.getRight());
+    int y = rescaleRange(ySlider->getValue(),
+                         ySlider->getMinimum(),
+                         ySlider->getMaximum(),
+                         activeZone.getY(),
+                         activeZone.getBottom());
     thumb.setXY(x, y);
 
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
@@ -69,8 +86,8 @@ void DragBox::paint (juce::Graphics& g)
     drawGridlines(g);
     
     g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
-
+    g.drawRoundedRectangle(0, 0, getWidth(), getHeight(), (float)thumbDrawRadius, 1.f);
+    
     if (thumbHovered) {
         g.setColour (juce::Colours::red);
         g.fillEllipse(x - thumbDrawRadius,
@@ -96,15 +113,20 @@ void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
 
 void DragBox::resized()
 {
+    activeZone = getLocalBounds().withSizeKeepingCentre(getWidth() - thumbDrawRadius * 2,
+                                                   getHeight() - thumbDrawRadius * 2);
+    
     calculateGridLines(xSlider->getMinimum(),
                        xSlider->getMaximum(),
                        gridStep,
-                       getWidth(),
+                       activeZone.getX(),
+                       activeZone.getRight(),
                        &verticalGridlines);
     calculateGridLines(ySlider->getMinimum(),
                        ySlider->getMaximum(),
                        gridStep,
-                       getHeight(),
+                       activeZone.getY(),
+                       activeZone.getBottom(),
                        &horizontalGridlines);
 }
 
@@ -126,8 +148,9 @@ void DragBox::mouseDrag(const juce::MouseEvent& event)
 {
     thumbDragged = true;
     thumbHovered = true;
-    xSlider->setValue(((float)event.x / getWidth()) * (xSlider->getMaximum() - xSlider->getMinimum()) + xSlider->getMinimum());
-    ySlider->setValue(((float)event.y / getHeight()) * (ySlider->getMaximum() - ySlider->getMinimum()) + ySlider->getMinimum());
+    // TODO: rescale stuff, maybe with a separate lerpy function
+    xSlider->setValue(rescaleRange(event.x, activeZone.getX(), activeZone.getRight(), xSlider->getMinimum(), xSlider->getMaximum()));
+    ySlider->setValue(rescaleRange(event.y, activeZone.getY(), activeZone.getBottom(), ySlider->getMinimum(), ySlider->getMaximum()));
     repaint();
 }
 
