@@ -166,6 +166,7 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 //==============================================================================
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
+    std::cout << "expecting " << samplesPerBlock << "\n";
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
     int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
@@ -229,6 +230,7 @@ void MaimAudioProcessor::updateParameters()
     if (bitrate != lameController.getBitrate()) {
         lameController.deInit();
         lameController.init(sampleRate, estimatedSamplesPerBlock, bitrate);
+        lameController.initialFlush();
     }
     
     parametersNeedUpdating = false;
@@ -241,6 +243,7 @@ void MaimAudioProcessor::updateParameters()
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
+    std::cout << "buf has " << buffer.getNumSamples() << "\n";
     if (parametersNeedUpdating) {
         updateParameters();
     }

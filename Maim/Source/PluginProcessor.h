@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include <array>
+#include <atomic>
 
 #include "LameController.h"
 
@@ -68,7 +69,7 @@ private:
     int estimatedSamplesPerBlock;
     
     void updateParameters();
-    bool parametersNeedUpdating;
+    std::atomic<bool> parametersNeedUpdating;
     juce::AudioProcessorValueTreeState parameters;
     
     LameController lameController;

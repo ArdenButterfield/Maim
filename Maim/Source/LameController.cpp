@@ -28,7 +28,7 @@ bool LameController::init(const int sampleRate,
     // From LAME api: mp3buf_size in bytes = 1.25*num_samples + 7200
     mp3_buf_size = input_buf_size * 1.25 + 7200;
     mp3Buffer.resize(mp3_buf_size);
-    
+    std::fill(mp3Buffer.begin(), mp3Buffer.end(), 0);
     
     outputBufferL = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
     outputBufferR = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
@@ -67,7 +67,6 @@ bool LameController::init(const int sampleRate,
 
     lame_dec_handler = hip_decode_init();
     bInitialized = true;
-    bendFlagsAndData = getBendStruct(lame_enc_handler);
     return true;
 }
 
@@ -114,6 +113,11 @@ void LameController::deInit() {
         hip_decode_exit(lame_dec_handler);
         lame_dec_handler = nullptr;
     }
+    
+    outputBufferL.reset(nullptr);
+    outputBufferR.reset(nullptr);
+    
+    mp3Buffer.resize(0);
 }
 
 void LameController::addNextInput(float* left_input,

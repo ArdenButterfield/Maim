@@ -41,7 +41,6 @@ public:
     void setMDCTwindowincrBends(int window_incr, int samp_incr);
     int getBitrate();
 private:
-    BendFlagsAndData* bendFlagsAndData;
     bool bInitialized = false;
     lame_global_flags *lame_enc_handler = nullptr;
     hip_global_flags *lame_dec_handler = nullptr;
