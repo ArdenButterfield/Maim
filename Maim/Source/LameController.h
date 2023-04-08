@@ -39,7 +39,7 @@ public:
     void setMDCTbandstepBends(bool invert, int step);
     void setMDCTpostshiftBends(int shift);
     void setMDCTwindowincrBends(int window_incr, int samp_incr);
-    
+    int getBitrate();
 private:
     BendFlagsAndData* bendFlagsAndData;
     bool bInitialized = false;
@@ -52,6 +52,8 @@ private:
     int max_samples_per_block;
     std::unique_ptr<QueueBuffer<float>> outputBufferL;
     std::unique_ptr<QueueBuffer<float>> outputBufferR;
+    
+    int bitrate;
     
     int input_buf_size;
     int mp3_buf_size;

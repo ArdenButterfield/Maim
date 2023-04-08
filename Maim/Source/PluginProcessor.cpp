@@ -60,7 +60,11 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                   "MDCT window increment",
                                                   -64,
                                                   64,
-                                                  64)
+                                                  64),
+        std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"bitrate", 1},
+                                                     "Bitrate",
+                                                     juce::StringArray {"8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
+                                                     10)
     })
 {
     parameters.addParameterListener("butterflystandard", this);
@@ -71,6 +75,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("mdctpostshift", this);
     parameters.addParameterListener("mdctwindowincr", this);
     parameters.addParameterListener("mdctsampincr", this);
+    parameters.addParameterListener("bitrate", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -83,6 +88,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctpostshift", this);
     parameters.removeParameterListener("mdctwindowincr", this);
     parameters.removeParameterListener("mdctsampincr", this);
+    parameters.removeParameterListener("bitrate", this);
 }
 
 //==============================================================================
@@ -161,7 +167,9 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
     sampleRate = fs;
-    lameController.init(sampleRate, samplesPerBlock, 128);
+    estimatedSamplesPerBlock = samplesPerBlock;
+    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    lameController.init(sampleRate, samplesPerBlock, bitrate);
     parametersNeedUpdating = true;
 }
 
@@ -216,6 +224,12 @@ void MaimAudioProcessor::updateParameters()
     lameController.setMDCTwindowincrBends(
          ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get(),
          ((juce::AudioParameterInt*) parameters.getParameter("mdctsampincr"))->get());
+    
+    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    if (bitrate != lameController.getBitrate()) {
+        lameController.deInit();
+        lameController.init(sampleRate, estimatedSamplesPerBlock, bitrate);
+    }
     
     parametersNeedUpdating = false;
     

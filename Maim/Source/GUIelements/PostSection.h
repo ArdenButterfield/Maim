@@ -20,11 +20,20 @@
 class PostSection  : public StageWindow
 {
 public:
-    PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p) {
-        addAndMakeVisible(postFilterSlider);
-    }
+    PostSection(juce::AudioProcessorValueTreeState& p);
     void resized() override;
 private:
+    juce::Slider bitrateSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    
+    juce::AudioProcessorValueTreeState::SliderAttachment bitrateAttachment {
+        parameters,
+        "bitrate",
+        bitrateSlider
+    };
+    
     juce::Slider postFilterSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow

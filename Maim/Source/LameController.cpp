@@ -21,7 +21,9 @@ LameController::~LameController() { deInit(); }
 
 bool LameController::init(const int sampleRate,
                           const int maxSamplesPerBlock,
-                          const int bitrate) {
+                          const int br) {
+    bitrate = br;
+    
     input_buf_size = max_samples_per_block;
     // From LAME api: mp3buf_size in bytes = 1.25*num_samples + 7200
     mp3_buf_size = input_buf_size * 1.25 + 7200;
@@ -119,6 +121,7 @@ void LameController::addNextInput(float* left_input,
                                   const int num_block_samples) {
     if (!bInitialized) {
         std::cout << "Not initialized\n";
+        return;
     }
 
     int enc_result = lame_encode_buffer_ieee_float(
@@ -175,6 +178,11 @@ bool LameController::copyOutput(float* left, float* right, const int num_block_s
 int LameController::samples_in_output_queue()
 {
     return outputBufferL->num_items();
+}
+
+int LameController::getBitrate()
+{
+    return bitrate;
 }
 
 void LameController::setButterflyBends(float uu, float ud, float du, float dd)
