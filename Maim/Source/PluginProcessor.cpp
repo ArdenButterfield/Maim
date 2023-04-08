@@ -261,7 +261,10 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         samplesL = buffer.getWritePointer(0);
         samplesR = buffer.getWritePointer(1);
         lameController.addNextInput(samplesL, samplesR, buffer.getNumSamples());
-        lameController.copyOutput(samplesL, samplesR, buffer.getNumSamples());
+        if (!lameController.copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
+            memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
+            memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());
+        }
         postFilter[0].processSamples(samplesL, buffer.getNumSamples());
         postFilter[1].processSamples(samplesR, buffer.getNumSamples());
     }

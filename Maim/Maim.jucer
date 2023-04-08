@@ -19,6 +19,12 @@
         <FILE id="JnJcVp" name="StageWindow.cpp" compile="1" resource="0" file="Source/GUIelements/StageWindow.cpp"/>
         <FILE id="QyWlgw" name="StageWindow.h" compile="0" resource="0" file="Source/GUIelements/StageWindow.h"/>
       </GROUP>
+      <FILE id="zohOe0" name="RootMeanSquare.cpp" compile="1" resource="0"
+            file="Source/RootMeanSquare.cpp"/>
+      <FILE id="kgGGrD" name="RootMeanSquare.h" compile="0" resource="0"
+            file="Source/RootMeanSquare.h"/>
+      <FILE id="ibjFZL" name="AutoGain.cpp" compile="1" resource="0" file="Source/AutoGain.cpp"/>
+      <FILE id="JkY2wL" name="AutoGain.h" compile="0" resource="0" file="Source/AutoGain.h"/>
       <FILE id="uYkYsx" name="QueueBuffer.h" compile="0" resource="0" file="Source/QueueBuffer.h"/>
       <FILE id="P31oi2" name="LameController.cpp" compile="1" resource="0"
             file="Source/LameController.cpp"/>
