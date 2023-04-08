@@ -12,9 +12,12 @@
 
 #include <JuceHeader.h>
 
-#include "MDCTSection.h"
-#include "PostSection.h"
 #include "StageWindow.h"
+#include "PsychoacousticSection.h"
+#include "MDCTSection.h"
+#include "QuantizeSection.h"
+#include "DecodeSection.h"
+#include "PostSection.h"
 
 //==============================================================================
 /*
@@ -29,8 +32,12 @@ public:
     void resized() override;
 
 private:
+    PsychoacousticSection psychoacousticSection;
     MDCTSection mdctSection;
+    QuantizeSection quantizeSection;
+    DecodeSection decodeSection;
     PostSection postSection;
+    
     juce::AudioProcessorValueTreeState& parameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainArea)
 };

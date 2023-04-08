@@ -13,11 +13,17 @@
 
 //==============================================================================
 MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
+    psychoacousticSection(p),
     mdctSection(p),
+    quantizeSection(p),
+    decodeSection(p),
     postSection(p),
     parameters(p)
 {
+    addAndMakeVisible(psychoacousticSection);
     addAndMakeVisible(mdctSection);
+    addAndMakeVisible(quantizeSection);
+    addAndMakeVisible(decodeSection);
     addAndMakeVisible(postSection);
 }
 
@@ -42,6 +48,42 @@ void MainArea::paint (juce::Graphics& g)
 
 void MainArea::resized()
 {
-    mdctSection.setBounds(getLocalBounds().withTrimmedRight(100));
-    postSection.setBounds(getLocalBounds().withTrimmedLeft(getWidth() - 100));
+    int margin = 10;
+    int postSectionHeight = 150;
+    
+    auto activeArea = getLocalBounds()
+        .withTrimmedTop(margin)
+        .withTrimmedLeft(margin)
+        .withTrimmedRight(margin)
+        .withTrimmedBottom(margin);
+    
+    auto bigFour = activeArea
+        .withTrimmedBottom(postSectionHeight)
+        .withTrimmedBottom(margin);
+    
+    int bigFourElementWidth = (bigFour.getWidth() - margin) / 2;
+    int bigFourElementHeight = (bigFour.getHeight() - margin) / 2;
+    
+    auto bigFourLeftColumn = bigFour
+        .withTrimmedRight(bigFourElementWidth + margin);
+    auto bigFourRightColumn = bigFour
+        .withTrimmedLeft(bigFourElementWidth + margin);
+    
+    auto psychoacousticBounds = bigFourLeftColumn
+        .withTrimmedBottom(bigFourElementHeight + margin);
+    auto mdctBounds = bigFourRightColumn
+        .withTrimmedBottom(bigFourElementHeight + margin);
+    auto quantizeBounds = bigFourLeftColumn
+        .withTrimmedTop(bigFourElementHeight + margin);
+    auto decodeBounds = bigFourRightColumn
+        .withTrimmedTop(bigFourElementHeight + margin);
+    
+    auto postSectionBounds = activeArea
+        .withTrimmedTop(activeArea.getHeight() - postSectionHeight);
+    
+    psychoacousticSection.setBounds(psychoacousticBounds);
+    mdctSection.setBounds(mdctBounds);
+    quantizeSection.setBounds(quantizeBounds);
+    decodeSection.setBounds(decodeBounds);
+    postSection.setBounds(postSectionBounds);
 }

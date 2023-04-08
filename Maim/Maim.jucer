@@ -7,8 +7,12 @@
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
       <GROUP id="{0D544590-D22F-C70E-E1F7-D80B68DB01F0}" name="GUIelements">
+        <FILE id="KJqWbc" name="DecodeSection.cpp" compile="1" resource="0"
+              file="Source/GUIelements/DecodeSection.cpp"/>
+        <FILE id="zqkglV" name="DecodeSection.h" compile="0" resource="0" file="Source/GUIelements/DecodeSection.h"/>
         <FILE id="erokQA" name="DragBox.cpp" compile="1" resource="0" file="Source/GUIelements/DragBox.cpp"/>
         <FILE id="qZGNMO" name="DragBox.h" compile="0" resource="0" file="Source/GUIelements/DragBox.h"/>
+        <FILE id="xuhQz2" name="guiUtil.h" compile="0" resource="0" file="Source/GUIelements/guiUtil.h"/>
         <FILE id="gxRlcI" name="LineGraph.h" compile="0" resource="0" file="Source/GUIelements/LineGraph.h"/>
         <FILE id="woCWId" name="MainArea.cpp" compile="1" resource="0" file="Source/GUIelements/MainArea.cpp"/>
         <FILE id="jGe62S" name="MainArea.h" compile="0" resource="0" file="Source/GUIelements/MainArea.h"/>
@@ -16,6 +20,14 @@
         <FILE id="gi2n9P" name="MDCTSection.h" compile="0" resource="0" file="Source/GUIelements/MDCTSection.h"/>
         <FILE id="wBXH3Q" name="PostSection.cpp" compile="1" resource="0" file="Source/GUIelements/PostSection.cpp"/>
         <FILE id="YxRK6X" name="PostSection.h" compile="0" resource="0" file="Source/GUIelements/PostSection.h"/>
+        <FILE id="Vh6G9I" name="PsychoacousticSection.cpp" compile="1" resource="0"
+              file="Source/GUIelements/PsychoacousticSection.cpp"/>
+        <FILE id="ypeIYi" name="PsychoacousticSection.h" compile="0" resource="0"
+              file="Source/GUIelements/PsychoacousticSection.h"/>
+        <FILE id="qbGr7u" name="QuantizeSection.cpp" compile="1" resource="0"
+              file="Source/GUIelements/QuantizeSection.cpp"/>
+        <FILE id="XXLevg" name="QuantizeSection.h" compile="0" resource="0"
+              file="Source/GUIelements/QuantizeSection.h"/>
         <FILE id="JnJcVp" name="StageWindow.cpp" compile="1" resource="0" file="Source/GUIelements/StageWindow.cpp"/>
         <FILE id="QyWlgw" name="StageWindow.h" compile="0" resource="0" file="Source/GUIelements/StageWindow.h"/>
       </GROUP>
