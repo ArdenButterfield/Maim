@@ -89,6 +89,25 @@ void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc
     gfp->bendFlagsAndData->mdct_samp_increment = samp_inc;
 }
 
+void lame_clear_bends(lame_global_flags* gfp)
+{
+    gfp->bendFlagsAndData->butterfly_bubu = 1;
+    gfp->bendFlagsAndData->butterfly_bubd = 0;
+    gfp->bendFlagsAndData->butterfly_bdbu = 0;
+    gfp->bendFlagsAndData->butterfly_bdbd = 1;
+
+    gfp->bendFlagsAndData->mdct_invert = 0;
+    gfp->bendFlagsAndData->mdct_band_step = 18;
+
+    gfp->bendFlagsAndData->mdct_post_shift = 0;
+
+    gfp->bendFlagsAndData->mdct_window_increment = 64;
+    gfp->bendFlagsAndData->mdct_samp_increment = 64;
+
+
+
+}
+
 int
 is_lame_global_flags_valid(const lame_global_flags * gfp)
 {

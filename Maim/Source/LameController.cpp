@@ -36,6 +36,7 @@ bool LameController::init(const int sampleRate,
     max_samples_per_block = maxSamplesPerBlock;
     
     lame_enc_handler = lame_init();
+    lame_clear_bends(lame_enc_handler);
     if (!lame_enc_handler) {
         return false;
     }
