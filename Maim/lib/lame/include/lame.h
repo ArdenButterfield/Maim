@@ -152,7 +152,7 @@ BendFlagsAndData* getBendStruct(lame_global_flags* gfp);
 void lame_set_butterfly_bends(lame_global_flags* gfp, float buinbu, float buinbd, float bdinbu, float bdinbd);
 void lame_set_mdct_step_bends(lame_global_flags* gfp, int invert, int step);
 void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int shift);
-void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int increment);
+void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc, int samp_inc);
 
 typedef lame_global_flags *lame_t;
 

@@ -957,6 +957,7 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
     if (wk_incr < 0) {
         wk += (18 / 2) * cfg->mode_gr * 64;
     }
+    int samp_incr = gfc->bendFlagsAndData->mdct_samp_increment;
     /* thinking cache performance, ch->gr loop is better than gr->ch loop */
     for (ch = 0; ch < cfg->channels_out; ch++) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
@@ -964,11 +965,19 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
             gr_info *const gi = &(gfc->l3_side.tt[gr][ch]);
             FLOAT  *mdct_enc = gi->xr;
             FLOAT  *samp = esv->sb_sample[ch][1 - gr][0];
+            memset(samp, 0, 18 * SBLIMIT * sizeof(FLOAT));
+            if (samp_incr < 0) {
+                samp += 64 * 18 / 2; // This might run off the end: possible segfault territory.
+            } else if (samp_incr < 32) {
+                samp += 32;
+            }
             for (k = 0; k < 18 / 2; k++) {
                 window_subband(wk, samp);
                 window_subband(wk + 32, samp + 32);
                 // TEST samp icr of smaller amounts: thick buzzes. below 32 is segfault territory. UNLESS you incr samp before the inner loop.
-                samp += 64;
+                if (samp_incr > 0) {
+                    samp += samp_incr;
+                }
                 // TESTT: wk increment less than samp: low, gravelly. more: high, gravelly
                 // above 80ish: segfault
                 // close to 0: really cool tone thing
@@ -980,6 +989,9 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                 // TESTT: changing the multiplier gives it some minor whooping noises.
                 for (band = 1; band < 32; band += 2) {
                     samp[band - 32] *= -1;
+                }
+                if (samp_incr < 0) {
+                    samp += samp_incr;
                 }
             }
 
@@ -1061,7 +1073,6 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                         // either/both 0: very thin, but transients pop through
                         mdct_enc[-1 - k] = gfc->bendFlagsAndData->butterfly_bubu * bu + gfc->bendFlagsAndData->butterfly_bdbu * bd;
                         mdct_enc[k] = gfc->bendFlagsAndData->butterfly_bubd * bu + gfc->bendFlagsAndData->butterfly_bdbd * bd;
-                        printf("%f\n", gfc->bendFlagsAndData->butterfly_bubu);
                     }
                 }
             }

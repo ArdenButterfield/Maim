@@ -55,6 +55,11 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                   "MDCT window increment",
                                                   -64,
                                                   64,
+                                                  64),
+        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctsampincr", 1},
+                                                  "MDCT window increment",
+                                                  -64,
+                                                  64,
                                                   64)
     })
 {
@@ -65,6 +70,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("lopass", this);
     parameters.addParameterListener("mdctpostshift", this);
     parameters.addParameterListener("mdctwindowincr", this);
+    parameters.addParameterListener("mdctsampincr", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -76,6 +82,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("lopass", this);
     parameters.removeParameterListener("mdctpostshift", this);
     parameters.removeParameterListener("mdctwindowincr", this);
+    parameters.removeParameterListener("mdctsampincr", this);
 }
 
 //==============================================================================
@@ -207,7 +214,8 @@ void MaimAudioProcessor::updateParameters()
          ((juce::AudioParameterInt*) parameters.getParameter("mdctpostshift"))->get());
     
     lameController.setMDCTwindowincrBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get());
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get(),
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctsampincr"))->get());
     
     parametersNeedUpdating = false;
     

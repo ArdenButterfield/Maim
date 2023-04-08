@@ -83,9 +83,10 @@ void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int shift)
     gfp->bendFlagsAndData->mdct_post_shift = shift;
 }
 
-void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int increment)
+void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc, int samp_inc)
 {
-    gfp->bendFlagsAndData->mdct_window_increment = increment;
+    gfp->bendFlagsAndData->mdct_window_increment = window_inc;
+    gfp->bendFlagsAndData->mdct_samp_increment = samp_inc;
 }
 
 int
