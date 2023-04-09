@@ -200,9 +200,15 @@ void LameController::setMDCTbandstepBends(bool invert, int step)
     lame_set_mdct_step_bends(lame_enc_handler, (int)invert, step);
 }
 
-void LameController::setMDCTpostshiftBends(int shift)
+void LameController::setMDCTpostshiftBends(int h_shift, float v_shift)
 {
-    lame_set_mdct_post_shift_bends(lame_enc_handler, shift);
+    float actual_v_shift;
+    if (v_shift > 0) {
+        actual_v_shift = v_shift / 100.f;
+    } else {
+        actual_v_shift = v_shift / 2.f;
+    }
+    lame_set_mdct_post_shift_bends(lame_enc_handler, h_shift, actual_v_shift);
 }
 
 void LameController::setMDCTwindowincrBends(int window_incr, int samp_incr)

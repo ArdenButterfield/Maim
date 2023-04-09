@@ -29,6 +29,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <math.h>
 
 
 #include "lame.h"
@@ -183,6 +184,21 @@ updateStats(lame_internal_flags * const gfc)
     }
 }
 
+
+float apply_v_shift(float v, float v_shift) 
+{
+    float v_mag, v_sign;
+    v_mag = fabsf(v);
+    v_sign = (0 < v) - (v < 0);
+    if ((v_shift > 0) && (v != 0)) {
+        v = (v_mag + (v_shift)) * v_sign;
+    // } else if (v_shift < 0) {
+    //     v = fmaxf(0, v_mag + v_shift) * v_sign;
+    } else if ((v_shift < 0) && (v_mag < -v_shift)) {
+        v = 0;
+    }
+    return v;
+}
 
 
 
@@ -409,25 +425,28 @@ lame_encode_mp3_frame(       /* Output */
     // TESTT: print output of mdct
     // scale y: boring. shift y: grating tone
     // shift x: robot voice
-    int mdct_shift = gfc->bendFlagsAndData->mdct_post_shift;
-    if (mdct_shift < 0) {
+    int h_shift = gfc->bendFlagsAndData->mdct_post_h_shift;
+    float v_shift = gfc->bendFlagsAndData->mdct_post_v_shift;
+    float v;
+    if (h_shift < 0) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
                 for (int i = 0; i < 512; ++i) {
-                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+512-mdct_shift)%512];
+                    v = gfc->l3_side.tt[gr][ch].xr[(i+512-h_shift)%512];
+                    gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
                 }
             }
         }
-    } else if (mdct_shift > 0) {
+    } else {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
                 for (int i = 511; i >= 0; --i) {
-                    gfc->l3_side.tt[gr][ch].xr[i] = gfc->l3_side.tt[gr][ch].xr[(i+512-mdct_shift)%512];
+                    v = gfc->l3_side.tt[gr][ch].xr[(i+512-h_shift)%512];
+                    gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
                 }
             }
         }
     }
-
     // Result: some small numbers, between -1ish and 1, mostly very small magnitude, and then
     // all zeros above the lowpass filter cutoff
     

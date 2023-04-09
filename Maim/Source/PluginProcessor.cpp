@@ -46,11 +46,16 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                     100.f,
                                                     20000.f,
                                                     18000.f),
-        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctpostshift", 1},
-                                                    "MDCT post shift",
+        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctposthshift", 1},
+                                                    "MDCT post pitch shift",
                                                     -100,
                                                     100,
                                                     0),
+        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"mdctpostvshift", 1},
+                                                    "MDCT post amplitude shift",
+                                                    -1.f,
+                                                    1.f,
+                                                    0.f),
         std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctwindowincr", 1},
                                                   "MDCT window increment",
                                                   -64,
@@ -72,7 +77,8 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("mdctstep", this);
     parameters.addParameterListener("mdctinvert", this);
     parameters.addParameterListener("lopass", this);
-    parameters.addParameterListener("mdctpostshift", this);
+    parameters.addParameterListener("mdctposthshift", this);
+    parameters.addParameterListener("mdctpostvshift", this);
     parameters.addParameterListener("mdctwindowincr", this);
     parameters.addParameterListener("mdctsampincr", this);
     parameters.addParameterListener("bitrate", this);
@@ -85,7 +91,8 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctstep", this);
     parameters.removeParameterListener("mdctinvert", this);
     parameters.removeParameterListener("lopass", this);
-    parameters.removeParameterListener("mdctpostshift", this);
+    parameters.removeParameterListener("mdctposthshift", this);
+    parameters.removeParameterListener("mdctpostvshift", this);
     parameters.removeParameterListener("mdctwindowincr", this);
     parameters.removeParameterListener("mdctsampincr", this);
     parameters.removeParameterListener("bitrate", this);
@@ -166,7 +173,6 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 //==============================================================================
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
-    std::cout << "expecting " << samplesPerBlock << "\n";
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
     int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
@@ -220,11 +226,14 @@ void MaimAudioProcessor::updateParameters()
     );
     
     lameController.setMDCTpostshiftBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctpostshift"))->get());
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
+         ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
+    );
     
     lameController.setMDCTwindowincrBends(
          ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get(),
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctsampincr"))->get());
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctsampincr"))->get()
+    );
     
     int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
     if (bitrate != lameController.getBitrate()) {
@@ -232,18 +241,17 @@ void MaimAudioProcessor::updateParameters()
         lameController.init(sampleRate, estimatedSamplesPerBlock, bitrate);
         lameController.initialFlush();
     }
-    
-    parametersNeedUpdating = false;
-    
+
     for (auto &f: postFilter) {
         f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));
     }
+    
+    parametersNeedUpdating = false;
 }
 
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
-    std::cout << "buf has " << buffer.getNumSamples() << "\n";
     if (parametersNeedUpdating) {
         updateParameters();
     }

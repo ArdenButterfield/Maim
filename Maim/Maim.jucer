@@ -3,7 +3,7 @@
 <JUCERPROJECT id="sSUksU" name="Maim" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               pluginManufacturer="Wildergarden" pluginManufacturerCode="Awbb"
-              pluginName="Maim" headerPath="../lib/lame/include">
+              pluginName="Maim" headerPath="../lib/lame/include" pluginFormats="buildAU,buildVST3">
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
       <GROUP id="{0D544590-D22F-C70E-E1F7-D80B68DB01F0}" name="GUIelements">

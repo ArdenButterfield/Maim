@@ -78,10 +78,13 @@ void lame_set_mdct_step_bends(lame_global_flags* gfp, int invert, int step)
     gfp->bendFlagsAndData->mdct_band_step = step;
 }
 
-void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int shift)
+void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int h_shift, float v_shift)
 {
-    gfp->bendFlagsAndData->mdct_post_shift = shift;
+    gfp->bendFlagsAndData->mdct_post_h_shift = h_shift;
+    gfp->bendFlagsAndData->mdct_post_v_shift = v_shift;
+
 }
+
 
 void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc, int samp_inc)
 {
@@ -99,7 +102,8 @@ void lame_clear_bends(lame_global_flags* gfp)
     gfp->bendFlagsAndData->mdct_invert = 0;
     gfp->bendFlagsAndData->mdct_band_step = 18;
 
-    gfp->bendFlagsAndData->mdct_post_shift = 0;
+    gfp->bendFlagsAndData->mdct_post_h_shift = 0;
+    gfp->bendFlagsAndData->mdct_post_v_shift = 0.f;
 
     gfp->bendFlagsAndData->mdct_window_increment = 64;
     gfp->bendFlagsAndData->mdct_samp_increment = 64;
