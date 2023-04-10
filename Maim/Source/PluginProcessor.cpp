@@ -110,7 +110,6 @@ MaimAudioProcessor::~MaimAudioProcessor()
         id << "bandorder" << i;
         parameters.removeParameterListener(id.str(), this);
     }
-    
 }
 
 //==============================================================================

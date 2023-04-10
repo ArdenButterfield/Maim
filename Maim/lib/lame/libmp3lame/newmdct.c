@@ -1017,10 +1017,11 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                 mdct_enc += 32 * gfc->bendFlagsAndData->mdct_band_step;
                 mdct_step *= -1;
             }
+            int* band_reassignments = gfc->bendFlagsAndData->mdct_band_reassignments;
             for (band = 0; band < 32; band++, mdct_enc += mdct_step) {
                 int     type = gi->block_type;
-                FLOAT const *const band0 = esv->sb_sample[ch][gr][0] + order[band];
-                FLOAT  *const band1 = esv->sb_sample[ch][1 - gr][0] + order[band];
+                FLOAT const *const band0 = esv->sb_sample[ch][gr][0] + order[band_reassignments[band]];
+                FLOAT  *const band1 = esv->sb_sample[ch][1 - gr][0] + order[band_reassignments[band]];
                 if (gi->mixed_block_flag && band < 2)
                     type = 0;
                 if (esv->amp_filter[band] < 1e-12) {

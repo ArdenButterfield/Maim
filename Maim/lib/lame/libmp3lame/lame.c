@@ -92,6 +92,13 @@ void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc
     gfp->bendFlagsAndData->mdct_samp_increment = samp_inc;
 }
 
+void lame_set_mdct_band_reassignment_bends(lame_global_flags* gfp, int* band_reassignments)
+{
+    for (int i = 0; i < 32; ++i) {
+        gfp->bendFlagsAndData->mdct_band_reassignments[i] = band_reassignments[i];
+    }
+}
+
 void lame_clear_bends(lame_global_flags* gfp)
 {
     gfp->bendFlagsAndData->butterfly_bubu = 1;
@@ -108,7 +115,9 @@ void lame_clear_bends(lame_global_flags* gfp)
     gfp->bendFlagsAndData->mdct_window_increment = 64;
     gfp->bendFlagsAndData->mdct_samp_increment = 64;
 
-
+    for (int i = 0; i < 32; ++i) {
+        gfp->bendFlagsAndData->mdct_band_reassignments[i] = i;
+    }
 
 }
 
