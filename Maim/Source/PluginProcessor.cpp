@@ -72,6 +72,15 @@ MaimAudioProcessor::MaimAudioProcessor()
                                                      10)
     })
 {
+    for (int i = 0; i < 32; ++i) {
+        std::stringstream id, name;
+        id << "bandorder" << i;
+        name << "Band order " << i;
+        
+        parameters.createAndAddParameter(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{id.str(), 1,},name.str(),0,32,i));
+        parameters.addParameterListener(id.str(), this);
+    }
+    
     parameters.addParameterListener("butterflystandard", this);
     parameters.addParameterListener("butterflycrossed", this);
     parameters.addParameterListener("mdctstep", this);
@@ -96,6 +105,12 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctwindowincr", this);
     parameters.removeParameterListener("mdctsampincr", this);
     parameters.removeParameterListener("bitrate", this);
+    for (int i = 0; i < 32; ++i) {
+        std::stringstream id;
+        id << "bandorder" << i;
+        parameters.removeParameterListener(id.str(), this);
+    }
+    
 }
 
 //==============================================================================

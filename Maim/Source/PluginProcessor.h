@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include <array>
 #include <atomic>
+#include <string>
 
 #include "LameController.h"
 
