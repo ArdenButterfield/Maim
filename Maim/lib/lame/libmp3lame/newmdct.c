@@ -963,11 +963,15 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             int     band;
             gr_info *const gi = &(gfc->l3_side.tt[gr][ch]);
+            int*     yeah_type = &gi->block_type;
+            printf("%p ", yeah_type);
             FLOAT  *mdct_enc = gi->xr;
             FLOAT  *samp = esv->sb_sample[ch][1 - gr][0];
             memset(samp, 0, 18 * SBLIMIT * sizeof(FLOAT));
             if (samp_incr < 0) {
-                samp += 64 * 18 / 2; // This might run off the end: possible segfault territory.
+                int initial_incr = (-samp_incr) * 18 / 2;
+                initial_incr = (initial_incr < 64) ? 64 : initial_incr;
+                samp += initial_incr;
             } else if (samp_incr < 32) {
                 samp += 32;
             }
