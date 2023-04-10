@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 
 #include "StageWindow.h"
+#include "ArrayAssigner.h"
 
 //==============================================================================
 /*
@@ -24,5 +25,6 @@ public:
     void resized() override;
 
 private:
+    ArrayAssigner arrayAssigner;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PsychoacousticSection)
 };

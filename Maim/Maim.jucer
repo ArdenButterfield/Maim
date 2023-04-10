@@ -7,6 +7,9 @@
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
       <GROUP id="{0D544590-D22F-C70E-E1F7-D80B68DB01F0}" name="GUIelements">
+        <FILE id="fdFi9j" name="ArrayAssigner.cpp" compile="1" resource="0"
+              file="Source/GUIelements/ArrayAssigner.cpp"/>
+        <FILE id="bDOLuE" name="ArrayAssigner.h" compile="0" resource="0" file="Source/GUIelements/ArrayAssigner.h"/>
         <FILE id="KJqWbc" name="DecodeSection.cpp" compile="1" resource="0"
               file="Source/GUIelements/DecodeSection.cpp"/>
         <FILE id="zqkglV" name="DecodeSection.h" compile="0" resource="0" file="Source/GUIelements/DecodeSection.h"/>
