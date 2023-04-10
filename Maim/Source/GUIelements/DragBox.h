@@ -21,6 +21,7 @@ typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 */
 class DragBox  :
         public juce::Component,
+        public juce::Timer,
         public juce::AudioProcessorValueTreeState::Listener
 {
 public:
@@ -38,6 +39,9 @@ public:
     void mouseDown(const juce::MouseEvent &event) override;
 
 private:
+    void timerCallback() override;
+    std::atomic<bool> needsRepainting;
+    
     juce::Point<int> thumb;
     const int thumbDrawRadius = 10;
     const int thumbSensitivityRadius = 10;

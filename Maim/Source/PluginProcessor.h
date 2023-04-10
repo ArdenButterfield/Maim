@@ -18,6 +18,8 @@
 //==============================================================================
 /**
 */
+juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
+
 class MaimAudioProcessor  : public juce::AudioProcessor,
                             public juce::AudioProcessorValueTreeState::Listener
                             #if JucePlugin_Enable_ARA
@@ -74,6 +76,8 @@ private:
     juce::AudioProcessorValueTreeState parameters;
     
     LameController lameController;
+    
+    std::array<juce::AudioParameterInt*, 32> bandReassignmentParameters;
     
     std::array<juce::IIRFilter, 2> postFilter;
     

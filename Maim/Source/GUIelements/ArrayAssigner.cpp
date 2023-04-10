@@ -12,33 +12,45 @@
 #include "ArrayAssigner.h"
 
 //==============================================================================
-ArrayAssigner::ArrayAssigner(float numItems, int s)
+ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int s) :
+    pTree(p)
 {
-    itemVals.resize(numItems);
-    steps = s;
-    
-    for (int i = 0; i < itemVals.size(); ++i) {
-        setValue(i, (float)i / itemVals.size());
+    parameters.resize(numItems);
+    for (int i = 0; i < numItems; ++i) {
+        std::stringstream id;
+        id << "bandorder" << i;
+        pTree.addParameterListener(id.str(), this);
+        parameters[i] = (juce::AudioParameterInt*)pTree.getParameter(id.str());
     }
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+    itemVals.resize(numItems);
+    
+    for (int i = 0; i < numItems; ++i) {
+        itemVals[i] = parameters[i]->get();
+    }
+    steps = s;
 
+    startTimerHz(30);
+    needsRepainting = false;
+    
 }
 
 ArrayAssigner::~ArrayAssigner()
 {
+    for (int i = 0; i < 32; ++i) {
+        std::stringstream id;
+        id << "bandorder" << i;
+        pTree.removeParameterListener(id.str(), this);
+    }
 }
 
-void ArrayAssigner::setValue(const int index, const float newVal)
+void ArrayAssigner::setValue(const int index, const int newVal)
 {
-    if ((0 > newVal) || (newVal > 1) || (index < 0) || (index > itemVals.size())) {
+    std::cout << "set val " << index << " " << newVal << "\n";
+    if ((index < 0) || (index >= itemVals.size())) {
         return;
     }
-    if (steps) {
-        itemVals[index] = round(newVal * (steps-1)) / (steps-1);
-    } else {
-        itemVals[index] = newVal;
-    }
+    itemVals[index] = juce::jmax(0, juce::jmin(newVal, steps - 1));
+    (*parameters[index]) = newVal;
 }
 
 void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool strictBounds)
@@ -57,8 +69,7 @@ void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool st
         }
     }
     int i = (x - activeArea.getX()) * itemVals.size() / activeArea.getWidth();
-    float v = 1 - ((y - activeArea.getY()) / activeArea.getHeight());
-    setValue(i, v);
+    setValue(i, getValIndex(y));
     
     repaint();
 }
@@ -74,31 +85,30 @@ void ArrayAssigner::mouseDrag(const juce::MouseEvent& event)
 }
 
 
-float ArrayAssigner::getValY(float rawVal)
+float ArrayAssigner::getValScreenY(const int rawVal)
 {
-    return activeArea.getHeight() * (1 - rawVal) + activeArea.getY();
+    return activeArea.getHeight() * (1 - ((float)rawVal / (steps - 1))) + activeArea.getY();
+}
+
+int ArrayAssigner::getValIndex(const float screenY)
+{
+    float v = 1 - ((screenY - activeArea.getY()) / activeArea.getHeight());
+    return (int) round(v * (steps - 1));
 }
 
 void ArrayAssigner::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-    
-    
-    g.fillAll (juce::Colours::black);   // clear the background
+    g.fillAll (juce::Colours::black);
     g.setColour(juce::Colours::darkgrey);
     g.fillRect(activeArea);
     float singleLineWidth = (float)activeArea.getWidth() / itemVals.size();
     g.setColour(juce::Colours::white);
     for (int i = 0; i < itemVals.size(); ++i) {
-        g.drawHorizontalLine(getValY(itemVals[i]),
+        g.drawHorizontalLine(getValScreenY(itemVals[i]),
                              activeArea.getX() + singleLineWidth * i,
                              activeArea.getX() + singleLineWidth * (i + 1));
     }
+    needsRepainting = false;
 }
 
 void ArrayAssigner::resized()
@@ -106,5 +116,25 @@ void ArrayAssigner::resized()
     activeArea = getLocalBounds().withSizeKeepingCentre(getWidth() - 200, getHeight() - 200);
     // This method is where you should set the bounds of any child
     // components that your component contains..
+}
 
+void ArrayAssigner::parameterChanged (const juce::String &parameterID, float newValue)
+{
+    buildItemValsFromParams();
+    
+    needsRepainting = true;
+}
+
+void ArrayAssigner::buildItemValsFromParams()
+{
+    for (int i = 0; i < itemVals.size(); ++i) {
+        setValue(i, parameters[i]->get());
+    }
+}
+
+void ArrayAssigner::timerCallback()
+{
+    if (needsRepainting) {
+        repaint();
+    }
 }

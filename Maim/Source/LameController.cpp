@@ -215,3 +215,8 @@ void LameController::setMDCTwindowincrBends(int window_incr, int samp_incr)
 {
     lame_set_mdct_window_increment_bends(lame_enc_handler, window_incr, samp_incr);
 }
+
+void LameController::setMDCTBandReassignmentBends(int* order)
+{
+    lame_set_mdct_band_reassignment_bends(lame_enc_handler, order);
+}

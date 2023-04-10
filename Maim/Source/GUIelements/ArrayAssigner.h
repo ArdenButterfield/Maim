@@ -17,10 +17,13 @@
 //==============================================================================
 /*
 */
-class ArrayAssigner  : public juce::Component
+class ArrayAssigner  :
+        public juce::Component,
+        public juce::Timer,
+        public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    ArrayAssigner(float numItems, int steps=0);
+    ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int steps);
     ~ArrayAssigner() override;
     
     void mouseDown(const juce::MouseEvent &event) override;
@@ -32,11 +35,19 @@ public:
     void resized() override;
 
 private:
-    juce::Rectangle<int> activeArea;
+    void parameterChanged (const juce::String &parameterID, float newValue) override;
+    void buildItemValsFromParams();
+    void timerCallback() override;
     
-    float getValY(float rawVal);
-    void setValue(const int index, const float newVal);
-    std::vector<float> itemVals;
+    juce::Rectangle<int> activeArea;
+    juce::AudioProcessorValueTreeState& pTree;
+    std::vector<juce::AudioParameterInt*> parameters;
+    float getValScreenY(const int rawVal);
+    int getValIndex(const float screenY);
+    void setValue(const int index, const int newVal);
+    std::vector<int> itemVals;
+    
+    std::atomic<bool> needsRepainting;
     int steps;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrayAssigner)
 };

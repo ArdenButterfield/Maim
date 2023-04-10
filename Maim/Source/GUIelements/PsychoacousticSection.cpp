@@ -14,7 +14,7 @@
 //==============================================================================
 PsychoacousticSection::PsychoacousticSection(juce::AudioProcessorValueTreeState& p)
 : StageWindow(p),
-arrayAssigner(32, 32)
+arrayAssigner(p, 32, 32)
 {
     addAndMakeVisible(arrayAssigner);
     // In your constructor, you should add any child components, and

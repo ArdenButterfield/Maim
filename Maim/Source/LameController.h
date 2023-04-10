@@ -39,6 +39,7 @@ public:
     void setMDCTbandstepBends(bool invert, int step);
     void setMDCTpostshiftBends(int h_shift, float v_shift);
     void setMDCTwindowincrBends(int window_incr, int samp_incr);
+    void setMDCTBandReassignmentBends(int* order);
     int getBitrate();
 private:
     bool bInitialized = false;

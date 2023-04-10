@@ -30,12 +30,14 @@ DragBox::DragBox(juce::AudioProcessorValueTreeState& p,
         parameters(p)
         
 {
+    startTimerHz(30);
     xSlider = std::make_unique<juce::Slider>();
     ySlider = std::make_unique<juce::Slider>();
     xAttachment = std::make_unique<SliderAttachment>(parameters, xParamID, *xSlider);
     yAttachment = std::make_unique<SliderAttachment>(parameters, yParamID, *ySlider);
     parameters.addParameterListener(xParamID, this);
     parameters.addParameterListener(yParamID, this);
+    needsRepainting = false;
 }
 
 DragBox::~DragBox()
@@ -105,11 +107,12 @@ void DragBox::paint (juce::Graphics& g)
                   thumbDrawRadius * 2,
                   thumbDrawRadius * 2,
                   2);
+    needsRepainting = false;
 }
 
 void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
 {
-    repaint();
+    needsRepainting = true;
 }
 
 
@@ -170,4 +173,11 @@ void DragBox::mouseDown(const juce::MouseEvent &event)
     ySlider->setValue(rescaleRange(event.position.getY(), activeZone.getY(), activeZone.getBottom(), ySlider->getMinimum(), ySlider->getMaximum()));
     repaint();
 
+}
+
+void DragBox::timerCallback()
+{
+    if (needsRepainting) {
+        repaint();
+    }
 }
