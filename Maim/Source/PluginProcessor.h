@@ -18,6 +18,8 @@
 //==============================================================================
 /**
 */
+#define NUM_REASSIGNMENT_BANDS 20
+
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
 
 class MaimAudioProcessor  : public juce::AudioProcessor,
@@ -77,7 +79,7 @@ private:
     
     LameController lameController;
     
-    std::array<juce::AudioParameterInt*, 32> bandReassignmentParameters;
+    std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     
     std::array<juce::IIRFilter, 2> postFilter;
     

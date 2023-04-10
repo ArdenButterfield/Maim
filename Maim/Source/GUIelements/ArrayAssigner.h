@@ -20,7 +20,8 @@
 class ArrayAssigner  :
         public juce::Component,
         public juce::Timer,
-        public juce::AudioProcessorValueTreeState::Listener
+        public juce::AudioProcessorValueTreeState::Listener,
+        public juce::Button::Listener
 {
 public:
     ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int steps);
@@ -35,6 +36,21 @@ public:
     void resized() override;
 
 private:
+    juce::TextButton resetButton;
+    juce::TextButton randomButton;
+    juce::ArrowButton upButton;
+    juce::ArrowButton downButton;
+    
+    juce::Random random;
+    
+    void resetGraph();
+    void randomizeGraph();
+    void shiftGraph(bool up);
+    
+    
+    void buttonClicked (juce::Button *) override;
+    void buttonStateChanged (juce::Button *) override;
+    
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     void buildItemValsFromParams();
     void timerCallback() override;

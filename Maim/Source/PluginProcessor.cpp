@@ -60,7 +60,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
                                                                               "Bitrate",
                                                                               juce::StringArray {"8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
                                                                               10));
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id, name;
         id << "bandorder" << i;
         name << "Band order " << i;
@@ -82,7 +82,7 @@ MaimAudioProcessor::MaimAudioProcessor()
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters())
 {
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
         id << "bandorder" << i;
         parameters.addParameterListener(id.str(), this);
@@ -113,7 +113,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctwindowincr", this);
     parameters.removeParameterListener("mdctsampincr", this);
     parameters.removeParameterListener("bitrate", this);
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
         id << "bandorder" << i;
         parameters.removeParameterListener(id.str(), this);
@@ -265,8 +265,12 @@ void MaimAudioProcessor::updateParameters()
     }
     
     int bandReassign[32];
-    for (int i = 0; i < 32; ++i) {
+    int i;
+    for (i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         bandReassign[i] = bandReassignmentParameters[i]->get();
+    }
+    for (; i < 32; ++i) {
+        bandReassign[i] = i;
     }
     lameController.setMDCTBandReassignmentBends(bandReassign);
     

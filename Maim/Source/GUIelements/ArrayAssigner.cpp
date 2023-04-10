@@ -13,8 +13,22 @@
 
 //==============================================================================
 ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int s) :
+    resetButton("reset"),
+    randomButton("random"),
+    upButton("up", 0.75, juce::Colours::yellow),
+    downButton("down", 0.25, juce::Colours::yellow),
     pTree(p)
 {
+    addAndMakeVisible(resetButton);
+    addAndMakeVisible(randomButton);
+    addAndMakeVisible(upButton);
+    addAndMakeVisible(downButton);
+    
+    resetButton.addListener(this);
+    randomButton.addListener(this);
+    upButton.addListener(this);
+    downButton.addListener(this);
+    
     parameters.resize(numItems);
     for (int i = 0; i < numItems; ++i) {
         std::stringstream id;
@@ -41,16 +55,45 @@ ArrayAssigner::~ArrayAssigner()
         id << "bandorder" << i;
         pTree.removeParameterListener(id.str(), this);
     }
+    
+    resetButton.removeListener(this);
+    randomButton.removeListener(this);
+    upButton.removeListener(this);
+    downButton.removeListener(this);
 }
 
 void ArrayAssigner::setValue(const int index, const int newVal)
 {
-    std::cout << "set val " << index << " " << newVal << "\n";
     if ((index < 0) || (index >= itemVals.size())) {
         return;
     }
     itemVals[index] = juce::jmax(0, juce::jmin(newVal, steps - 1));
     (*parameters[index]) = newVal;
+}
+
+void ArrayAssigner::resetGraph()
+{
+    for (int i = 0; i < itemVals.size(); ++i) {
+        setValue(i, i);
+    }
+    repaint();
+}
+
+void ArrayAssigner::randomizeGraph()
+{
+    for (int i = 0; i < itemVals.size(); ++i) {
+        setValue(i, random.nextInt(itemVals.size()));
+    }
+    repaint();
+}
+
+void ArrayAssigner::shiftGraph(bool up)
+{
+    int inc = up ? 1 : -1;
+    for (int i = 0; i < itemVals.size(); ++i) {
+        setValue(i, itemVals[i] + inc);
+    }
+    repaint();
 }
 
 void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool strictBounds)
@@ -113,7 +156,14 @@ void ArrayAssigner::paint (juce::Graphics& g)
 
 void ArrayAssigner::resized()
 {
-    activeArea = getLocalBounds().withSizeKeepingCentre(getWidth() - 200, getHeight() - 200);
+    auto mainRect = getLocalBounds().withSizeKeepingCentre(getWidth() - 50, getHeight() - 50);
+    auto buttonRect = mainRect.withHeight(40);
+    int buttonWidth = buttonRect.getWidth() / 4;
+    resetButton.setBounds(buttonRect.withWidth(buttonWidth));
+    randomButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth, 0));
+    upButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth * 2, 0));
+    downButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth * 3, 0));
+    activeArea = mainRect.withTrimmedTop(40);
     // This method is where you should set the bounds of any child
     // components that your component contains..
 }
@@ -137,4 +187,20 @@ void ArrayAssigner::timerCallback()
     if (needsRepainting) {
         repaint();
     }
+}
+
+void ArrayAssigner::buttonClicked (juce::Button * b)
+{
+    if (b == &resetButton) {
+        resetGraph();
+    } else if (b == &randomButton) {
+        randomizeGraph();
+    } else if (b == &upButton) {
+        shiftGraph(true);
+    } else if (b == &downButton) {
+        shiftGraph(false);
+    }
+}
+void ArrayAssigner::buttonStateChanged (juce::Button * b)
+{
 }
