@@ -13,11 +13,9 @@
 #include <atomic>
 #include <string>
 
-#include "LameController.h"
+#include "LameControllerManager.h"
 
 //==============================================================================
-/**
-*/
 #define NUM_REASSIGNMENT_BANDS 20
 
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
@@ -77,7 +75,7 @@ private:
     std::atomic<bool> parametersNeedUpdating;
     juce::AudioProcessorValueTreeState parameters;
     
-    LameController lameController;
+    std::unique_ptr<LameControllerManager> lameControllerManager;
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     
