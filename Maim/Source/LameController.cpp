@@ -20,11 +20,12 @@ LameController::LameController(){
 LameController::~LameController() { deInit(); }
 
 bool LameController::init(const int sampleRate,
-                          const int maxSamplesPerBlock,
+                          const int maxsampsperblock,
                           const int br) {
     bitrate = br;
+    maxSamplesPerBlock = maxsampsperblock;
     
-    input_buf_size = max_samples_per_block;
+    input_buf_size = maxSamplesPerBlock;
     // From LAME api: mp3buf_size in bytes = 1.25*num_samples + 7200
     mp3_buf_size = input_buf_size * 1.25 + 7200;
     mp3Buffer.resize(mp3_buf_size);
@@ -33,7 +34,6 @@ bool LameController::init(const int sampleRate,
     outputBufferL = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
     outputBufferR = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
     
-    max_samples_per_block = maxSamplesPerBlock;
     
     lame_enc_handler = lame_init();
     lame_clear_bends(lame_enc_handler);

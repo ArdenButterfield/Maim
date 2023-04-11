@@ -31,6 +31,9 @@ LameControllerManager::~LameControllerManager()
 
 void LameControllerManager::changeBitrate(int new_bitrate)
 {
+    if (wantingToSwitch && (new_bitrate == offController->getBitrate())) {
+        return;
+    }
     if (new_bitrate == currentBitrate) {
         wantingToSwitch = false;
         return;

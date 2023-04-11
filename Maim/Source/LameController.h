@@ -49,7 +49,7 @@ private:
     std::array<short, 20000> decodedLeftChannel = {0};
     std::array<short, 20000> decodedRightChannel = {0};
     std::vector<float> readBuf;
-    int max_samples_per_block;
+    int maxSamplesPerBlock;
     std::unique_ptr<QueueBuffer<float>> outputBufferL;
     std::unique_ptr<QueueBuffer<float>> outputBufferR;
     
