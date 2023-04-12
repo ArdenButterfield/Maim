@@ -34,6 +34,10 @@ private:
     int currentBitrate;
     const int samplerate;
     const int samplesPerBlock;
+    
+    const int blocksBeforeSwitch;
+    int switchCountdown;
+    
     std::array<LameController, 2> controllers;
     LameController* currentController;
     LameController* offController;

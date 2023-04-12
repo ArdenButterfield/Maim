@@ -12,7 +12,8 @@
 
 LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb) :
     samplerate(s),
-    samplesPerBlock(spb)
+    samplesPerBlock(spb),
+    blocksBeforeSwitch(3000 / samplesPerBlock) // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
 
 {
     controllers[0].init(samplerate, samplesPerBlock, initialBitrate);
@@ -22,6 +23,7 @@ LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb)
     
     currentBitrate = initialBitrate;
     wantingToSwitch = false;
+    switchCountdown = 0;
 }
 
 LameControllerManager::~LameControllerManager()
@@ -41,6 +43,7 @@ void LameControllerManager::changeBitrate(int new_bitrate)
     }
     offController->init(samplerate, samplesPerBlock, new_bitrate);
     wantingToSwitch = true;
+    switchCountdown = blocksBeforeSwitch;
 }
 
 void LameControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
@@ -52,9 +55,26 @@ void LameControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     auto samplesL = buffer.getWritePointer(0);
     auto samplesR = buffer.getWritePointer(1);
     
-    if (wantingToSwitch) {
+    currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
+    if (switchCountdown > 0) {
+
+        offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
+        if (offController->copyOutput(nullptr, nullptr, buffer.getNumSamples())) {
+            --switchCountdown;
+        }
+    } else if (wantingToSwitch) {
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
         if (offController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
+            auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
+                                                       buffer.getNumSamples());
+            samplesL = tempBuffer.getWritePointer(0);
+            samplesR = tempBuffer.getWritePointer(1);
+            currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples());
+            
+            buffer.applyGainRamp(0, buffer.getNumSamples(), 0, 1);
+            buffer.addFromWithRamp(0, 0, samplesL, buffer.getNumSamples(), 1, 0);
+            buffer.addFromWithRamp(1, 0, samplesR, buffer.getNumSamples(), 1, 0);
+            
             auto temp = currentController;
             currentController = offController;
             offController = temp;
@@ -63,7 +83,6 @@ void LameControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         }
     }
     
-    currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
     if (!currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
         memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
         memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());

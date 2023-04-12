@@ -170,12 +170,24 @@ bool LameController::copyOutput(float* left, float* right, const int num_block_s
         // std::cout << "Not enough items in queue.\n";
         return false;
     }
-    
-    for (int i = 0; i < num_block_samples; ++i) {
-        left[i] = outputBufferL->dequeue();
+    if (left == nullptr) {
+        for (int i = 0; i < num_block_samples; ++i) {
+            outputBufferL->dequeue();
+        }
+    } else {
+        for (int i = 0; i < num_block_samples; ++i) {
+            left[i] = outputBufferL->dequeue();
+        }
     }
-    for (int i = 0; i < num_block_samples; ++i) {
-        right[i] = outputBufferR->dequeue();
+    
+    if (right == nullptr) {
+        for (int i = 0; i < num_block_samples; ++i) {
+            outputBufferR->dequeue();
+        }
+    } else {
+        for (int i = 0; i < num_block_samples; ++i) {
+            right[i] = outputBufferR->dequeue();
+        }
     }
     return true;
 }
