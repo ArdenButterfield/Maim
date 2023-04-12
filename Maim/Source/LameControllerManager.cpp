@@ -113,9 +113,7 @@ void LameControllerManager::updateParameters(juce::AudioProcessorValueTreeState&
     );
     
     controller->setMDCTwindowincrBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get(),
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctsampincr"))->get()
-    );
+         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()    );
     
     int bandReassign[32];
     int i;

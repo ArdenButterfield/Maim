@@ -78,15 +78,5 @@ private:
         mdctWindowIncrementSlider
     };
     
-    juce::Slider mdctSampIncrementSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    juce::AudioProcessorValueTreeState::SliderAttachment mdctSampIncrementAttachment {
-        parameters,
-        "mdctsampincr",
-        mdctSampIncrementSlider
-    };
-    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MDCTSection)
 };
