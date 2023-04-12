@@ -93,11 +93,6 @@ void LameControllerManager::updateParameters(juce::AudioProcessorValueTreeState&
                                              std::array<juce::AudioParameterInt*, 20>* bandReassignmentParameters,
                                              bool updateOffController)
 {
-    if (updateOffController) {
-        std::cout << "update off controler";
-    } else {
-        std::cout << "update controller";
-    }
     auto controller = updateOffController ? offController : currentController;
     
     controller->setButterflyBends(
