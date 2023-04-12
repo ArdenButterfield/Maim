@@ -20,11 +20,12 @@ LameController::LameController(){
 LameController::~LameController() { deInit(); }
 
 bool LameController::init(const int sampleRate,
-                          const int maxSamplesPerBlock,
+                          const int maxsampsperblock,
                           const int br) {
     bitrate = br;
+    maxSamplesPerBlock = maxsampsperblock;
     
-    input_buf_size = max_samples_per_block;
+    input_buf_size = maxSamplesPerBlock;
     // From LAME api: mp3buf_size in bytes = 1.25*num_samples + 7200
     mp3_buf_size = input_buf_size * 1.25 + 7200;
     mp3Buffer.resize(mp3_buf_size);
@@ -33,7 +34,6 @@ bool LameController::init(const int sampleRate,
     outputBufferL = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
     outputBufferR = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
     
-    max_samples_per_block = maxSamplesPerBlock;
     
     lame_enc_handler = lame_init();
     lame_clear_bends(lame_enc_handler);
@@ -170,12 +170,24 @@ bool LameController::copyOutput(float* left, float* right, const int num_block_s
         // std::cout << "Not enough items in queue.\n";
         return false;
     }
-    
-    for (int i = 0; i < num_block_samples; ++i) {
-        left[i] = outputBufferL->dequeue();
+    if (left == nullptr) {
+        for (int i = 0; i < num_block_samples; ++i) {
+            outputBufferL->dequeue();
+        }
+    } else {
+        for (int i = 0; i < num_block_samples; ++i) {
+            left[i] = outputBufferL->dequeue();
+        }
     }
-    for (int i = 0; i < num_block_samples; ++i) {
-        right[i] = outputBufferR->dequeue();
+    
+    if (right == nullptr) {
+        for (int i = 0; i < num_block_samples; ++i) {
+            outputBufferR->dequeue();
+        }
+    } else {
+        for (int i = 0; i < num_block_samples; ++i) {
+            right[i] = outputBufferR->dequeue();
+        }
     }
     return true;
 }

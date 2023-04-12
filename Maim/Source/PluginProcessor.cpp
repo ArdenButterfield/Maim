@@ -198,7 +198,7 @@ void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
     int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    lameController.init(sampleRate, samplesPerBlock, bitrate);
+    lameControllerManager = std::make_unique<LameControllerManager>((int)fs, bitrate, samplesPerBlock);
     parametersNeedUpdating = true;
 }
 
@@ -236,43 +236,11 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
-    lameController.setButterflyBends(
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
-    );
-    lameController.setMDCTbandstepBends(
-        ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
-        ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
-    );
-    
-    lameController.setMDCTpostshiftBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
-         ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
-    );
-    
-    lameController.setMDCTwindowincrBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get(),
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctsampincr"))->get()
-    );
-    
+    lameControllerManager->updateParameters(parameters, &bandReassignmentParameters);
     int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    if (bitrate != lameController.getBitrate()) {
-        lameController.deInit();
-        lameController.init(sampleRate, estimatedSamplesPerBlock, bitrate);
-        lameController.initialFlush();
+    if (bitrate != lameControllerManager->getBitrate()) {
+        lameControllerManager->changeBitrate(bitrate);
     }
-    
-    int bandReassign[32];
-    int i;
-    for (i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        bandReassign[i] = bandReassignmentParameters[i]->get();
-    }
-    for (; i < 32; ++i) {
-        bandReassign[i] = i;
-    }
-    lameController.setMDCTBandReassignmentBends(bandReassign);
     
     for (auto &f: postFilter) {
         f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));
@@ -294,17 +262,11 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    float* samplesL;
-    float* samplesR;
-
+    lameControllerManager->processBlock(buffer);
+    
     if (buffer.getNumChannels() == 2) {
-        samplesL = buffer.getWritePointer(0);
-        samplesR = buffer.getWritePointer(1);
-        lameController.addNextInput(samplesL, samplesR, buffer.getNumSamples());
-        if (!lameController.copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
-            memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
-            memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());
-        }
+        auto samplesL = buffer.getWritePointer(0);
+        auto samplesR = buffer.getWritePointer(1);
         postFilter[0].processSamples(samplesL, buffer.getNumSamples());
         postFilter[1].processSamples(samplesR, buffer.getNumSamples());
     }

@@ -34,6 +34,10 @@
         <FILE id="JnJcVp" name="StageWindow.cpp" compile="1" resource="0" file="Source/GUIelements/StageWindow.cpp"/>
         <FILE id="QyWlgw" name="StageWindow.h" compile="0" resource="0" file="Source/GUIelements/StageWindow.h"/>
       </GROUP>
+      <FILE id="qW4RKC" name="LameControllerManager.cpp" compile="1" resource="0"
+            file="Source/LameControllerManager.cpp"/>
+      <FILE id="yXs5o6" name="LameControllerManager.h" compile="0" resource="0"
+            file="Source/LameControllerManager.h"/>
       <FILE id="zohOe0" name="RootMeanSquare.cpp" compile="1" resource="0"
             file="Source/RootMeanSquare.cpp"/>
       <FILE id="kgGGrD" name="RootMeanSquare.h" compile="0" resource="0"
