@@ -16,7 +16,6 @@
 #include "LameControllerManager.h"
 
 //==============================================================================
-#define NUM_REASSIGNMENT_BANDS 20
 
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters();
 
@@ -76,30 +75,9 @@ private:
     juce::AudioProcessorValueTreeState parameters;
     
     std::unique_ptr<LameControllerManager> lameControllerManager;
-    
-    std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
-    
+        
     std::array<juce::IIRFilter, 2> postFilter;
     
-    const std::array<int, 17> bitrates {
-        8,
-        16,
-        24,
-        32,
-        40,
-        48,
-        56,
-        64,
-        80,
-        96,
-        112,
-        128,
-        160,
-        192,
-        224,
-        256,
-        320
-    };
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessor)
 };
