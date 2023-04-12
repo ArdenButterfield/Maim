@@ -236,11 +236,19 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
-    lameControllerManager->updateParameters(parameters, &bandReassignmentParameters);
+    // It's important to call changeBitrate before updateParameters, so that the
+    // parameters get copied to the new bitrate's instance of lame. It might be
+    // more elegant to store a reference to parameters and
+    // bandReassignmentParameters inside of LameControllerManager, and have that
+    // be the listener, rather than the PluginProcessor. That way we aren't updating
+    // as many things unnecessarily (e.g. updating all lame parameters when the
+    // filter is what's changed.)
     int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
     if (bitrate != lameControllerManager->getBitrate()) {
         lameControllerManager->changeBitrate(bitrate);
     }
+    
+    lameControllerManager->updateParameters(parameters, &bandReassignmentParameters);
     
     for (auto &f: postFilter) {
         f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));

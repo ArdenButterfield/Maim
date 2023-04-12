@@ -55,7 +55,7 @@
  */
 
 #define ENCDELAY      576
-
+// #define ENCDELAY      48
 
 
 /*
