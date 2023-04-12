@@ -78,45 +78,14 @@ MaimAudioProcessor::MaimAudioProcessor()
                        ),
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters())
-{
-    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        std::stringstream id;
-        id << "bandorder" << i;
-        parameters.addParameterListener(id.str(), this);
-        bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(id.str());
-    }
-    
-    parameters.addParameterListener("butterflystandard", this);
-    parameters.addParameterListener("butterflycrossed", this);
-    parameters.addParameterListener("mdctstep", this);
-    parameters.addParameterListener("mdctinvert", this);
+{    
     parameters.addParameterListener("lopass", this);
-    parameters.addParameterListener("mdctposthshift", this);
-    parameters.addParameterListener("mdctpostvshift", this);
-    parameters.addParameterListener("mdctwindowincr", this);
-    parameters.addParameterListener("mdctsampincr", this);
-    parameters.addParameterListener("bitrate", this);
-    parameters.addParameterListener("bitratesquish", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
-    parameters.removeParameterListener("butterflystandard", this);
-    parameters.removeParameterListener("butterflycrossed", this);
-    parameters.removeParameterListener("mdctstep", this);
-    parameters.removeParameterListener("mdctinvert", this);
     parameters.removeParameterListener("lopass", this);
-    parameters.removeParameterListener("mdctposthshift", this);
-    parameters.removeParameterListener("mdctpostvshift", this);
-    parameters.removeParameterListener("mdctwindowincr", this);
-    parameters.removeParameterListener("mdctsampincr", this);
-    parameters.removeParameterListener("bitrate", this);
-    parameters.removeParameterListener("bitratesquish", this);
-    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        std::stringstream id;
-        id << "bandorder" << i;
-        parameters.removeParameterListener(id.str(), this);
-    }
+
 }
 
 //==============================================================================
@@ -196,8 +165,8 @@ void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
-    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    lameControllerManager = std::make_unique<LameControllerManager>((int)fs, bitrate, samplesPerBlock);
+    int bitrate = LameControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    lameControllerManager = std::make_unique<LameControllerManager>((int)fs, bitrate, samplesPerBlock, parameters);
     parametersNeedUpdating = true;
 }
 
@@ -235,11 +204,6 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
-    lameControllerManager->updateParameters(parameters, &bandReassignmentParameters);
-    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    if (bitrate != lameControllerManager->getBitrate()) {
-        lameControllerManager->changeBitrate(bitrate);
-    }
     
     for (auto &f: postFilter) {
         f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));

@@ -10,12 +10,34 @@
 
 #include "LameControllerManager.h"
 
-LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb) :
+LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb, juce::AudioProcessorValueTreeState& p) :
     samplerate(s),
     samplesPerBlock(spb),
-    blocksBeforeSwitch(3000 / samplesPerBlock) // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
+    blocksBeforeSwitch(3000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
+    parameters(p)
 
 {
+    parametersNeedUpdating = false;
+    
+    parameters.addParameterListener("butterflystandard", this);
+    parameters.addParameterListener("butterflycrossed", this);
+    parameters.addParameterListener("mdctstep", this);
+    parameters.addParameterListener("mdctinvert", this);
+    parameters.addParameterListener("mdctposthshift", this);
+    parameters.addParameterListener("mdctpostvshift", this);
+    parameters.addParameterListener("mdctwindowincr", this);
+    parameters.addParameterListener("mdctsampincr", this);
+    parameters.addParameterListener("bitrate", this);
+    parameters.addParameterListener("bitratesquish", this);
+    
+    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
+        std::stringstream id;
+        id << "bandorder" << i;
+        parameters.addParameterListener(id.str(), this);
+        bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(id.str());
+    }
+
+    
     controllers[0].init(samplerate, samplesPerBlock, initialBitrate);
     
     currentController = &controllers[0];
@@ -28,7 +50,27 @@ LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb)
 
 LameControllerManager::~LameControllerManager()
 {
+    parameters.removeParameterListener("butterflystandard", this);
+    parameters.removeParameterListener("butterflycrossed", this);
+    parameters.removeParameterListener("mdctstep", this);
+    parameters.removeParameterListener("mdctinvert", this);
+    parameters.removeParameterListener("mdctposthshift", this);
+    parameters.removeParameterListener("mdctpostvshift", this);
+    parameters.removeParameterListener("mdctwindowincr", this);
+    parameters.removeParameterListener("mdctsampincr", this);
+    parameters.removeParameterListener("bitrate", this);
+    parameters.removeParameterListener("bitratesquish", this);
 
+    for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
+        std::stringstream id;
+        id << "bandorder" << i;
+        parameters.removeParameterListener(id.str(), this);
+    }
+}
+
+void LameControllerManager::parameterChanged (const juce::String &parameterID, float newValue)
+{
+    parametersNeedUpdating = true;
 }
 
 void LameControllerManager::changeBitrate(int new_bitrate)
@@ -48,6 +90,9 @@ void LameControllerManager::changeBitrate(int new_bitrate)
 
 void LameControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
 {
+    if (parametersNeedUpdating) {
+        updateParameters();
+    }
     
     if (buffer.getNumChannels() != 2) {
         return;
@@ -89,10 +134,13 @@ void LameControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     }
 }
 
-void LameControllerManager::updateParameters(juce::AudioProcessorValueTreeState& parameters,
-                                             std::array<juce::AudioParameterInt*, 20>* bandReassignmentParameters,
-                                             bool updateOffController)
+void LameControllerManager::updateParameters(bool updateOffController)
 {
+    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    if (bitrate != getBitrate()) {
+        changeBitrate(bitrate);
+    }
+    
     auto controller = updateOffController ? offController : currentController;
     
     controller->setButterflyBends(
@@ -118,7 +166,7 @@ void LameControllerManager::updateParameters(juce::AudioProcessorValueTreeState&
     int bandReassign[32];
     int i;
     for (i = 0; i < 20; ++i) {
-        bandReassign[i] = (*bandReassignmentParameters)[i]->get();
+        bandReassign[i] = bandReassignmentParameters[i]->get();
     }
     for (; i < 32; ++i) {
         bandReassign[i] = i;
@@ -127,7 +175,7 @@ void LameControllerManager::updateParameters(juce::AudioProcessorValueTreeState&
 
     
     if (wantingToSwitch && !updateOffController) {
-        updateParameters(parameters, bandReassignmentParameters, true);
+        updateParameters(true);
     }
 }
 

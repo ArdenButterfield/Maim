@@ -15,21 +15,48 @@
 
 #include "LameController.h"
 
-class LameControllerManager
+#define NUM_REASSIGNMENT_BANDS 20
+
+class LameControllerManager : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    LameControllerManager(int samplerate, int initialBitrate, int samplesPerBlock);
+    LameControllerManager(int samplerate,
+                          int initialBitrate,
+                          int samplesPerBlock,
+                          juce::AudioProcessorValueTreeState& parameters);
     ~LameControllerManager();
 
     void changeBitrate(int newBitrate);
     void processBlock(juce::AudioBuffer<float>& buffer);
     
-    void updateParameters(juce::AudioProcessorValueTreeState& parameters,
-                          std::array<juce::AudioParameterInt*, 20>* bandReassignmentParameters,
-                          bool updateOffController=false);
+    void updateParameters(bool updateOffController=false);
     int getBitrate();
     
+    static constexpr std::array<int, 17> bitrates {
+        8,
+        16,
+        24,
+        32,
+        40,
+        48,
+        56,
+        64,
+        80,
+        96,
+        112,
+        128,
+        160,
+        192,
+        224,
+        256,
+        320
+    };
+
+    
 private:
+    std::atomic<bool> parametersNeedUpdating;
+    void parameterChanged (const juce::String &parameterID, float newValue) override;
+    
     bool wantingToSwitch;
     int currentBitrate;
     const int samplerate;
@@ -41,4 +68,8 @@ private:
     std::array<LameController, 2> controllers;
     LameController* currentController;
     LameController* offController;
+    
+    std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
+    juce::AudioProcessorValueTreeState& parameters;
+    
 };
