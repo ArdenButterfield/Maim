@@ -22,7 +22,6 @@ MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
     addAndMakeVisible(mdctPostAmpShiftSlider);
     addAndMakeVisible(mdctWindowIncrementSlider);
     addAndMakeVisible(butterflyDragBox);
-    addAndMakeVisible(mdctSampIncrementSlider);
 }
 
 
@@ -37,5 +36,4 @@ void MDCTSection::resized()
     mdctPostPitchShiftSlider.setBounds(otherpart.withTrimmedTop(halfHeight).withTrimmedLeft(halfWidth).withHeight(70));
     mdctPostAmpShiftSlider.setBounds(otherpart.withTrimmedTop(halfHeight).withTrimmedLeft(halfWidth).withTrimmedTop(70));
     mdctWindowIncrementSlider.setBounds(otherpart.withTrimmedTop(halfHeight).withTrimmedRight(halfWidth).withHeight(70));
-    mdctSampIncrementSlider.setBounds(otherpart.withTrimmedTop(halfHeight).withTrimmedRight(halfWidth).withTrimmedTop(70));
 }

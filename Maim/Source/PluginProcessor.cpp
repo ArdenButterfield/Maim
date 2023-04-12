@@ -51,11 +51,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
                                                                            -64,
                                                                            64,
                                                                            64));
-    parameters.push_back(        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctsampincr", 1},
-                                                                           "MDCT window increment",
-                                                                           -64,
-                                                                           64,
-                                                                           64));
     parameters.push_back(        std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"bitrate", 1},
                                                                               "Bitrate",
                                                                               juce::StringArray {"8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},

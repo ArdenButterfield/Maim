@@ -85,11 +85,16 @@ void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int h_shift, float v
 
 }
 
-
-void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc, int samp_inc)
+void _lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc, int samp_inc)
 {
+    // samp_incr turned off with #define in newmdct. It was buggy and sounded bad.
     gfp->bendFlagsAndData->mdct_window_increment = window_inc;
     gfp->bendFlagsAndData->mdct_samp_increment = samp_inc;
+}
+
+void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc)
+{
+    _lame_set_mdct_window_increment_bends(gfp, window_inc, 0);
 }
 
 void lame_set_mdct_band_reassignment_bends(lame_global_flags* gfp, int* band_reassignments)

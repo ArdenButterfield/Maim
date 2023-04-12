@@ -39,7 +39,7 @@ typedef struct bend_flags_and_data {
     float mdct_post_v_shift;
 
     int mdct_window_increment;
-    int mdct_samp_increment;
+    int mdct_samp_increment; // Turned off with #define in newmdct. It was buggy and sounded bad.
 
     int mdct_band_reassignments[32];
 } BendFlagsAndData;
