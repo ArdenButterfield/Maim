@@ -223,9 +223,9 @@ void LameController::setMDCTpostshiftBends(int h_shift, float v_shift)
     lame_set_mdct_post_shift_bends(lame_enc_handler, h_shift, actual_v_shift);
 }
 
-void LameController::setMDCTwindowincrBends(int window_incr, int samp_incr)
+void LameController::setMDCTwindowincrBends(int window_incr)
 {
-    lame_set_mdct_window_increment_bends(lame_enc_handler, window_incr, samp_incr);
+    lame_set_mdct_window_increment_bends(lame_enc_handler, window_incr);
 }
 
 void LameController::setMDCTBandReassignmentBends(int* order)

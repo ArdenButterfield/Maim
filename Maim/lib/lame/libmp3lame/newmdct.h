@@ -24,4 +24,6 @@
 
 void    mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1);
 
+#define SAMP_INCR_BEND 0
+
 #endif /* LAME_NEWMDCT_H */

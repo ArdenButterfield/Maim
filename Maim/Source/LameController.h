@@ -38,7 +38,7 @@ public:
     void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd);
     void setMDCTbandstepBends(bool invert, int step);
     void setMDCTpostshiftBends(int h_shift, float v_shift);
-    void setMDCTwindowincrBends(int window_incr, int samp_incr);
+    void setMDCTwindowincrBends(int window_incr);
     void setMDCTBandReassignmentBends(int* order);
     void setBitrateSquishBends(float squish);
     int getBitrate();

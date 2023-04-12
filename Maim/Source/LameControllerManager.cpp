@@ -111,12 +111,10 @@ void LameControllerManager::updateParameters(juce::AudioProcessorValueTreeState&
          ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
          ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
     );
-    
     controller->setMDCTwindowincrBends(
          ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()    );
     controller->setBitrateSquishBends(
                                       ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get());
-    
     int bandReassign[32];
     int i;
     for (i = 0; i < 20; ++i) {

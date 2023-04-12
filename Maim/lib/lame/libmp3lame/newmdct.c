@@ -957,7 +957,9 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
     if (wk_incr < 0) {
         wk += (18 / 2) * cfg->mode_gr * 64;
     }
+#if SAMP_INCR_BEND
     int samp_incr = gfc->bendFlagsAndData->mdct_samp_increment;
+#endif
     /* thinking cache performance, ch->gr loop is better than gr->ch loop */
     for (ch = 0; ch < cfg->channels_out; ch++) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
@@ -965,6 +967,7 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
             gr_info *const gi = &(gfc->l3_side.tt[gr][ch]);
             FLOAT  *mdct_enc = gi->xr;
             FLOAT  *samp = esv->sb_sample[ch][1 - gr][0];
+#if SAMP_INCR_BEND
             memset(samp, 0, 18 * SBLIMIT * sizeof(FLOAT));
             FLOAT* initial_samp = samp;
             if (samp_incr < -32) {
@@ -976,15 +979,20 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
             } else if (samp_incr < 32) {
                 samp += 32;
             }
+#endif
             for (k = 0; k < 18 / 2; k++) {
                 
                 window_subband(wk, samp);
                 window_subband(wk + 32, samp + 32);
                 
+#if SAMP_INCR_BEND
                 // TEST samp icr of smaller amounts: thick buzzes. below 32 is segfault territory. UNLESS you incr samp before the inner loop.
                 if (samp_incr > 0) {
                     samp += samp_incr;
                 }
+#else
+                samp += 64;
+#endif
                 // TESTT: wk increment less than samp: low, gravelly. more: high, gravelly
                 // above 80ish: segfault
                 // close to 0: really cool tone thing
@@ -997,10 +1005,11 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                 for (band = 1; band < 32; band += 2) {
                     samp[band - 32] *= -1;
                 }
-                
+#if SAMP_INCR_BEND
                 if (samp_incr < 0) {
                     samp += samp_incr;
                 }
+#endif
             }
 
             /*
