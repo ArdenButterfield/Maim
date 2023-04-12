@@ -41,7 +41,7 @@
 #include "vector/lame_intrin.h"
 #endif
 
-
+#include <stdio.h>
 
 
 /* convert from L/R <-> Mid/Side */
@@ -1010,8 +1010,11 @@ balance_noise(lame_internal_flags * gfc,
 static int
 outer_loop(lame_internal_flags * gfc, gr_info * const cod_info, const FLOAT * const l3_xmin, /* allowed distortion */
            FLOAT xrpow[576], /* coloured magnitudes of spectral */
-           const int ch, const int targ_bits)
+           const int ch, int targ_bits)
 {                       /* maximum allowed bits */
+
+    targ_bits *= gfc->bendFlagsAndData->bitrate_squish;
+    printf("%f %d\n", gfc->bendFlagsAndData->bitrate_squish, targ_bits);
     SessionConfig_t const *const cfg = &gfc->cfg;
     gr_info cod_info_w;
     FLOAT   save_xrpow[576];

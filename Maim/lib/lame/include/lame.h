@@ -154,6 +154,7 @@ void lame_set_mdct_step_bends(lame_global_flags* gfp, int invert, int step);
 void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int h_shift, float v_shift);
 void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc, int samp_inc);
 void lame_set_mdct_band_reassignment_bends(lame_global_flags* gfp, int* band_reassignments);
+void lame_set_bitrate_squish_bends(lame_global_flags* gfp, float squish);
 
 void lame_clear_bends(lame_global_flags* gfp);
 

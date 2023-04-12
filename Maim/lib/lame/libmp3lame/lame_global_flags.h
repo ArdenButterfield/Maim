@@ -41,7 +41,10 @@ typedef struct bend_flags_and_data {
     int mdct_window_increment;
     int mdct_samp_increment;
 
+    float bitrate_squish;
+
     int mdct_band_reassignments[32];
+
 } BendFlagsAndData;
 
 

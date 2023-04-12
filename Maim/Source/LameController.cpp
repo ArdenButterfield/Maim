@@ -232,3 +232,8 @@ void LameController::setMDCTBandReassignmentBends(int* order)
 {
     lame_set_mdct_band_reassignment_bends(lame_enc_handler, order);
 }
+
+void LameController::setBitrateSquishBends(float squish)
+{
+    lame_set_bitrate_squish_bends(lame_enc_handler, (1 - squish) * (1 - squish) * (1 - squish));
+}

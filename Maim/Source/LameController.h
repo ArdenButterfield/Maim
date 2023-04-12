@@ -40,6 +40,7 @@ public:
     void setMDCTpostshiftBends(int h_shift, float v_shift);
     void setMDCTwindowincrBends(int window_incr, int samp_incr);
     void setMDCTBandReassignmentBends(int* order);
+    void setBitrateSquishBends(float squish);
     int getBitrate();
 private:
     bool bInitialized = false;

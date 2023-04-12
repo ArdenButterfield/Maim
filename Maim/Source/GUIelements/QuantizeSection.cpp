@@ -15,15 +15,10 @@
 QuantizeSection::QuantizeSection(juce::AudioProcessorValueTreeState& p)
 : StageWindow(p)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
-
+    addAndMakeVisible(squishSlider);
 }
 
-void QuantizeSection
-::resized()
+void QuantizeSection::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
+    squishSlider.setBounds(getLocalBounds());
 }

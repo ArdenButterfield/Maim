@@ -51,11 +51,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
                                                                            -64,
                                                                            64,
                                                                            64));
-    parameters.push_back(        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctsampincr", 1},
-                                                                           "MDCT window increment",
-                                                                           -64,
-                                                                           64,
-                                                                           64));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+         juce::ParameterID {"bitratesquish", 1}, "Bitrate squish", 0, 1, 0));
     parameters.push_back(        std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"bitrate", 1},
                                                                               "Bitrate",
                                                                               juce::StringArray {"8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
@@ -99,6 +96,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("mdctwindowincr", this);
     parameters.addParameterListener("mdctsampincr", this);
     parameters.addParameterListener("bitrate", this);
+    parameters.addParameterListener("bitratesquish", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -113,6 +111,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mdctwindowincr", this);
     parameters.removeParameterListener("mdctsampincr", this);
     parameters.removeParameterListener("bitrate", this);
+    parameters.removeParameterListener("bitratesquish", this);
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
         id << "bandorder" << i;

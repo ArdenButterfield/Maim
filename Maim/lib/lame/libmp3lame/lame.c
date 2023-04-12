@@ -99,6 +99,11 @@ void lame_set_mdct_band_reassignment_bends(lame_global_flags* gfp, int* band_rea
     }
 }
 
+void lame_set_bitrate_squish_bends(lame_global_flags* gfp, float squish)
+{
+    gfp->bendFlagsAndData->bitrate_squish = squish;
+}
+
 void lame_clear_bends(lame_global_flags* gfp)
 {
     gfp->bendFlagsAndData->butterfly_bubu = 1;
@@ -114,6 +119,8 @@ void lame_clear_bends(lame_global_flags* gfp)
 
     gfp->bendFlagsAndData->mdct_window_increment = 64;
     gfp->bendFlagsAndData->mdct_samp_increment = 64;
+
+    gfp->bendFlagsAndData->bitrate_squish = 1;
 
     for (int i = 0; i < 32; ++i) {
         gfp->bendFlagsAndData->mdct_band_reassignments[i] = i;

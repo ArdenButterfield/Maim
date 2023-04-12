@@ -24,5 +24,15 @@ public:
     void resized() override;
 
 private:
+    juce::Slider squishSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    juce::AudioProcessorValueTreeState::SliderAttachment squishAttachment {
+        parameters,
+        "bitratesquish",
+        squishSlider
+    };
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QuantizeSection)
 };
