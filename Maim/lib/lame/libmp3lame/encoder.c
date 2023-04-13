@@ -373,6 +373,7 @@ lame_encode_mp3_frame(       /* Output */
     *   Stage 1: psychoacoustic model       *
     ****************************************/
 
+    int     blocktype[2];
     {
         /* psychoacoustic model
          * psy model has a 1 granule (576) delay that we must compensate for
@@ -380,7 +381,7 @@ lame_encode_mp3_frame(       /* Output */
          */
         int     ret;
         const sample_t *bufp[2] = {0, 0}; /* address of beginning of left & right granule */
-        int     blocktype[2];
+        
 
         for (gr = 0; gr < cfg->mode_gr; gr++) {
 
@@ -505,6 +506,13 @@ lame_encode_mp3_frame(       /* Output */
     else {
         masking = (const III_psy_ratio (*)[2])masking_LR; /* use LR masking */
         pe_use = pe;
+    }
+
+    if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
+        for (int i = 0; i < 22; ++i) {
+            gfc->bendFlagsAndData->psychoanal_energy[i] = ((*masking)[0].en.l[i] + (*masking)[1].en.l[i])/2;
+            gfc->bendFlagsAndData->psychoanal_threshold[i] = ((*masking)[0].thm.l[i] + (*masking)[1].thm.l[i])/2;
+        }
     }
 
     /*

@@ -19,10 +19,11 @@
 template <class T> class LineGraph  : public juce::Component
 {
 public:
-    LineGraph(float y_min, float y_max, int num_points) :
+    LineGraph(float y_min, float y_max, int num_points, juce::Colour c) :
         numPoints(num_points),
         ymin(y_min),
-        ymax(y_max)
+        ymax(y_max),
+        lineColour(c)
     {
         xVals.resize(numPoints);
         yVals.resize(numPoints);
@@ -36,6 +37,7 @@ public:
         for (int i = 0; i < numPoints; ++i) {
             yVals[i] = getHeight() - (data[i] - ymin) / (ymax - ymin) * getHeight();
         }
+        repaint();
     }
     
     void CalculateXValues() {
@@ -50,7 +52,7 @@ public:
         for (int i = 1; i < numPoints; ++i) {
             p.lineTo(xVals[i], yVals[i]);
         }
-        g.setColour(juce::Colours::magenta);
+        g.setColour(lineColour);
         g.strokePath(p, juce::PathStrokeType(2.f));
     }
     void resized() override {
@@ -63,5 +65,6 @@ private:
     float ymax;
     std::vector<float> xVals;
     std::vector<float> yVals;
+    juce::Colour lineColour;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LineGraph)
 };

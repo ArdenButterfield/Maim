@@ -41,6 +41,10 @@ public:
     void setMDCTwindowincrBends(int window_incr);
     void setMDCTBandReassignmentBends(int* order);
     void setBitrateSquishBends(float squish);
+    
+    float* getPsychoanalThreshold();
+    float* getPsychoanalEnergy();
+    
     int getBitrate();
 private:
     bool bInitialized = false;

@@ -46,6 +46,8 @@ LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb,
     currentBitrate = initialBitrate;
     wantingToSwitch = false;
     switchCountdown = 0;
+    
+    startTimerHz(30);
 }
 
 LameControllerManager::~LameControllerManager()
@@ -182,4 +184,35 @@ void LameControllerManager::updateParameters(bool updateOffController)
 int LameControllerManager::getBitrate()
 {
     return currentBitrate;
+}
+
+float* LameControllerManager::getPsychoanalEnergy()
+{
+    return currentController->getPsychoanalEnergy();
+}
+
+float* LameControllerManager::getPsychoanalThreshold()
+{
+    return currentController->getPsychoanalThreshold();
+}
+
+float rescalePsychoanal(const float a) {
+    return log10(a > 1 ? a : 1) / 14;
+}
+
+void LameControllerManager::timerCallback()
+{
+    float* energy = getPsychoanalEnergy();
+    float* threshold = getPsychoanalThreshold();
+    
+    juce::var thresholdV, energyV;
+    for (int i = 0; i < 22; ++i) {
+        thresholdV.append(rescalePsychoanal(threshold[i]));
+        energyV.append(rescalePsychoanal(energy[i])); // TEMP test
+    }
+
+    auto psychoSpectrum = parameters.state.getChildWithName("psycho_spectrum");
+    psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
+    psychoSpectrum.setProperty("energy", energyV, nullptr);
+    
 }

@@ -37,3 +37,8 @@ void MaimAudioProcessorEditor::resized()
 {
     mainArea.setBounds(getLocalBounds());
 }
+
+MaimAudioProcessor* MaimAudioProcessorEditor::getAudioProcessor()
+{
+    return &audioProcessor;
+}

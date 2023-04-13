@@ -27,6 +27,10 @@
               file="Source/GUIelements/PsychoacousticSection.cpp"/>
         <FILE id="ypeIYi" name="PsychoacousticSection.h" compile="0" resource="0"
               file="Source/GUIelements/PsychoacousticSection.h"/>
+        <FILE id="xaHH7H" name="PsychoanalGraph.cpp" compile="1" resource="0"
+              file="Source/GUIelements/PsychoanalGraph.cpp"/>
+        <FILE id="J7uZHd" name="PsychoanalGraph.h" compile="0" resource="0"
+              file="Source/GUIelements/PsychoanalGraph.h"/>
         <FILE id="qbGr7u" name="QuantizeSection.cpp" compile="1" resource="0"
               file="Source/GUIelements/QuantizeSection.cpp"/>
         <FILE id="XXLevg" name="QuantizeSection.h" compile="0" resource="0"

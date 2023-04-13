@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 
 #include "StageWindow.h"
+#include "PsychoanalGraph.h"
 
 //==============================================================================
 class DecodeSection  : public StageWindow
@@ -22,5 +23,6 @@ public:
     void resized() override;
 
 private:
+    PsychoanalGraph psychoanalGraph;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DecodeSection)
 };

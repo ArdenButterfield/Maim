@@ -78,7 +78,20 @@ MaimAudioProcessor::MaimAudioProcessor()
                        ),
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters())
-{    
+{
+    juce::var threshold, energy;
+    for (int i = 0; i < 22; ++i) {
+        threshold.append((float)i / 22.f);
+        energy.append((float)i / 22.f); // TEMP test
+    }
+    parameters.state.appendChild(juce::ValueTree(
+        "psycho_spectrum",
+        {
+            juce::NamedValueSet::NamedValue("threshold", threshold),
+            juce::NamedValueSet::NamedValue("energy", energy)
+        }),
+        nullptr);
+    
     parameters.addParameterListener("lopass", this);
 }
 
@@ -249,18 +262,22 @@ juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
 //==============================================================================
 void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
+    /*
     auto state = parameters.copyState();
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
+     */
 }
 
 void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+    /*
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
     if (xmlState.get() != nullptr)
         if (xmlState->hasTagName (parameters.state.getType()))
             parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
+     */
 }
 
 //==============================================================================

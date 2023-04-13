@@ -12,12 +12,14 @@
 
 #include <JuceHeader.h>
 #include <array>
+#include <cmath>
 
 #include "LameController.h"
 
 #define NUM_REASSIGNMENT_BANDS 20
 
-class LameControllerManager : public juce::AudioProcessorValueTreeState::Listener
+class LameControllerManager : public juce::AudioProcessorValueTreeState::Listener,
+public juce::Timer
 {
 public:
     LameControllerManager(int samplerate,
@@ -31,6 +33,9 @@ public:
     
     void updateParameters(bool updateOffController=false);
     int getBitrate();
+    
+    float* getPsychoanalEnergy();
+    float* getPsychoanalThreshold();
     
     static constexpr std::array<int, 17> bitrates {
         8,
@@ -54,6 +59,8 @@ public:
 
     
 private:
+    void timerCallback() override;
+    
     std::atomic<bool> parametersNeedUpdating;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     

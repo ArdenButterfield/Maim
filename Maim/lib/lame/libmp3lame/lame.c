@@ -109,6 +109,16 @@ void lame_set_bitrate_squish_bends(lame_global_flags* gfp, float squish)
     gfp->bendFlagsAndData->bitrate_squish = squish;
 }
 
+float* lame_get_psychoanal_energy(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->psychoanal_energy;
+}
+
+float* lame_get_psychoanal_threshold(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->psychoanal_threshold;
+}
+
 void lame_clear_bends(lame_global_flags* gfp)
 {
     gfp->bendFlagsAndData->butterfly_bubu = 1;
@@ -131,6 +141,10 @@ void lame_clear_bends(lame_global_flags* gfp)
         gfp->bendFlagsAndData->mdct_band_reassignments[i] = i;
     }
 
+    for (int i = 0; i < 22; ++i) {
+        gfp->bendFlagsAndData->psychoanal_energy[i] = 0;
+        gfp->bendFlagsAndData->psychoanal_threshold[i] = 0;
+    }
 }
 
 int
