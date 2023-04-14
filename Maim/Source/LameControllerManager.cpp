@@ -160,13 +160,13 @@ void LameControllerManager::updateParameters(bool updateOffController)
     );
     
     controller->setMDCTpostshiftBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
-         ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
+        ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
+       ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
     );
     controller->setMDCTwindowincrBends(
-         ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()    );
+        ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()    );
     controller->setBitrateSquishBends(
-                                      ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get());
+        ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get());
     
      controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get());
     

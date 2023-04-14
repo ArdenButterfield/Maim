@@ -13,55 +13,43 @@
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterflystandard", 1},
-                                                                     "MDCT Butterfly standard",
-                                                                     0.0f,
-                                                                     1.0f,
-                                                                     1.0f));
-    parameters.push_back(        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"butterflycrossed", 1},
-                                                                             "MDCT Butterfly crossed",
-                                                                             0.0f,
-                                                                             1.0f,
-                                                                             0.0f));
-    parameters.push_back(        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctstep", 1},
-                                                                           "MDCT band step",
-                                                                           8,
-                                                                           18,
-                                                                           18));
-    parameters.push_back(        std::make_unique<juce::AudioParameterBool>(juce::ParameterID {"mdctinvert", 1},
-                                                                            "MDCT band invert",
-                                                                            false));
-    parameters.push_back(        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"lopass", 1},
-                                                                             "Lowpass filter",
-                                                                             100.f,
-                                                                             20000.f,
-                                                                             18000.f));
-    parameters.push_back(        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctposthshift", 1},
-                                                                           "MDCT post pitch shift",
-                                                                           -100,
-                                                                           100,
-                                                                           0));
-    parameters.push_back(        std::make_unique<juce::AudioParameterFloat>(juce::ParameterID {"mdctpostvshift", 1},
-                                                                             "MDCT post amplitude shift",
-                                                                             -1.f,
-                                                                             1.f,
-                                                                             0.f));
+    
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"butterflystandard", 1}, "MDCT Butterfly standard", 0.0f, 1.0f, 1.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"butterflycrossed", 1}, "MDCT Butterfly crossed", 0.0f, 1.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>(
+        juce::ParameterID {"mdctstep", 1},"MDCT band step", 8, 18, 18));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID {"mdctinvert", 1}, "MDCT band invert", false));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>(
+        juce::ParameterID {"mdctposthshift", 1}, "MDCT post pitch shift", -100, 100, 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"mdctpostvshift", 1}, "MDCT post amplitude shift", -1.f, 1.f, 0.f));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
         juce::ParameterID {"mdctwindowincr", 1}, "MDCT window increment", -64, 64, 64));
+    
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"bitratesquish", 1}, "Bitrate squish", 0, 1, 0));
+    
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"thresholdbias", 1}, "Threshold bias", -1, 1, 0));
-    parameters.push_back(        std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"bitrate", 1},
-                                                                              "Bitrate",
-                                                                              juce::StringArray {"8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
-                                                                              10));
+    
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id, name;
         id << "bandorder" << i;
         name << "Band order " << i;
         parameters.push_back(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{id.str(), 1,},name.str(),0,31,i));
     }
+    
+    parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID {"bitrate", 1}, "Bitrate", juce::StringArray {
+            "8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
+        10));
+    
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"lopass", 1}, "Lowpass filter", 100.f, 20000.f, 18000.f));
+    
     return {parameters.begin(), parameters.end()};
 }
 
