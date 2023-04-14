@@ -2,7 +2,9 @@
 
 *MAIM Ain't an Implementation of Mp3*
 
-MAIM is an audio plugin that circuit bends an MP3 encoder in real time, disrupting the control flow sending data down unexpected paths to create digital distortions.
+MAIM is an audio plugin that circuit bends an MP3 encoder in real time, disrupting the control flow sending data down unexpected paths to create digital distortions. 
+
+This plugin is still very much a work in progress, and is changing rapidly, so there are no guarantees that it works at any point in time. That said, feel free to give the code a try, and raise an issue or make a pull request if you have any suggestions!
 
 ## Building and Installation
 
