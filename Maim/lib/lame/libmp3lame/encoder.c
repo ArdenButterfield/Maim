@@ -421,7 +421,38 @@ lame_encode_mp3_frame(       /* Output */
     /* polyphase filtering / mdct */
     mdct_sub48(gfc, inbuf[0], inbuf[1]);
 
+
+#if 0
+    if ((blocktype[0] == NORM_TYPE) && 
+        (blocktype[1] == NORM_TYPE) && 
+        (gfc->bendFlagsAndData->prev_block_long)) {
+        float wet = gfc->bendFlagsAndData->mdct_feedback;
+        float dry = 1 - wet;
+        for (int gr = 0; gr < 2; ++gr) {
+            for (int ch = 0; ch < 2; ++ch) {
+                for (int s = 0; s < 576; ++s) {
+                    gfc->bendFlagsAndData->feedback_data[gr][ch][s] = 
+                        dry * gfc->l3_side.tt[gr][ch].xr[s] + 
+                        wet * gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+                    gfc->l3_side.tt[gr][ch].xr[s] = gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+                }
+            }
+        }
+    } else if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
+        gfc->bendFlagsAndData->prev_block_long = 1;
+        for (int gr = 0; gr < 2; ++gr) {
+            for (int ch = 0; ch < 2; ++ch) {
+                for (int s = 0; s < 576; ++s) {
+                    gfc->bendFlagsAndData->feedback_data[gr][ch][s] = gfc->l3_side.tt[gr][ch].xr[s];
+                }
+            }
+        }
+
+    } else {
+        gfc->bendFlagsAndData->prev_block_long = 0;
+    }
     
+#endif
     
     // TESTT: print output of mdct
     // scale y: boring. shift y: grating tone
@@ -448,6 +479,20 @@ lame_encode_mp3_frame(       /* Output */
             }
         }
     }
+
+    float wet = gfc->bendFlagsAndData->mdct_feedback;
+    float dry = 1 - wet;
+    for (int gr = 0; gr < 2; ++gr) {
+        for (int ch = 0; ch < 2; ++ch) {
+            for (int s = 0; s < 576; ++s) {
+                gfc->bendFlagsAndData->feedback_data[gr][ch][s] = 
+                    dry * gfc->l3_side.tt[gr][ch].xr[s] + 
+                    wet * gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+                gfc->l3_side.tt[gr][ch].xr[s] = gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+            }
+        }
+    }
+
     // Result: some small numbers, between -1ish and 1, mostly very small magnitude, and then
     // all zeros above the lowpass filter cutoff
     

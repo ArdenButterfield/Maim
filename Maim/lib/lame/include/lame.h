@@ -154,12 +154,13 @@ void lame_set_mdct_step_bends(lame_global_flags* gfp, int invert, int step);
 void lame_set_mdct_post_shift_bends(lame_global_flags* gfp, int h_shift, float v_shift);
 void lame_set_mdct_window_increment_bends(lame_global_flags* gfp, int window_inc);
 void lame_set_mdct_band_reassignment_bends(lame_global_flags* gfp, int* band_reassignments);
+void lame_set_mdct_feedback_bends(lame_global_flags* gfp, float feedback);
 void lame_set_bitrate_squish_bends(lame_global_flags* gfp, float squish);
+void lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias);
 
 float* lame_get_psychoanal_energy(lame_global_flags* gfp);
 float* lame_get_psychoanal_threshold(lame_global_flags* gfp);
 
-float* lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias);
 
 void lame_clear_bends(lame_global_flags* gfp);
 

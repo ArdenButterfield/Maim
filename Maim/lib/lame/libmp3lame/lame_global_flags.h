@@ -53,6 +53,10 @@ typedef struct bend_flags_and_data {
     float threshold_bias[22];
     // Likewise, we are currently only biasing the long blocks.
 
+    float mdct_feedback;
+    int prev_block_long;
+    float feedback_data[2][2][576];
+
 } BendFlagsAndData;
 
 

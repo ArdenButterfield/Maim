@@ -212,6 +212,11 @@ void LameController::setMDCTbandstepBends(bool invert, int step)
     lame_set_mdct_step_bends(lame_enc_handler, (int)invert, step);
 }
 
+void LameController::setMDCTfeedback(float feedback)
+{
+    lame_set_mdct_feedback_bends(lame_enc_handler, feedback);
+}
+
 void LameController::setMDCTpostshiftBends(int h_shift, float v_shift)
 {
     float actual_v_shift;

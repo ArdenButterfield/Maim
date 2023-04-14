@@ -111,17 +111,7 @@ void lame_set_bitrate_squish_bends(lame_global_flags* gfp, float squish)
     gfp->bendFlagsAndData->bitrate_squish = squish;
 }
 
-float* lame_get_psychoanal_energy(lame_global_flags* gfp)
-{
-    return gfp->bendFlagsAndData->psychoanal_energy;
-}
-
-float* lame_get_psychoanal_threshold(lame_global_flags* gfp)
-{
-    return gfp->bendFlagsAndData->psychoanal_threshold;
-}
-
-float* lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias)
+void lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias)
 {
     float b;
     for (int i = 0; i < 22; ++i) {
@@ -133,6 +123,24 @@ float* lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias)
         gfp->bendFlagsAndData->threshold_bias[i] = b;
     }
 }
+
+void lame_set_mdct_feedback_bends(lame_global_flags* gfp, float feedback)
+{
+    gfp->bendFlagsAndData->mdct_feedback = feedback;
+}
+
+float* lame_get_psychoanal_energy(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->psychoanal_energy;
+}
+
+float* lame_get_psychoanal_threshold(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->psychoanal_threshold;
+}
+
+
+
 
 void lame_clear_bends(lame_global_flags* gfp)
 {
@@ -152,6 +160,9 @@ void lame_clear_bends(lame_global_flags* gfp)
 
     gfp->bendFlagsAndData->bitrate_squish = 1;
 
+    gfp->bendFlagsAndData->mdct_feedback = 0;
+    gfp->bendFlagsAndData->prev_block_long = 0;
+
     for (int i = 0; i < 32; ++i) {
         gfp->bendFlagsAndData->mdct_band_reassignments[i] = i;
     }
@@ -164,6 +175,17 @@ void lame_clear_bends(lame_global_flags* gfp)
     for (int i = 0; i < 22; ++i) {
         gfp->bendFlagsAndData->threshold_bias[i] = 1;
     }
+
+    memset(gfp->bendFlagsAndData->feedback_data, 0, 2 * 2 * 576 * sizeof(float));
+    /*
+    for (int gr = 0; gr < 2; ++gr) {
+        for (int ch = 0; ch < 2; ++ch) {
+            for (int s = 0; s < 2; ++s) {
+                gfp->bendFlagsAndData->feedback_data[ch][gr][s] = 0;
+            }
+        }
+    }
+    */
 }
 
 int

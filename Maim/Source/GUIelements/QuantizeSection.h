@@ -36,6 +36,16 @@ private:
         "bitratesquish",
         squishSlider
     };
-    
+
+    juce::Slider MDCTfeedbackSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    juce::AudioProcessorValueTreeState::SliderAttachment MDCTfeedbackAttachment {
+        parameters,
+        "mdctfeedback",
+        MDCTfeedbackSlider
+    };
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QuantizeSection)
 };

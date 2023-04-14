@@ -28,6 +28,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID {"mdctpostvshift", 1}, "MDCT post amplitude shift", -1.f, 1.f, 0.f));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
         juce::ParameterID {"mdctwindowincr", 1}, "MDCT window increment", -64, 64, 64));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"mdctfeedback", 1}, "MDCT feedback", 0, 1, 0));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"bitratesquish", 1}, "Bitrate squish", 0, 1, 0));

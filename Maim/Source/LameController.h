@@ -42,6 +42,7 @@ public:
     void setMDCTBandReassignmentBends(int* order);
     void setBitrateSquishBends(float squish);
     void setThresholdBias(float bias);
+    void setMDCTfeedback(float feedback);
     
     float* getPsychoanalThreshold();
     float* getPsychoanalEnergy();
