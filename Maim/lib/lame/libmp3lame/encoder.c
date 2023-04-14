@@ -330,7 +330,7 @@ lame_encode_mp3_frame(       /* Output */
     int     mp3count;
     III_psy_ratio masking_LR[2][2]; /*LR masking & energy */
     III_psy_ratio masking_MS[2][2]; /*MS masking & energy */
-    const III_psy_ratio (*masking)[2]; /*pointer to selected maskings */
+    III_psy_ratio (*masking)[2]; /*pointer to selected maskings */
     const sample_t *inbuf[2];
 
     FLOAT   tot_ener[2][4];
@@ -500,12 +500,30 @@ lame_encode_mp3_frame(       /* Output */
 
     /* bit and noise allocation */
     if (gfc->ov_enc.mode_ext == MPG_MD_MS_LR) {
-        masking = (const III_psy_ratio (*)[2])masking_MS; /* use MS masking */
+        masking = (III_psy_ratio (*)[2])masking_MS; /* use MS masking */
         pe_use = pe_MS;
+        if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
+            for (int i = 0; i < 22; ++i) {
+                masking_MS[0][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+                masking_MS[0][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+                masking_MS[1][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+                masking_MS[1][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+            }
+        }
+
     }
     else {
-        masking = (const III_psy_ratio (*)[2])masking_LR; /* use LR masking */
+        masking = (III_psy_ratio (*)[2])masking_LR; /* use LR masking */
         pe_use = pe;
+        if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
+            for (int i = 0; i < 22; ++i) {
+                masking_LR[0][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+                masking_LR[0][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+                masking_LR[1][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+                masking_LR[1][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
+            }
+        }
+
     }
 
     if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {

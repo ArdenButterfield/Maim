@@ -30,6 +30,8 @@
 # include <config.h>
 #endif
 
+#include <math.h>
+
 
 #include "lame.h"
 #include "machine.h"
@@ -119,6 +121,19 @@ float* lame_get_psychoanal_threshold(lame_global_flags* gfp)
     return gfp->bendFlagsAndData->psychoanal_threshold;
 }
 
+float* lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias)
+{
+    float b;
+    for (int i = 0; i < 22; ++i) {
+        b = pow(10.f, (-bias) * (i - 11.f) / 1.f);
+
+        if (bias < 0) {
+            b *= pow(1000000.f, -bias);
+        }
+        gfp->bendFlagsAndData->threshold_bias[i] = b;
+    }
+}
+
 void lame_clear_bends(lame_global_flags* gfp)
 {
     gfp->bendFlagsAndData->butterfly_bubu = 1;
@@ -144,6 +159,10 @@ void lame_clear_bends(lame_global_flags* gfp)
     for (int i = 0; i < 22; ++i) {
         gfp->bendFlagsAndData->psychoanal_energy[i] = 0;
         gfp->bendFlagsAndData->psychoanal_threshold[i] = 0;
+    }
+
+    for (int i = 0; i < 22; ++i) {
+        gfp->bendFlagsAndData->threshold_bias[i] = 1;
     }
 }
 

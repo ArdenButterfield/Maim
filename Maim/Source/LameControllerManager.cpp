@@ -29,6 +29,7 @@ LameControllerManager::LameControllerManager(int s, int initialBitrate, int spb,
     parameters.addParameterListener("mdctsampincr", this);
     parameters.addParameterListener("bitrate", this);
     parameters.addParameterListener("bitratesquish", this);
+    parameters.addParameterListener("thresholdbias", this);
     
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
@@ -62,6 +63,7 @@ LameControllerManager::~LameControllerManager()
     parameters.removeParameterListener("mdctsampincr", this);
     parameters.removeParameterListener("bitrate", this);
     parameters.removeParameterListener("bitratesquish", this);
+    parameters.removeParameterListener("thresholdbias", this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
@@ -165,6 +167,9 @@ void LameControllerManager::updateParameters(bool updateOffController)
          ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()    );
     controller->setBitrateSquishBends(
                                       ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get());
+    
+     controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get());
+    
     int bandReassign[32];
     int i;
     for (i = 0; i < 20; ++i) {

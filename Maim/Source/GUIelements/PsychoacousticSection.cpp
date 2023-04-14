@@ -12,19 +12,17 @@
 #include "PsychoacousticSection.h"
 
 //==============================================================================
-PsychoacousticSection::PsychoacousticSection(juce::AudioProcessorValueTreeState& p)
-: StageWindow(p),
-arrayAssigner(p, 20, 20)
+PsychoacousticSection::PsychoacousticSection(juce::AudioProcessorValueTreeState& p) :
+    StageWindow(p),
+    psychoanalGraph(p)
 {
-    addAndMakeVisible(arrayAssigner);
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+    addAndMakeVisible(biasSlider);
+    addAndMakeVisible(psychoanalGraph);
 
 }
 
 void PsychoacousticSection::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-    arrayAssigner.setBounds(getLocalBounds());
+    biasSlider.setBounds(getLocalBounds().withWidth(100));
+    psychoanalGraph.setBounds(getLocalBounds().withTrimmedLeft(100));
 }

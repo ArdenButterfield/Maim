@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 
 #include "StageWindow.h"
+#include "ArrayAssigner.h"
 
 //==============================================================================
 /*
@@ -24,6 +25,8 @@ public:
     void resized() override;
 
 private:
+    ArrayAssigner arrayAssigner;
+    
     juce::Slider squishSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow

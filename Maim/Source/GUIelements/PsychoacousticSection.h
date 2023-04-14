@@ -13,7 +13,7 @@
 #include <JuceHeader.h>
 
 #include "StageWindow.h"
-#include "ArrayAssigner.h"
+#include "PsychoanalGraph.h"
 
 //==============================================================================
 /*
@@ -25,6 +25,17 @@ public:
     void resized() override;
 
 private:
-    ArrayAssigner arrayAssigner;
+    juce::Slider biasSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    juce::AudioProcessorValueTreeState::SliderAttachment biasAttachment {
+        parameters,
+        "thresholdbias",
+        biasSlider
+    };
+    
+    PsychoanalGraph psychoanalGraph;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PsychoacousticSection)
 };

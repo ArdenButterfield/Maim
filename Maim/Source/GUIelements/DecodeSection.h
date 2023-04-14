@@ -23,6 +23,5 @@ public:
     void resized() override;
 
 private:
-    PsychoanalGraph psychoanalGraph;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DecodeSection)
 };

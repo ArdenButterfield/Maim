@@ -238,6 +238,11 @@ void LameController::setBitrateSquishBends(float squish)
     lame_set_bitrate_squish_bends(lame_enc_handler, (1 - squish) * (1 - squish) * (1 - squish));
 }
 
+void LameController::setThresholdBias(float bias)
+{
+    lame_set_threshold_bias_bends(lame_enc_handler, bias);
+}
+
 float* LameController::getPsychoanalThreshold()
 {
     return lame_get_psychoanal_threshold(lame_enc_handler);

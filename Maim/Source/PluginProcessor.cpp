@@ -46,13 +46,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
                                                                              -1.f,
                                                                              1.f,
                                                                              0.f));
-    parameters.push_back(        std::make_unique<juce::AudioParameterInt>(juce::ParameterID {"mdctwindowincr", 1},
-                                                                           "MDCT window increment",
-                                                                           -64,
-                                                                           64,
-                                                                           64));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>(
+        juce::ParameterID {"mdctwindowincr", 1}, "MDCT window increment", -64, 64, 64));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-         juce::ParameterID {"bitratesquish", 1}, "Bitrate squish", 0, 1, 0));
+        juce::ParameterID {"bitratesquish", 1}, "Bitrate squish", 0, 1, 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"thresholdbias", 1}, "Threshold bias", -1, 1, 0));
     parameters.push_back(        std::make_unique<juce::AudioParameterChoice>(juce::ParameterID {"bitrate", 1},
                                                                               "Bitrate",
                                                                               juce::StringArray {"8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
