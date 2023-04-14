@@ -421,7 +421,7 @@ lame_encode_mp3_frame(       /* Output */
     /* polyphase filtering / mdct */
     mdct_sub48(gfc, inbuf[0], inbuf[1]);
 
-
+    
     
     // TESTT: print output of mdct
     // scale y: boring. shift y: grating tone
@@ -432,8 +432,8 @@ lame_encode_mp3_frame(       /* Output */
     if (h_shift < 0) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
-                for (int i = 0; i < 512; ++i) {
-                    v = gfc->l3_side.tt[gr][ch].xr[(i+512-h_shift)%512];
+                for (int i = 0; i < 576; ++i) {
+                    v = gfc->l3_side.tt[gr][ch].xr[(i+576-h_shift)%576];
                     gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
                 }
             }
@@ -441,8 +441,8 @@ lame_encode_mp3_frame(       /* Output */
     } else {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
-                for (int i = 511; i >= 0; --i) {
-                    v = gfc->l3_side.tt[gr][ch].xr[(i+512-h_shift)%512];
+                for (int i = 576-1; i >= 0; --i) {
+                    v = gfc->l3_side.tt[gr][ch].xr[(i+576-h_shift)%576];
                     gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
                 }
             }
