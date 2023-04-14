@@ -373,6 +373,8 @@ lame_encode_mp3_frame(       /* Output */
     *   Stage 1: psychoacoustic model       *
     ****************************************/
 
+    gfc->bendFlagsAndData->in_short_block = 0;
+
     int     blocktype[2];
     {
         /* psychoacoustic model
@@ -405,10 +407,12 @@ lame_encode_mp3_frame(       /* Output */
                 gr_info *const cod_info = &gfc->l3_side.tt[gr][ch];
                 cod_info->block_type = blocktype[ch];
                 cod_info->mixed_block_flag = 0;
+                if (blocktype[ch] != NORM_TYPE) {
+                    gfc->bendFlagsAndData->in_short_block = 1;
+                }
             }
         }
     }
-
 
     /* auto-adjust of ATH, useful for low volume */
     adjust_ATH(gfc);
@@ -571,7 +575,7 @@ lame_encode_mp3_frame(       /* Output */
 
     }
 
-    if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
+    if (!(gfc->bendFlagsAndData->in_short_block)) {
         for (int i = 0; i < 22; ++i) {
             gfc->bendFlagsAndData->psychoanal_energy[i] = ((*masking)[0].en.l[i] + (*masking)[1].en.l[i])/2;
             gfc->bendFlagsAndData->psychoanal_threshold[i] = ((*masking)[0].thm.l[i] + (*masking)[1].thm.l[i])/2;

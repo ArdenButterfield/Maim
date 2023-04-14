@@ -160,7 +160,7 @@ void lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias);
 
 float* lame_get_psychoanal_energy(lame_global_flags* gfp);
 float* lame_get_psychoanal_threshold(lame_global_flags* gfp);
-
+int lame_is_short_block(lame_global_flags* gfp);
 
 void lame_clear_bends(lame_global_flags* gfp);
 

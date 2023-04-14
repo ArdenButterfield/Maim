@@ -14,17 +14,21 @@
 
 #include "StageWindow.h"
 #include "PsychoanalGraph.h"
+#include "IndicatorLight.h"
 
 //==============================================================================
 /*
 */
-class PsychoacousticSection  : public StageWindow
+class PsychoacousticSection  : public StageWindow, public juce::ValueTree::Listener
 {
 public:
     PsychoacousticSection(juce::AudioProcessorValueTreeState& p);
+    ~PsychoacousticSection();
     void resized() override;
 
 private:
+    void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
+                                  const juce::Identifier &property) override;
     juce::Slider biasSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
@@ -36,6 +40,7 @@ private:
     };
     
     PsychoanalGraph psychoanalGraph;
+    IndicatorLight shortFrameIndicator;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PsychoacousticSection)
 };

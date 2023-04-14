@@ -257,3 +257,8 @@ float* LameController::getPsychoanalEnergy()
 {
     return lame_get_psychoanal_energy(lame_enc_handler);
 }
+
+int LameController::getShortBlockStatus()
+{
+    return lame_is_short_block(lame_enc_handler);
+}

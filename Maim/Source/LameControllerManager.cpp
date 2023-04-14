@@ -193,6 +193,12 @@ void LameControllerManager::updateParameters(bool updateOffController)
     if (wantingToSwitch && !updateOffController) {
         updateParameters(true);
     }
+    auto psychoanalState = parameters.state.getChildWithName("psychoanal");
+    auto indicator = psychoanalState.getProperty("shortblockindicator");
+    bool shortBlockStatus = controller->getShortBlockStatus();
+    if (!(indicator.isBool() && ((bool)indicator == shortBlockStatus))) {
+        psychoanalState.setProperty("shortblockindicator", shortBlockStatus, nullptr);
+    }
 }
 
 int LameControllerManager::getBitrate()
@@ -225,8 +231,7 @@ void LameControllerManager::timerCallback()
         energyV.append(rescalePsychoanal(energy[i])); // TEMP test
     }
 
-    auto psychoSpectrum = parameters.state.getChildWithName("psycho_spectrum");
+    auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
     psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
     psychoSpectrum.setProperty("energy", energyV, nullptr);
-    
 }

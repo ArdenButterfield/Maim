@@ -46,6 +46,7 @@ public:
     
     float* getPsychoanalThreshold();
     float* getPsychoanalEnergy();
+    int getShortBlockStatus();
     
     int getBitrate();
 private:

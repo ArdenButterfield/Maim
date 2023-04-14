@@ -16,7 +16,7 @@
 //==============================================================================
 /*
 */
-template <class T> class LineGraph  : public juce::Component
+template <class T> class LineGraph  : public juce::Component, public juce::AsyncUpdater
 {
 public:
     LineGraph(float y_min, float y_max, int num_points, juce::Colour c) :
@@ -37,6 +37,10 @@ public:
         for (int i = 0; i < numPoints; ++i) {
             yVals[i] = getHeight() - (data[i] - ymin) / (ymax - ymin) * getHeight();
         }
+        triggerAsyncUpdate();
+    }
+    
+    void handleAsyncUpdate() override {
         repaint();
     }
     

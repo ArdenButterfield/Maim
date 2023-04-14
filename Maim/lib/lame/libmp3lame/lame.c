@@ -140,7 +140,10 @@ float* lame_get_psychoanal_threshold(lame_global_flags* gfp)
 }
 
 
-
+int lame_is_short_block(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->in_short_block;
+}
 
 void lame_clear_bends(lame_global_flags* gfp)
 {
