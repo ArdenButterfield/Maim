@@ -74,10 +74,11 @@ MaimAudioProcessor::MaimAudioProcessor()
         energy.append((float)i / 22.f); // TEMP test
     }
     parameters.state.appendChild(juce::ValueTree(
-        "psycho_spectrum",
+        "psychoanal",
         {
             juce::NamedValueSet::NamedValue("threshold", threshold),
-            juce::NamedValueSet::NamedValue("energy", energy)
+            juce::NamedValueSet::NamedValue("energy", energy),
+            juce::NamedValueSet::NamedValue("shortblockindicator", juce::var(false))
         }),
         nullptr);
     

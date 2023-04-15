@@ -55,6 +55,8 @@ typedef struct bend_flags_and_data {
 
     float mdct_feedback;
     int prev_block_long;
+
+    int in_short_block;
     float feedback_data[2][2][576];
 
 } BendFlagsAndData;

@@ -16,6 +16,10 @@
         <FILE id="erokQA" name="DragBox.cpp" compile="1" resource="0" file="Source/GUIelements/DragBox.cpp"/>
         <FILE id="qZGNMO" name="DragBox.h" compile="0" resource="0" file="Source/GUIelements/DragBox.h"/>
         <FILE id="xuhQz2" name="guiUtil.h" compile="0" resource="0" file="Source/GUIelements/guiUtil.h"/>
+        <FILE id="WKhjRK" name="IndicatorLight.cpp" compile="1" resource="0"
+              file="Source/GUIelements/IndicatorLight.cpp"/>
+        <FILE id="h5Xh50" name="IndicatorLight.h" compile="0" resource="0"
+              file="Source/GUIelements/IndicatorLight.h"/>
         <FILE id="gxRlcI" name="LineGraph.h" compile="0" resource="0" file="Source/GUIelements/LineGraph.h"/>
         <FILE id="woCWId" name="MainArea.cpp" compile="1" resource="0" file="Source/GUIelements/MainArea.cpp"/>
         <FILE id="jGe62S" name="MainArea.h" compile="0" resource="0" file="Source/GUIelements/MainArea.h"/>
