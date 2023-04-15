@@ -13,6 +13,10 @@
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"drive", 1}, "drive", -36.f, 36.f, 0.f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"makeupgain", 1}, "makeup gain", -36.f, 36.f, 0.f));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"butterflystandard", 1}, "MDCT Butterfly standard", 0.0f, 1.0f, 1.0f));
@@ -83,11 +87,15 @@ MaimAudioProcessor::MaimAudioProcessor()
         nullptr);
     
     parameters.addParameterListener("lopass", this);
+    parameters.addParameterListener("drive", this);
+    parameters.addParameterListener("makeupgain", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
     parameters.removeParameterListener("lopass", this);
+    parameters.removeParameterListener("drive", this);
+    parameters.removeParameterListener("makeupgain", this);
 
 }
 
@@ -207,10 +215,19 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
-    
     for (auto &f: postFilter) {
         f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));
     }
+    
+    auto driveDB = ((juce::AudioParameterFloat*)parameters.getParameter("drive"))->get();
+    auto makeupDB = ((juce::AudioParameterFloat*)parameters.getParameter("makeupgain"))->get();
+    
+    if (driveDB > 0) {
+        makeupDB -= driveDB / 2;
+    }
+    
+    preGain = juce::Decibels::decibelsToGain(driveDB);
+    postGain = juce::Decibels::decibelsToGain(makeupDB);
     
     parametersNeedUpdating = false;
 }
@@ -228,6 +245,8 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    buffer.applyGain(preGain);
+    
     lameControllerManager->processBlock(buffer);
     
     if (buffer.getNumChannels() == 2) {
@@ -236,6 +255,8 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         postFilter[0].processSamples(samplesL, buffer.getNumSamples());
         postFilter[1].processSamples(samplesR, buffer.getNumSamples());
     }
+    
+    buffer.applyGain(postGain);
 }
 
 //==============================================================================

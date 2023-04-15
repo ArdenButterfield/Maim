@@ -23,6 +23,29 @@ public:
     PostSection(juce::AudioProcessorValueTreeState& p);
     void resized() override;
 private:
+    juce::Slider driveSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    
+    juce::AudioProcessorValueTreeState::SliderAttachment driveAttachment {
+        parameters,
+        "drive",
+        driveSlider
+    };
+    
+    juce::Slider makeupSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    
+    juce::AudioProcessorValueTreeState::SliderAttachment makeupAttachment {
+        parameters,
+        "makeupgain",
+        makeupSlider
+    };
+
+    
     juce::Slider bitrateSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow

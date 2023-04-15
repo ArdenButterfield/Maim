@@ -67,6 +67,9 @@ public:
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     
 private:
+    float preGain;
+    float postGain;
+    
     double sampleRate;
     int estimatedSamplesPerBlock;
     
