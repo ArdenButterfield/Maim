@@ -70,6 +70,9 @@ private:
     float preGain;
     float postGain;
     
+    float oldPreGain;
+    float oldPostGain;
+    
     double sampleRate;
     int estimatedSamplesPerBlock;
     

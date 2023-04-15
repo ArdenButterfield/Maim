@@ -72,6 +72,8 @@ MaimAudioProcessor::MaimAudioProcessor()
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters())
 {
+    oldPreGain = 1;
+    oldPostGain = 1;
     juce::var threshold, energy;
     for (int i = 0; i < 22; ++i) {
         threshold.append((float)i / 22.f);
@@ -245,8 +247,13 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    buffer.applyGain(preGain);
-    
+    if (oldPreGain != preGain) {
+        buffer.applyGainRamp(0, buffer.getNumSamples(), oldPreGain, preGain);
+        oldPreGain = preGain;
+    } else {
+        buffer.applyGain(preGain);
+    }
+        
     lameControllerManager->processBlock(buffer);
     
     if (buffer.getNumChannels() == 2) {
@@ -255,8 +262,12 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         postFilter[0].processSamples(samplesL, buffer.getNumSamples());
         postFilter[1].processSamples(samplesR, buffer.getNumSamples());
     }
-    
-    buffer.applyGain(postGain);
+    if (oldPostGain != postGain) {
+        buffer.applyGainRamp(0, buffer.getNumSamples(), oldPostGain, postGain);
+        oldPostGain = postGain;
+    } else {
+        buffer.applyGain(postGain);
+    }
 }
 
 //==============================================================================
