@@ -242,6 +242,7 @@ int						main (int argc, char* argv[])
 	int						nNoGapSamples;
 	int						noGapOfs;
 
+	encoder_flags_and_data flags_and_data;
 
 #if SYSTEM == MAC_OS
 	long					macTickStart;
@@ -456,7 +457,7 @@ int						main (int argc, char* argv[])
 
 		if (!bContinueNoGap)
 		{
-			pCodecInfo = codecInit (&psJobQueue->sCodec);
+			pCodecInfo = codecInit (&flags_and_data, &psJobQueue->sCodec);
 			samplesPerFrame = pCodecInfo->nSamples;
 			if (psJobQueue->sCodec.mode != 3)
 				samplesPerFrame /= 2;
@@ -515,7 +516,7 @@ int						main (int argc, char* argv[])
 			if (psJobQueue->sCodec.mode != 3)
 				nSamples2 *= 2;
 
-			encodedChunkSize = codecEncodeChunk (nSamples2, readBuffer, pBuffer);
+			encodedChunkSize = codecEncodeChunk (&flags_and_data, nSamples2, readBuffer, pBuffer);
 			if (fwrite (pBuffer, 1, encodedChunkSize, fp) != encodedChunkSize)
 			{
 				fprintf (textout, "ERROR: Couldn't write '%s'! Disc probably full.\n", psJobQueue->outputFilename);
@@ -554,7 +555,7 @@ int						main (int argc, char* argv[])
 					input = be_getch();
 					if (input == 'y'  ||  input == 'Y')
 					{
-						encodedChunkSize = codecExit (pBuffer);
+						encodedChunkSize = codecExit (&flags_and_data, pBuffer);
 						if (encodedChunkSize != 0)
 							if (fwrite (pBuffer, encodedChunkSize, 1, fp) != 1)
 							{
@@ -587,7 +588,7 @@ int						main (int argc, char* argv[])
 
 		if (psJobQueue->bNoGap  &&  psJobQueue->psNext != NULL)
 		{
-			encodedChunkSize = codecFlush (pBuffer);
+			encodedChunkSize = codecFlush (&flags_and_data, pBuffer);
 			bContinueNoGap   = TRUE;
 			nNoGapSamples    = nSamples;
 			noGapOfs         = nSamples;
@@ -599,7 +600,7 @@ int						main (int argc, char* argv[])
 		}
 		else
 		{
-			encodedChunkSize = codecExit (pBuffer);
+			encodedChunkSize = codecExit (&flags_and_data, pBuffer);
 			bContinueNoGap   = FALSE;
             bConcatenate     = FALSE;
 		}

@@ -27,6 +27,62 @@
 
 
 
+#include	"common.h"
+#include	"l3psy.h"
+#include	"mdct.h"
+#include	"reservoir.h"
+#include	"formatbitstream2.h"
+#include	"l3bitstream.h"
+#include	"loop.h"
+#include	"encoder.h"
+
+extern	int				fInit_fft;
+
+
+
+
+
+/************************************************************************/
+
+#define	SAMPLES_PER_FRAME		1152
+
+typedef struct encoder_flags_and_data_struct {
+	L3SBS					l3_sb_sample;
+
+	layer					info;
+
+
+
+#if ORG_BUFFERS
+	short					buffer[2][1152];
+	/*	static	float					snr32[32]; */
+	short					sam[2][2048];
+#else
+	FLOAT					buffer[2][2048];
+	int						buffer_idx;
+#endif
+
+
+
+	int						whole_SpF;
+
+	double					frac_SpF, slot_lag;
+
+	int						stereo, error_protection;
+
+	III_side_info_t			l3_side;
+	CodecInitOut			sOut;
+
+	frame_params			fr_ps;
+
+
+
+	char					*pEncodedOutput;
+	int						outputBit;
+
+	double			avg_slots_per_frame;
+} encoder_flags_and_data;
+
 
 
 typedef		struct
@@ -50,13 +106,13 @@ typedef		struct
 
 
 
-extern	CodecInitOut	*codecInit (CodecInitIn *psInitData);
+extern	CodecInitOut	*codecInit (encoder_flags_and_data* flags, CodecInitIn *psInitData);
 
-extern	unsigned int	codecEncodeChunk (int nSamples, short *pSamples, char *pOutput);
+extern	unsigned int	codecEncodeChunk (encoder_flags_and_data* flags, int nSamples, short *pSamples, char *pOutput);
 
-extern	unsigned int	codecExit (char *pOutput);
+extern	unsigned int	codecExit (encoder_flags_and_data* flags, char *pOutput);
 
-extern	unsigned int	codecFlush (char *pOutput);
+extern	unsigned int	codecFlush (encoder_flags_and_data* flags, char *pOutput);
 
 
 

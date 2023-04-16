@@ -34,64 +34,12 @@
 #include	<stdlib.h>
 #include	<assert.h>
 
-#include	"common.h"
-#include	"l3psy.h"
-#include	"mdct.h"
-#include	"reservoir.h"
-#include	"formatbitstream2.h"
-#include	"l3bitstream.h"
-#include	"loop.h"
-#include	"encoder.h"
 #include	"codec.h"
 
 
 
 
 
-extern	int				fInit_fft;
-
-
-
-
-
-/************************************************************************/
-
-#define	SAMPLES_PER_FRAME		1152
-
-static	L3SBS					l3_sb_sample;
-
-static	layer					info;
-
-
-
-#if ORG_BUFFERS
-static	short					buffer[2][1152];
-/*	static	float					snr32[32]; */
-static	short					sam[2][2048];
-#else
-static	FLOAT					buffer[2][2048];
-static	int						buffer_idx;
-#endif
-
-
-
-static	int						whole_SpF;
-
-static	double					frac_SpF, slot_lag;
-
-static	int						stereo, error_protection;
-
-static	III_side_info_t			l3_side;
-static	CodecInitOut			sOut;
-
-static	frame_params			fr_ps;
-
-
-
-char					*pEncodedOutput;
-int						outputBit;
-
-volatile double			avg_slots_per_frame;
 
 
 
@@ -99,7 +47,7 @@ volatile double			avg_slots_per_frame;
 
 /*____ codecInit() ____________________________________________________________*/
 
-CodecInitOut			*codecInit (CodecInitIn *psIn)
+CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 {
 	int						j;
 
@@ -107,31 +55,31 @@ CodecInitOut			*codecInit (CodecInitIn *psIn)
 
 	switch (psIn->frequency)
 	{
-		case 48000:  info.sampling_frequency = 1;  break;
-	  	case 44100:  info.sampling_frequency = 0;  break;
-	  	case 32000:  info.sampling_frequency = 2;  break;
+		case 48000:  flags->info.sampling_frequency = 1;  break;
+	  	case 44100:  flags->info.sampling_frequency = 0;  break;
+	  	case 32000:  flags->info.sampling_frequency = 2;  break;
 	  	default   :  return FALSE;
 	}
 
 	switch (psIn->mode)
 	{
-		case  0:  info.mode = MPG_MD_STEREO      ;  info.mode_ext = 0;  break;
-		case  2:  info.mode = MPG_MD_DUAL_CHANNEL;  info.mode_ext = 0;  break;
-		case  3:  info.mode = MPG_MD_MONO        ;  info.mode_ext = 0;  break;
+		case  0:  flags->info.mode = MPG_MD_STEREO      ;  flags->info.mode_ext = 0;  break;
+		case  2:  flags->info.mode = MPG_MD_DUAL_CHANNEL;  flags->info.mode_ext = 0;  break;
+		case  3:  flags->info.mode = MPG_MD_MONO        ;  flags->info.mode_ext = 0;  break;
 		default:  return FALSE;
 	}
 
 	j = 0;
 	while (j < 15  &&  bitratex[1][j] != psIn->bitrate)
 		j++;
-	info.bitrate_index    = j;
+	flags->info.bitrate_index    = j;
 
-	info.version 	      = 1;   /* Default: MPEG-1 */
-	info.emphasis 	      = psIn->emphasis;
-	info.extension 	      = psIn->fPrivate;
-	info.copyright 	      = psIn->fCopyright;
-	info.original 	      = psIn->fOriginal;
-	info.error_protection = psIn->fCRC;
+	flags->info.version 	      = 1;   /* Default: MPEG-1 */
+	flags->info.emphasis 	      = psIn->emphasis;
+	flags->info.extension 	      = psIn->fPrivate;
+	flags->info.copyright 	      = psIn->fCopyright;
+	flags->info.original 	      = psIn->fOriginal;
+	flags->info.error_protection = psIn->fCRC;
 
 
 /*_______ Static-fix _______________*/
@@ -149,7 +97,7 @@ CodecInitOut			*codecInit (CodecInitIn *psIn)
 
 	fixStatic_loop();
 
-	l3_side.main_data_begin = 0;
+	flags->l3_side.main_data_begin = 0;
 	fixStatic_reservoir();
 
 
@@ -160,50 +108,50 @@ CodecInitOut			*codecInit (CodecInitIn *psIn)
 	initFormatBitstream ();
 
 /*     clear buffers */
-	memset ((char *) l3_sb_sample, 0, sizeof(l3_sb_sample));
-    memset((char *) buffer, 0, sizeof(buffer));
+	memset ((char *) flags->l3_sb_sample, 0, sizeof(flags->l3_sb_sample));
+    memset((char *) flags->buffer, 0, sizeof(flags->buffer));
 /*    memset((char *) snr32, 0, sizeof(snr32));*/
 #if ORG_BUFFERS
-    memset((char *) sam, 0, sizeof(sam));
+    memset((char *) flags->sam, 0, sizeof(flags->sam));
 #endif
 
 
 
-    fr_ps.header 	  = &info;
-    fr_ps.tab_num 	  = -1;   /* no table loaded */
-    fr_ps.alloc 	  = NULL;
-    fr_ps.actual_mode = info.mode;
-    fr_ps.stereo 	  = (info.mode == MPG_MD_MONO) ? 1 : 2;
-	fr_ps.sblimit 	  = SBLIMIT;
-    fr_ps.jsbound 	  = SBLIMIT;
+    flags->fr_ps.header 	  = &flags->info;
+    flags->fr_ps.tab_num 	  = -1;   /* no table loaded */
+    flags->fr_ps.alloc 	  = NULL;
+    flags->fr_ps.actual_mode = flags->info.mode;
+    flags->fr_ps.stereo 	  = (flags->info.mode == MPG_MD_MONO) ? 1 : 2;
+	flags->fr_ps.sblimit 	  = SBLIMIT;
+    flags->fr_ps.jsbound 	  = SBLIMIT;
 
     
-    stereo = fr_ps.stereo;
-    error_protection = info.error_protection;
+    flags->stereo = flags->fr_ps.stereo;
+    flags->error_protection = flags->info.error_protection;
 
-    avg_slots_per_frame =
-		((double) SAMPLES_PER_FRAME / s_freq[1][info.sampling_frequency]) *
-		((double) bitratex[1][info.bitrate_index] / 8.0);
-    whole_SpF = (int) avg_slots_per_frame;
-    frac_SpF  = avg_slots_per_frame - (double) whole_SpF;
-    slot_lag  = -frac_SpF;
+    flags->avg_slots_per_frame =
+		((double) SAMPLES_PER_FRAME / s_freq[1][flags->info.sampling_frequency]) *
+		((double) bitratex[1][flags->info.bitrate_index] / 8.0);
+    flags->whole_SpF = (int) flags->avg_slots_per_frame;
+    flags->frac_SpF  = flags->avg_slots_per_frame - (double) flags->whole_SpF;
+    flags->slot_lag  = -flags->frac_SpF;
 
-/*    if (frac_SpF == 0)
-    	info.padding = 0;
+/*    if (flags->frac_SpF == 0)
+    	flags->info.padding = 0;
 */
 	genNoisePowTab();
 
 /*________________________*/
 
 
-	if( stereo != 2 )
-		sOut.nSamples = SAMPLES_PER_FRAME;
+	if( flags->stereo != 2 )
+		flags->sOut.nSamples = SAMPLES_PER_FRAME;
 	else
-		sOut.nSamples = SAMPLES_PER_FRAME*2;
+		flags->sOut.nSamples = SAMPLES_PER_FRAME*2;
 
-	sOut.bufferSize = 2048;
+	flags->sOut.bufferSize = 2048;
 
-	return  &sOut;			/* How many samples we want in each chunk... */
+	return  &flags->sOut;			/* How many samples we want in each chunk... */
 }
 
 
@@ -214,6 +162,7 @@ CodecInitOut			*codecInit (CodecInitIn *psIn)
 
 unsigned int			codecEncodeChunk
 (
+	encoder_flags_and_data* flags,
 	int						nSamples,
 	short					*pSamples,
 	char					*pDest
@@ -240,7 +189,7 @@ unsigned int			codecEncodeChunk
 		memset ((char *) &pe      , 0, sizeof(pe));
 		memset ((char *) &l3_enc  , 0, sizeof(l3_enc));
 		memset ((char *) &ratio   , 0, sizeof(ratio));
-		memset ((char *) &l3_side , 0, sizeof(l3_side));
+		memset ((char *) &flags->l3_side , 0, sizeof(flags->l3_side));
 		memset ((char *) &scalefac, 0, sizeof(scalefac));
 
 		fFirst = FALSE;
@@ -251,24 +200,24 @@ unsigned int			codecEncodeChunk
 /* rebuffer audio */
 
 #if ORG_BUFFERS
-	rebuffer_audio (buffer, pSamples, nSamples, stereo);
+	rebuffer_audio (flags->buffer, pSamples, nSamples, flags->stereo);
 #else
-	rebuffer_audio (pSamples, buffer, &buffer_idx, nSamples, stereo);
+	rebuffer_audio (pSamples, flags->buffer, &flags->buffer_idx, nSamples, flags->stereo);
 #endif
 
 
 /* psychoacoustic model */
 
 	for (gr = 0;  gr < 2;  gr++)
-		for (ch = 0;  ch < stereo;  ch++)
+		for (ch = 0;  ch < flags->stereo;  ch++)
 			psycho_anal
 			(
 #if ORG_BUFFERS
-				&buffer[ch][gr*576],
-				&sam[ch][0],
+				&flags->buffer[ch][gr*576],
+				&flags->sam[ch][0],
 #else
-		    	buffer[ch],
-		    	(buffer_idx+gr*576) & 2047,
+		    	flags->buffer[ch],
+		    	(flags->buffer_idx+gr*576) & 2047,
 #endif
 				ch,
 				3,
@@ -276,7 +225,7 @@ unsigned int			codecEncodeChunk
 				&ratio.l[gr][ch][0],
 				&ratio.s[gr][ch][0],
 				&pe[gr][ch],
-				&l3_side.gr[gr].ch[ch].tt
+				&flags->l3_side.gr[gr].ch[ch].tt
 			);
 
 
@@ -286,20 +235,20 @@ unsigned int			codecEncodeChunk
 	{
 		int		gr_plus_1 = gr_idx[gr+1];
 
-		for (ch = 0;  ch < stereo;  ch++)
+		for (ch = 0;  ch < flags->stereo;  ch++)
 		{
 			for (j = 0;  j < 18;  j++)
 			{
 				windowFilterSubband
 				(
 #if ORG_BUFFERS
-					&buffer[ch][gr*18*32+32*j],
+					&flags->buffer[ch][gr*18*32+32*j],
 					ch,
 #else
-					buffer[ch],
-					(buffer_idx+768-480+gr*18*32+32*j) & 2047,
+					flags->buffer[ch],
+					(flags->buffer_idx+768-480+gr*18*32+32*j) & 2047,
 #endif
-					l3_sb_sample[ch][gr_plus_1][j]
+					flags->l3_sb_sample[ch][gr_plus_1][j]
 				);
 			}
 		}
@@ -308,41 +257,41 @@ unsigned int			codecEncodeChunk
 
 /* apply mdct to the polyphase outputs */
 
-	mdct_sub (&l3_sb_sample, xr, stereo, &l3_side, 2);
+	mdct_sub (&flags->l3_sb_sample, xr, flags->stereo, &flags->l3_side, 2);
 
 
-	pEncodedOutput = pDest;
-	outputBit = 8;
-	pEncodedOutput[0] = 0;
+	flags->pEncodedOutput = pDest;
+	flags->outputBit = 8;
+	flags->pEncodedOutput[0] = 0;
 
 
-	if (frac_SpF != 0)
+	if (flags->frac_SpF != 0)
 	{
-		if (slot_lag > (frac_SpF-1.0))
+		if (flags->slot_lag > (flags->frac_SpF-1.0))
 		{
-			slot_lag -= frac_SpF;
-			info.padding = 0;
+			flags->slot_lag -= flags->frac_SpF;
+			flags->info.padding = 0;
 		}
 		else
 		{
-			info.padding = 1;
-			slot_lag += (1-frac_SpF);
+			flags->info.padding = 1;
+			flags->slot_lag += (1-flags->frac_SpF);
 		}
 	}
 
-	bitsPerFrame = 8 * whole_SpF + (info.padding * 8);
+	bitsPerFrame = 8 * flags->whole_SpF + (flags->info.padding * 8);
 
 
 /* determine the mean bitrate for main data */
 
 	sideinfo_len = 32;
 
-	if (stereo == 1)
+	if (flags->stereo == 1)
 		sideinfo_len += 136;
 	else
 		sideinfo_len += 256;
 
-	if (info.error_protection)
+	if (flags->info.error_protection)
 		sideinfo_len += 16;
 
 	mean_bits = (bitsPerFrame - sideinfo_len) / 2;
@@ -355,13 +304,13 @@ unsigned int			codecEncodeChunk
 		pe,
 		xr,
 		&ratio,
-		&l3_side,
+		&flags->l3_side,
 		l3_enc,
 		mean_bits,
-		stereo,
+		flags->stereo,
 		xr_dec,
 		&scalefac,
-		&fr_ps,
+		&flags->fr_ps,
 		0,
 		bitsPerFrame
 	);
@@ -372,9 +321,9 @@ unsigned int			codecEncodeChunk
 	III_format_bitstream
 	(
 		bitsPerFrame,
-		&fr_ps,
+		&flags->fr_ps,
 		l3_enc,
-		&l3_side,
+		&flags->l3_side,
 		&scalefac,
 		xr,
 		NULL,
@@ -382,7 +331,7 @@ unsigned int			codecEncodeChunk
 	);
 
 
-	return  pEncodedOutput - pDest;
+	return  flags->pEncodedOutput - pDest;
 }
 
 
@@ -391,17 +340,17 @@ unsigned int			codecEncodeChunk
 
 /*____ codecExit() ____________________________________________________________*/
 
-unsigned int			codecExit (char *pDest)
+unsigned int			codecExit (encoder_flags_and_data* flags, char *pDest)
 {
-	pEncodedOutput = pDest;
-	outputBit = 8;
-	pEncodedOutput[0] = 0;
+	flags->pEncodedOutput = pDest;
+	flags->outputBit = 8;
+	flags->pEncodedOutput[0] = 0;
 
 	psycho_anal_exit ();
 	exitFormatBitstream ();
 	III_FlushBitstream ();
 
-	return pEncodedOutput - pDest;
+	return flags->pEncodedOutput - pDest;
 }
 
 
@@ -410,22 +359,22 @@ unsigned int			codecExit (char *pDest)
 
 /*____ codecFlush() _________________________________________________________*/
 
-unsigned int			codecFlush (char *pDest)
+unsigned int			codecFlush (encoder_flags_and_data* flags, char *pDest)
 {
-	pEncodedOutput = pDest;
-	outputBit = 8;
-	pEncodedOutput[0] = 0;
+	flags->pEncodedOutput = pDest;
+	flags->outputBit = 8;
+	flags->pEncodedOutput[0] = 0;
 
 	flushFrame ();
 
-	whole_SpF = (int) avg_slots_per_frame;
-	frac_SpF  = avg_slots_per_frame - (double) whole_SpF;
-	slot_lag  = -frac_SpF;
+	flags->whole_SpF = (int) flags->avg_slots_per_frame;
+	flags->frac_SpF  = flags->avg_slots_per_frame - (double) flags->whole_SpF;
+	flags->slot_lag  = -flags->frac_SpF;
 
-	l3_side.main_data_begin = 0;
+	flags->l3_side.main_data_begin = 0;
 	fixStatic_reservoir ();
 
-	return pEncodedOutput - pDest;
+	return flags->pEncodedOutput - pDest;
 }
 
 
