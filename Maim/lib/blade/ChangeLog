@@ -1,0 +1,394 @@
+Latest changes to the source
+============================
+
+2001-03-07     Put 0.94.0-stable online:
+               - Bugfix: STDOUT didn't work correct if compiled with Borland
+                 under Windows and a few minor cleanups. (Stephen from 
+                 Minnesota).
+               - Fixed a Windows compile bug (reported by Chris Rempel).
+               - Added RPM Specfile to the source distribution. Contributed
+                 by Jean Robertson.
+               - No longer forces system priority to NORMAL on UNIX and
+                 Amiga WarpOS sytems when no -PRIO switch is specified.
+                 Windows & OS/2 systems still defaults to lowest though.
+               - Added extra makefiles and project files for various systems
+                 in a makefiles_other directory.
+               - Minor compiler & system compatibility improvements contributed
+                 by Brad and Jeff Squyres.
+               - Replaced the huffman table generation code and built in 
+                 huffman ascii script with a pregenerated table. Result is
+                 an approximately 40 kb smaller executable, removal of
+                 huffman.c and the NO_ZERO_CALLOC define. This also fixed
+                 the missing deallocation at exit of some memory areas.
+               - Updated Amiga Warp/OS makefiles, fixed some Amiga Warp/OS 
+                 related compile problems and made Amiga Warp/OS systems
+                 autodetect through a SYSTEM define in the makefiles
+                 (Andrea Vallinotto).
+               - Fixed compilation issues on Tru64 (reported by Trevor Taylor).
+
+
+2001-01-20     Fixed a compile error on Windows platforms and put 
+               0.93.10-unstable-2 online.
+
+2001-01-19     Put 0.93.10-unstable online:
+               - Quality and speed improvements by Andre, including fixes
+                 for the reported quality loss in 0.93.7. Give this some
+                 heavy testing lads! ;)
+               - Fixed a serious bug that screwed up all mp3 files except the
+                 first in a batch. Normally turned them into silence, but could
+                 produce some static noise too.
+               - Added -concat switch for generating one mp3 file from multiple
+                 sources (Tord & Andre).
+               - Autoconf system rewritten to be cleaner, faster and work
+                 better (Tord with some help by Jeff Squyres).
+               - Added Amiga Warp/OS patch by Andrea Vallinotto.
+               - Code cleanup by Andre, removing a lot of compiler warnings etc.
+               - Numerous small changes in system.h, making it autodetect more
+                 systems, support more compilers (for example Borland C with
+                 family) etc.
+               - Fixed -nogap. Now we can encode without gaps again :)
+               - Changed progress indicator to only update once every second
+                 and removed -refresh=[] switch (still recognized, but
+                 doesn't do anything).
+               - Added OS/2 specific updates from Ruediger Ihle.
+               - Added the manual to the source distribution.
+               - Config file can now take parameters with spaces by enclosing
+                 them in quotation marks.
+
+2000-06-15		Fixed a really braindead little thing that could cause
+                compile problems with some compilers and released as
+                0.93.7-2-unstable. :(
+
+2000-06-15      Put 0.93.7-unstable online:
+                - Added in some bugfixes done by Andre, fixing two bugs that
+                  could cause hangs on certain systems and probably also
+                  quality degradation.
+                - Updated the AUTHORS file, hopefully it includes all
+                  contributors now.
+                - Added Autodetection for MS-DOS with DJGPP. Contributed by
+                  Jeffrey Hawk.
+                - Added stuff to configure.in with some advice from Jeff
+                  Squyres and changed system.h. All UNIX systems should now
+                  be correctly autodetected without any need to change the
+                  SYSTEM-define. Updated INSTALL text to reflect this.
+
+2000-06-13      Put 0.93.6-unstable online:
+                - Added -sort switch for sorting jobs on input filename. Useful
+                  if you ever want to do "bladeenc -nogap *" since it's crucial
+                  for the tracks to come in the right order when using -nogap.
+                - Fixed lying progress indicator when using -mono and took
+                  the opportunity to make some changes in samplein's interface.
+                - Replaced inline functions with macros to get rid of
+                  compatibility problems and keeping it fast on all platforms.
+                - Fixed some strange warnings and compile errors. Thanks to
+                  Jeff Squyres for helping me find them.
+                - Changed default progressbar refresh rate from 2 to 4 to
+                  decrease overhead. I'll implement a better solution later.
+
+2000-06-12      Put 0.93.5-unstable online:
+                - Added in Andrés latest changes, covering most of the things
+                  of the encoding process, improving quality, readability and
+                  speed. Quality degrading bug in 0.93.4 has been found and
+                  removed. Thanks for all improvements André!
+                - Added define IBM_AIX, contributed by Mauro Manfrin.
+                - First attempt to autodetect system so we don't have to set
+                  the SYSTEM define manually. Currently it autodetects Windows
+                  (probably conflicts with NT on Alpha based systems), Linux
+                  (all architectures should work) and BeOS (i386 and PPC).
+                - Included -nogap switch for gapless encoding of tracks that
+                  blends into each other. Be sure to read about it before using
+                  since there are a few things to think of.
+                - -quiet now works ok again (doesn't print one line at the end
+                  of encoding). Thanks to Rob Ekl for telling me about it.
+
+
+2000-03-14      Put 0.93.4-unstable online:
+
+                I have hardly had any time for BladeEnc coding recently, so
+                André Piotrowski has kind of taken over the development
+                branch for a while (just the coding, I'm still dealing with
+                the rest of the stuff like answering e-mails etc).
+                He has done an extraordinary work, resulting in:
+                - A lot of quality affecting bugs have been fixed, resulting
+                  in a better overall quality. Most notably have most of the
+                  hi-frequency "quirks" disappeared.
+                - bladtab.c finally being zapped! This resulted in a slight
+                  decrease in encoding speed, but made the executable (and
+                  source package) much smaller and shall have fixed the
+                  problem with getting BladeEnc to work on certain odd
+                  architectures. Please tell me if it still doesn't compile
+                  on your system.
+                - More clean and structured code with more comments, making it
+                  easier to learn and understand.
+
+                I would like to release this as stable now, but since we have
+                made quality affecting changes I would like this version to
+                get at least some more testing before everyone uses it. Most
+                likely it only improves quality, but if you find it to
+                generate lower quality under some circumstances, please
+                inform us.
+
+                If you wonder where 0.93.0-0.93.3 went... Well, Andre sent me
+                all of those, but I was to busy/tired to do some tests and
+                modifications to put them online, or we found new bugs that
+                were fixed quickly.
+
+
+2000-02-22      Released 0.92.0-stable:
+                - Merged together my small changes with Andrés whopping
+                  optimisations and restructuring of major components of the
+                  encoding process, resulting in a 34% speed increase on my
+                  K6-2 350! Thanks for your contribution man! :)
+                - Fixed two cosmetic bugs having to do with alternate progress
+                  indicator.
+                - Included a much improved subs.c, contributed by André.
+                - Fixed more bugs having to do with alternate progress
+                  indicators, thanks to Jeremy Prior for finding them.
+                - FINALLY fixed the bug that could (and often did) make
+                  BladeEnc crash when producing mono mp3s from stereo input.
+                  Thought I had nailed this one at least twice before... :(
+
+
+1999-12-30      Released 0.91-stable due to a serious mono encoding bug and
+                found that part of the code to contain some minor, undiscovered
+                bugs as well:
+                - Fixed the bug in 0.88 - 0.90 that made mono mp3's sound like
+                  shit (reported by many people).
+                - Found and fixed a bug that could give you wrong default
+                  bitrate if you combined mono and stereo samples in the same
+                  batch.
+                - Localy specified bad bitrates could slip through my error
+                  checking. fixed now.
+                - Added stanza in system.h for BeOS x86.
+                - Added support for the configuration file to BeOS systems.
+
+                There also seems to be some trouble to build a working copy of
+                BladeEnc on some certain architectures due to a design misstake
+                in one of the optimizations that were made between 0.82 and
+                0.88. The problem is that we took for granted that floating
+                point values were made up in a special way (size and position
+                of sign, integer and mantissa parts).
+
+
+1999-12-08      Released 0.90-stable:
+                - Finally fixed the Windows crash bug, turned out to be my
+                  fault anyway. Sorry for blaming the UPX developers. :(
+
+1999-12-07      Released 0.89-stable:
+                - Fixed the broken -rawbyteorder=[] switch. Thanks to
+                  Frans E. van Dorsselaer for reporting that bug.
+                - The Windows and Linux executables of 0.88 were compressed
+                  using UPX. As a result the Windows version crashed instantly
+                  on some machines, so I'll skip UPX from now on (at least
+                  until they've found that bug).
+
+1999-12-05      Release of 0.88! First stable release for a while. :)
+                Changes done since 0.87.4-unstable:
+                - Typecasted tablecontents in bladtab.c in order to produce
+                  less compiler warnings in Visual C++ 6.0.
+                - Petteri Kamppuri corrected a bug that caused trouble if the
+                  input file didn't have a suffix, but a folder in the path
+                  did.
+                - Changed homepage to bladeenc.mp3.no.
+
+                Support for the config file under BeOS has still not been
+                included and source is unlikely to compile correctly under
+                OS/2, but I didn't want to wait anymore.
+
+1999-11-23      Put 0.87.4-unstable online:
+                - Long filenames finally working correctly in Windows. Thanks
+                  to Robert Schlabbach for getting me on the right track.
+                - Petteri Kamppuri provided and requested some new changes that
+                  were needed for his MAC OS port.
+                - Paul Martin discovered that I had screwed up the
+                  implementation of the  -progress=[] switch and fixed it.
+                - Vitor Sessak and Robert Schlabbach provided some minor fixes.
+                - Paul Martin found that mono samples were not encoded
+                  correctly, fixed by Tord.
+                - Paul Cantrell added defines for BeOS PowerPC.
+
+                I was thinking back and forth about releasing this version as
+                0.88-stable, but I dedided to put this up first to give the
+                people doing the non-windows/non-unix ports some time to add
+                support for the config-file. I'm especially missing some code
+                for the OS/2, BeOS and Amiga ports. Windows, UNIX and Mac OS
+                code is allready in place.
+
+
+1999-11-15      Put 0.87.3-unstable online:
+                - The GCC compilation bug is finally fixed! Or maybe I should
+                  say patched since it seems to be GCC's fault. Anyway, many
+                  thanks to Marco Amrein for comming with the idea on how to
+                  find and patch the bug. Another sollution to the problem was
+                  provided by Vitor Sessak, but Marco's approach was more clean
+                  and straight forward.
+                - Merged in some minor changes provided by Petteri Kamppuri and
+                  Paul Martin.
+
+                Just the windows long filename bug to solve before I can
+                release 0.88-stable.
+
+
+1999-11-14      Made some changes that I put online as 0.87.2-unstable:
+                - Fixed some compilation problems reported by Troy Engel and
+                  Robert Schlabbach. Should compile nicely without any warnings
+                  on most systems now.
+                - Merged in some patches from Petteri Kamppuri which were
+                  needed for his upcomming MAC OS port of BladeEnc.
+                - Added a PAUSE_25_LINES define for Windows and OS/2 to pause
+                  the info-output after 25 lines.
+                - Added a switch (-progress=[0-8]) for changing the look of the
+                  progress indicator.
+                - Progress indicator automatically switches to number 7 if we
+                  have a RAW file in the batch since BladeEnc doesn't know the
+                  filelength of RAW files (doesn't have a header and I don't
+                  want to check the filesize because that won't work on stdin,
+                  fifos(?) and files still being written).
+
+                I have two very odd bugs that I would be happy if someone could
+                help me with. One is related to Windows and the other is
+                related to GCC (and possibly EGCS). More info can be found in
+                TODO in the tar.gz archive. Unless something else pops up those
+                are the only changes that needs to be done before 0.88-stable.
+
+
+1999-11-11      Put 0.87-unstable online:
+                - Went back to 0.83 since I couldn't fix the sound degradation
+                  in 0.84 and 0.85. Generates now the same quality as 0.82 and
+                  is just about 8% faster. :(
+                - Merged in all the changes from 0.84 and 0.85 except the heavy
+                  optimisations from Matthias Wächter which somehow caused the
+                  quality degradation.
+                - CONFIGURE, MAKE and MAKE INSTALL scripts for UNIX-systems
+                  thanks to KDevelop, which now is my main working environment.
+                  Only optimisation level 1 on all files though, since I can't
+                  set it individually in KDevelop and anything higher generates a
+                  mutated version of codec.c. when using egcs :(
+
+                The following changes were made for 0.86 which was never
+                released due to the quality bug, but they should all be
+                correctly included in 0.87 as well.
+
+                - Found and fixed a bug that often degraded the quality of the
+                  last frame in an mp3 and could cause the DLL to crash under
+                  certain circumstances.
+                - Changed tabsize from 2 to 4 since that's more standard and
+                  reindented the code using a program called Artistic Style.
+                - A lot of code clean-up and restructuring, but there's still
+                  loads to do. :(
+                - Changed the way commandlines are handled internally to make
+                  it easier and cleaner to add support for configuration files
+                  and filelists.
+                - Added suport for configuration-files on Windows and UNIX
+                  systems (bladeenc.cfg in same directory as bladeenc.exe on
+                  Windows systems and .bladeencrc in the home directory on
+                  UNIX systems). The contents in the cfg file is placed first
+                  on the commandline. Everything after a '#' is skipped.
+                - Added support for priority settings on UNIX-systems. Default
+                  is NORMAL (not LOWEST as on Windows) priority and you can also
+                  use values -20 > 20.
+                - Added a "-nocfg" switch for skipping any settings in the
+                  configuration file.
+                - Addded support for RAW PCM input, including a number of
+                  switches for stating the frequency, number of channels etc of
+                  a RAW sample.
+                - Added defines for HP/UX, submitted by Petter Reinholdtsen.
+                - Replaced all longs with ints since long is 64-bits on Alpha.
+                  Thanks to Ben Slusky, Sadruddin Rejeb and the rest of you who
+                  told me about this.
+                - Added defines for Linux Alpha, provided by Ben Slusky.
+                - Added defines for MS-DOS, provided by Matt Craven.
+                - Added code in main.c that will make it possible to change
+                  the look of the progress indicator as soon as I have added
+                  a commandline switch for it.				
+
+1999-08-07      Ok, back from the vacation I put 085-unstable online.
+                Improvements since 0.84-unstable:
+                - Matthias Wächter found a quality degrading bug in his
+                  optimisations for 0.84 and fixed it. He has also cleaned up
+                  and optimized l3psy.c and subs.c a bit further, which should
+                  do a few more percent.
+                - Brad submitted a patch to make it compile nicely on OpenBSD.
+                - Serg 'Ice' Tsyganenko found a bug in the code for reading the
+                  commandline, which under certain circumstances could confuse
+                  BladeEnc if one or more of the samples had ".mp3" in their body
+                  or specified path.
+
+                I have some more patches to merge, but I'm going to England for
+                a long business trip now (possibly two months), so they will have
+                to wait until I come back... :(
+
+1999-07-30      Put 084-unstable online. Improvements since 0.83-unstable:
+                - Received and added some really heavy optimisations made by
+                  Matthias Wächter, resulting in a 28% speed increase on my
+                  machine! 8-) These optimisations have however broken the
+                  binary identicality with older versions (slight changes in
+                  precision (to the better) for a few routines early in the
+                  process) and I can therefore not guarantee that no quality
+                  affecting bug has slipped through. The quick investigations
+                  I've made of the code and output suggests that nothing bad
+                  has occured, but I would appreciate if some of you took the
+                  time to test it more closely (frequency analysis and listening
+                  tests mostly).
+                - Fixed broken last frame in MP3-file using a sollution I know
+                  isn't the right one, but as far as I can see it should do the
+                  trick without any side effects. Thanks to Robert Schlabbach
+                  for bringing it to my attention over and over again... ;-)
+                - Fixed what seemed to be a quality affecting bug, but later
+                  turned out to be harmless due to lucky circumstances. Thanks
+                  to Chris DeLise for discovering it.
+                - Added defines for Linux PPC provided by Rich West.
+                - Added patches for Ultrix & NetBSD provided by Simon Burge.
+                - Made some minor optimisations, giving somewhere above 1%.
+
+                Still have some of Roger Fujii's minor optimisations to include,
+                but now I'm going on a short vacation (my first summer vacation
+                in 3 years, hurray!) :-)
+
+
+1999-07-23      Put the latest version online as 083-unstable. Improvements since
+                0.82:
+                - Added a "-refresh"-switch to set the update rate of the progress
+                  indicator (in order to save CPU-time) and set the default
+                  refresh rate to 2 (half the previous one). This gave a speed
+                  increase of slightly more than 1% on my machine.
+                - Added a define in SYSTEM.H called PRECISE_TIMER. This is a quite
+                  dirty hack by me to allow for more precise calculation of encoding
+                  time and is only meant as a tool when optimizing BladeEnc. It
+                  calculates and prints out encoding time with higher precision,
+                  but slows down the encoding process with about 2 seconds for
+                  each file. It's not extremely trustworthy either, but enough
+                  for my needs.
+                - Started to merge in some optimizations provided by Roger Fujii,
+                  most notably a very clever replacement of the bladTabValue()
+                  function in loop.c which gave a speed increase of about 7% on
+                  my K6-2 350. Unfortunatelly this also makes a notably bigger
+                  executable since bladetab.c was changed and fleshed out.
+                  I still have some of his optimizations left to merge in,
+                  but they won't do more than about 2% together.
+                - Probably one or two other minor changes which I've forgotten...
+
+1999-07-23      Fixed a minor thing having to do with compilation on some
+                machines. Put online as bladeenc-082-src-stable-2.tar.gz
+
+1999-07-22      Fixed the embarassing skipping header bug in 0.80/0.81 by
+                including a FIFO for the headers (by ISO called sideinfo) in
+                formatbitstream2.h. Also got a few patches fixing minor bugs
+                and compilation problems (WIN32_ALPHA and SCO OpenServer).
+                Regarded this as stable and released it right away. I intend to
+                concentrate on including the speedups I've been sent and release
+                a new, hopefully much faster, version when that has been done.
+                There will probably be an unstable branch of this since it includes
+                changes to the FFT calculations that I want to be throughly tested
+                for possible quality degradation before I release it to the masses.
+
+1999-06-30      Loads of bugs in 0.80 fixed thanks to you guys out there.
+                Released 0.81 as a bugfix release, so that is now the latest
+                stable version. Also added a makefile, not exactly as good as
+                a fully working Configure/Make/Make Install system, but I
+                haven't gotten any of those some of you sent me working yet.
+                I guess I just have to learn a little bit more about it first,
+                until then you'll have to do with this simple,
+                platform-dependent makefile.
+
+1999-06-28      Version 0.80 stable released.

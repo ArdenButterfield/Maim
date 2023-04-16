@@ -1,0 +1,476 @@
+Storm Shell Project (0018)
+Settings (Start)
+C/C++ Environment
+"StormC:include"
+0
+Includepath (End)
+0 "" 80
+1 "objects"
+1 0 "makelog.txt"
+""
+0
+0 0
+0
+0 0
+C/C++ Preprozessor
+0 "NDEBUG" ""
+0
+Defines (End)
+1 1 1
+0 0
+C/C++ Options
+0 0 0 2 1 0 0 0 1 0 0 5 1 3 0
+0 0 0
+0
+0 1 0
+C/C++ Optimizer
+9
+C/C++ Warnings
+1 1 1 1 1 1 0 1
+0 0
+GCC Options (1)
+0 "NDEBUG" ""
+0
+1 "__GCC__" ""
+0
+1 "SYSTEM" "AMIGA_WOS"
+0
+Defines (End)
+1 0 0 1 0
+0 0 0 0 0 1 0
+0 0 0 0 0
+0 0 0 0 1 0 0
+9 1 1 5
+0 ""
+3 1 1 0
+1 0 0 1 0 1 0 1 0 1
+1 1 0 1 0 1
+0 1 1 1 1 0 0
+0 0 0 0 0
+Assembler
+0 ""
+0 "CON://640/200/Storm Assembler/AUTO/WAIT/SCREEN StormScreen"
+0 0
+0 1 60 0 1 0 0 20 0
+Sets (End)
+0 1 0 0 0 2 1 0 0
+1 1 1 1 0 0 0 0 0
+1 0
+0 0 0 0 0
+Linker
+0 0 "PROGDIR:startup.o" 0 0 1 0 1 0 0
+"StormC:lib/" 0 "StormC:lib/logfile" 0 1 1
+0 "_WizardSurface"
+0 0 50 0 50 0 50 0 0
+0 0 0 0 0 0 0 0
+Run
+30 "" "" "" 0
+""
+-192 -quiet nbig:temp/halflifetrack10
+1 "CON://400/180/Storm Console/AUTO/WAIT/SCREEN StormScreen" "RAM:Output" "RAM:Input"
+1 0
+0 0 0 "" ""
+Settings (End)
+Storm Shell Project (Custom Sections End)
+Section
+1 1 100
+0 1 1 0
+3
+File
+1 "arglink.c"
+"arglink.c"
+"arglink.h"
+"system.h"
+Storm Shell Project (Dependencies)
+"objects/arglink.o" "objects/arglink.debug"
+""
+1 1
+File
+1 "bladesys.c"
+"bladesys.c"
+"system.h"
+"codec.h"
+"samplein.h"
+"arglink.h"
+"bladesys.h"
+Storm Shell Project (Dependencies)
+"objects/bladesys.o" "objects/bladesys.debug"
+""
+1 1
+File
+1 "codec.c"
+"codec.c"
+"common.h"
+"tables.h"
+"l3side.h"
+"encoder.h"
+"l3psy.h"
+"mdct.h"
+"loop.h"
+"l3bitstream.h"
+"formatbitstream2.h"
+"codec.h"
+"reservoir.h"
+Storm Shell Project (Dependencies)
+"objects/codec.o" "objects/codec.debug"
+""
+1 1
+File
+1 "common.c"
+"common.c"
+"common.h"
+"tables.h"
+"l3side.h"
+Storm Shell Project (Dependencies)
+"objects/common.o" "objects/common.debug"
+""
+1 1
+File
+1 "encode.c"
+"encode.c"
+"common.h"
+"tables.h"
+"l3side.h"
+"encoder.h"
+Storm Shell Project (Dependencies)
+"objects/encode.o" "objects/encode.debug"
+""
+1 1
+File
+1 "fix_name.c"
+"fix_name.c"
+Storm Shell Project (Dependencies)
+"objects/fix_name.o" "objects/fix_name.debug"
+""
+1 1
+File
+1 "formatbitstream2.c"
+"formatbitstream2.c"
+"formatbitstream2.h"
+"common.h"
+"tables.h"
+"l3side.h"
+Storm Shell Project (Dependencies)
+"objects/formatbitstream2.o" "objects/formatbitstream2.debug"
+""
+1 1
+File
+1 "l3bitstream.c"
+"l3bitstream.c"
+"system.h"
+"l3bitstream.h"
+"common.h"
+"tables.h"
+"l3side.h"
+"encoder.h"
+"l3psy.h"
+"loop.h"
+"formatbitstream2.h"
+"huffman.h"
+"l3bitstream-pvt.h"
+Storm Shell Project (Dependencies)
+"objects/l3bitstream.o" "objects/l3bitstream.debug"
+""
+1 1
+File
+1 "l3psy.c"
+"l3psy.c"
+"common.h"
+"tables.h"
+"l3side.h"
+"encoder.h"
+"l3psy.h"
+Storm Shell Project (Dependencies)
+"objects/l3psy.o" "objects/l3psy.debug"
+""
+1 1
+File
+1 "loop.c"
+"loop.c"
+"system.h"
+"l3side.h"
+"loop.h"
+"common.h"
+"tables.h"
+"huffman.h"
+"l3bitstream.h"
+"encoder.h"
+"reservoir.h"
+"loop-pvt.h"
+"l3psy.h"
+Storm Shell Project (Dependencies)
+"objects/loop.o" "objects/loop.debug"
+""
+1 1
+File
+1 "main.c"
+"main.c"
+"system.h"
+"codec.h"
+"samplein.h"
+"arglink.h"
+"bladesys.h"
+"common.h"
+"tables.h"
+"l3side.h"
+Storm Shell Project (Dependencies)
+"objects/main.o" "objects/main.debug"
+""
+1 1
+File
+1 "mdct.c"
+"mdct.c"
+"common.h"
+"tables.h"
+"l3side.h"
+"l3psy.h"
+"mdct.h"
+"encoder.h"
+Storm Shell Project (Dependencies)
+"objects/mdct.o" "objects/mdct.debug"
+""
+1 1
+File
+1 "natio.c"
+"natio.c"
+"bladesys.h"
+"natio.h"
+"fix_name.h"
+Storm Shell Project (Dependencies)
+"objects/natio.o" "objects/natio.debug"
+""
+1 1
+File
+1 "reservoir.c"
+"reservoir.c"
+"l3side.h"
+"loop.h"
+"common.h"
+"tables.h"
+"huffman.h"
+"l3bitstream.h"
+"encoder.h"
+"reservoir.h"
+Storm Shell Project (Dependencies)
+"objects/reservoir.o" "objects/reservoir.debug"
+""
+1 1
+File
+1 "samplein.c"
+"samplein.c"
+"system.h"
+"samplein.h"
+Storm Shell Project (Dependencies)
+"objects/samplein.o" "objects/samplein.debug"
+""
+1 1
+File
+1 "strupr.c"
+"strupr.c"
+"arglink.h"
+Storm Shell Project (Dependencies)
+"objects/strupr.o" "objects/strupr.debug"
+""
+1 1
+File
+1 "subs.c"
+"subs.c"
+"common.h"
+"tables.h"
+"l3side.h"
+"encoder.h"
+"l3psy.h"
+Storm Shell Project (Dependencies)
+"objects/subs.o" "objects/subs.debug"
+""
+1 1
+File
+1 "tables.c"
+"tables.c"
+"tables.h"
+"huffman.h"
+Storm Shell Project (Dependencies)
+"objects/tables.o" "objects/tables.debug"
+""
+1 1
+Section
+2 1 95
+0 1 1 0
+2
+File
+2 "arglink.h"
+"arglink.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "bladesys.h"
+"bladesys.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "codec.h"
+"codec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "common.h"
+"common.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "encoder.h"
+"encoder.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "fix_name.h"
+"fix_name.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "formatbitstream2.h"
+"formatbitstream2.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "huffman.h"
+"huffman.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "l3bitstream-pvt.h"
+"l3bitstream-pvt.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "l3bitstream.h"
+"l3bitstream.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "l3psy.h"
+"l3psy.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "l3side.h"
+"l3side.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "loop-pvt.h"
+"loop-pvt.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "loop.h"
+"loop.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "mdct.h"
+"mdct.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "natio.h"
+"natio.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "reservoir.h"
+"reservoir.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "samplein.h"
+"samplein.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "system.h"
+"system.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "tables.h"
+"tables.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+10 1 40
+0 0 0 0
+4
+File
+10 "BladeEnc"
+"BladeEnc"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+5 1 -50
+0 0 0 0
+7
+File
+5 "vlibwos:ppcmath.lib"
+"vlibwos:ppcmath.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "amiga603.lib"
+"amiga603.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "stormgcc603.lib"
+"stormgcc603.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Storm Shell Project (End)

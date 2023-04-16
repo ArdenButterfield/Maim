@@ -1,0 +1,27 @@
+#
+# Makefile for bladeenc written by William Thompson <wakko@animx.eu.org>
+# from compile script distributed with bladeenc.
+# Modified a number of times by Tord Jansson <tord.jansson@swipnet.se>
+
+# >>> Compiler options for PGCC/EMX (OS/2) on i586 <<<
+CFLAGS = -Wall -O6 -mcpu=i586 -malign-double -funroll-loops -ffast-math
+
+CC = gcc -Zomf -DSYSTEM=IBM_OS2
+LK = gcc -Zomf -Zsys -Zmap -Zlinker /pm:vio/e:2/m:full
+
+
+OBJS =	codec.obj bladesys.obj common.obj encode.obj \
+	formatbitstream2.obj l3bitstream.obj l3psy.obj \
+	loop.obj main.obj mdct.obj reservoir.obj samplein.obj strupr.obj \
+	tables.obj arglink.obj
+
+bladeenc.exe: $(OBJS)
+	$(LK) -o $@ $^ $(LIBS)
+
+%.obj: %.c
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+codec.obj: codec.c
+	$(CC) -Wall -O1 -mcpu=i586 -malign-double -funroll-loops -ffast-math -c -o $@ $^
+
+
