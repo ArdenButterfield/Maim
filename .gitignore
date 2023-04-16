@@ -45,3 +45,6 @@ Maim/lib/lame/frontend/lame
 
 # misc
 **/.DS_Store
+**/*.asd
+**/bladeenc
+**/*.dSYM
