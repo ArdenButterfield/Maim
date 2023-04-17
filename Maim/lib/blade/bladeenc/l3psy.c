@@ -64,6 +64,7 @@
 /* the second index is the "age" of the data.                             */
 
 
+#if 0
 static	int				new_, old, oldest;
 static	int				flush, sync_flush, syncsize;
 
@@ -114,7 +115,7 @@ static	FLOAT			window_s    [BLKSIZE_s];
 
 static	double			ratio       [2][SBMAX_l];
 static	double			ratio_s     [2][SBMAX_s][3];
-
+#endif
 
 
 
@@ -141,7 +142,7 @@ void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 
 	/* reset the r, phi_sav "ring buffer" indices */
 
-	old = 1 - (new_ = oldest = 0);
+	flags->old = 1 - (flags->new_ = flags->oldest = 0);
 
 
 	/* clear the ratio arrays */
@@ -149,11 +150,11 @@ void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 	for (ch = 0;  ch < 2;  ch++)
 	{
 		for (sfb = 0;  sfb < SBMAX_l;  sfb++)
-			ratio[ch][sfb] = 0.0;
+			flags->ratio[ch][sfb] = 0.0;
 
 		for (sfb = 0;  sfb < SBMAX_s;  sfb++)
 			for (b = 0;  b < 3;  b++)
-				ratio_s[ch][sfb][b] = 0.0;
+				flags->ratio_s[ch][sfb][b] = 0.0;
 	}
 
 
@@ -163,8 +164,8 @@ void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 	{
 		for (i = 0;  i < CBANDS;  i++)
 		{
-			nb_1[ch][i] = 0;
-			nb_2[ch][i] = 0;
+			flags->nb_1[ch][i] = 0;
+			flags->nb_2[ch][i] = 0;
 		}
 	}
 
@@ -172,27 +173,27 @@ void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 	/* clear blocktype information */
 
 	for (ch = 0;  ch < 2;  ch++)
-		blocktype_old[ch] = NORM_TYPE;
+		flags->blocktype_old[ch] = NORM_TYPE;
 
 
-	sync_flush =  768;
-	flush      =  576;
-	syncsize   = 1344;   /* sync_flush + flush */
+	flags->sync_flush =  768;
+	flags->flush      =  576;
+	flags->syncsize   = 1344;   /* sync_flush + flush */
 
 
 #if RING_BUFFER==1
 	for (ch = 0;  ch < 2;  ch++)
-		savebuf_start_idx[ch] = 0;
+		flags->savebuf_start_idx[ch] = 0;
 #endif
 
 
 	/* calculate HANN window coefficients */
 
     for (i = 0;  i < BLKSIZE;  i++)
-		window[i] = (FLOAT) (0.5 * (1 - cos (2.0 * PI * (i - 0.5) / BLKSIZE)));
+		flags->window[i] = (FLOAT) (0.5 * (1 - cos (2.0 * PI * (i - 0.5) / BLKSIZE)));
 
     for (i = 0;  i < BLKSIZE_s;  i++)
-		window_s[i] = (FLOAT) (0.5 * (1 - cos (2.0 * PI * (i - 0.5) / BLKSIZE_s)));
+		flags->window_s[i] = (FLOAT) (0.5 * (1 - cos (2.0 * PI * (i - 0.5) / BLKSIZE_s)));
 
 
 	/* reset states used in unpredictability measure */
@@ -203,8 +204,8 @@ void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 		{
 			for (j = 0;  j < 6;  j++)
 			{
-				      r[ch][i][j] = 0.0;
-				phi_sav[ch][i][j] = 0.0;
+				      flags->r[ch][i][j] = 0.0;
+				flags->phi_sav[ch][i][j] = 0.0;
 			}
 		}
 	}
@@ -216,7 +217,7 @@ void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 	/* Set unpredicatiblility of remaining spectral lines to 0.4 */
 
 	for (j = 206;  j < HBLKSIZE;  j++)
-		cw[j] = 0.4;
+		flags->cw[j] = 0.4;
 }
 
 /*____ psycho_anal_exit() ___________________________________________________*/
@@ -283,15 +284,15 @@ void					psycho_anal
 
 	
 	for (sfb = 0;  sfb < SBMAX_l;  sfb++)
-		ratio_d[sfb] = ratio[ch][sfb];
+		ratio_d[sfb] = flags->ratio[ch][sfb];
 
 	for (sfb = 0;  sfb < SBMAX_s;  sfb++)
 		for (b = 0;  b < 3;  b++)
-			ratio_ds[sfb][b] = ratio_s[ch][sfb][b];
+			ratio_ds[sfb][b] = flags->ratio_s[ch][sfb][b];
 	
 
 	if (ch == 0)
-		old = 1 - (new_ = oldest = old);
+		flags->old = 1 - (flags->new_ = flags->oldest = flags->old);
 
 
 #if ORG_BUFFERS
@@ -300,16 +301,16 @@ void					psycho_anal
 	**********************************************************************/
 
 #	if RING_BUFFER==0
-		for (j = 0;  j < sync_flush;  j++)   /* for long window samples */
-			savebuf[j] = savebuf[j+flush];
+		for (j = 0;  j < flags->sync_flush;  j++)   /* for long window samples */
+			savebuf[j] = savebuf[j+flags->flush];
 
-		for (j = sync_flush;  j < syncsize;  j++)
+		for (j = flags->sync_flush;  j < flags->syncsize;  j++)
 			savebuf[j] = *buffer++;
 #	else
-		beg = savebuf_start_idx[ch] = (savebuf_start_idx[ch] + flush) & 2047;
+		beg = flags->savebuf_start_idx[ch] = (flags->savebuf_start_idx[ch] + flags->flush) & 2047;
 
-		idx = (beg + sync_flush) & 2047;
-		fin = (idx + flush) & 2047;
+		idx = (beg + flags->sync_flush) & 2047;
+		fin = (idx + flags->flush) & 2047;
 		if (idx >= fin)
 		{
 			while (idx < 2048)
@@ -329,8 +330,8 @@ void					psycho_anal
 #if RING_BUFFER==0
 	for (j = 0, k = 0, idx = 0;  j < BLKSIZE/2;  j++)
 	{
-		wsamp_r[j] = window[k++] * savebuf[idx++];
-		wsamp_i[j] = window[k++] * savebuf[idx++];
+		wsamp_r[j] = flags->window[k++] * savebuf[idx++];
+		wsamp_i[j] = flags->window[k++] * savebuf[idx++];
 	}
 #else
 	j = 0;  k = 0;
@@ -340,16 +341,16 @@ void					psycho_anal
 	{
 		while (idx < 2048)
 		{
-			wsamp_r[j] = window[k++] * savebuf[idx++];
-			wsamp_i[j] = window[k++] * savebuf[idx++];
+			wsamp_r[j] = flags->window[k++] * savebuf[idx++];
+			wsamp_i[j] = flags->window[k++] * savebuf[idx++];
 			j++;
 		}
 		idx = 0;
 	}
 	while (idx < fin)
 	{
-		wsamp_r[j] = window[k++] * savebuf[idx++];
-		wsamp_i[j] = window[k++] * savebuf[idx++];
+		wsamp_r[j] = flags->window[k++] * savebuf[idx++];
+		wsamp_i[j] = flags->window[k++] * savebuf[idx++];
 		j++;
 	}
 #endif
@@ -359,20 +360,20 @@ void					psycho_anal
 	for (j = 0;  j < 6;  j++)
 	{	/* calculate unpredictability measure cw */
 		double r1, phi1;
-		                     r_prime = 2.0 *       r[ch][old][j] -       r[ch][oldest][j];
-		                   phi_prime = 2.0 * phi_sav[ch][old][j] - phi_sav[ch][oldest][j];
-		      r[ch][new_][j] = (FLOAT) (  r1 = sqrt((double) energy[j]));
-		phi_sav[ch][new_][j] = (FLOAT) (phi1 =                  phi[j] );
+		                     r_prime = 2.0 *       flags->r[ch][flags->old][j] -       flags->r[ch][flags->oldest][j];
+		                   phi_prime = 2.0 * flags->phi_sav[ch][flags->old][j] - flags->phi_sav[ch][flags->oldest][j];
+		      flags->r[ch][flags->new_][j] = (FLOAT) (  r1 = sqrt((double) energy[j]));
+		flags->phi_sav[ch][flags->new_][j] = (FLOAT) (phi1 =                  phi[j] );
 
 		temp3 = r1 + fabs(r_prime);
 		if (temp3 != 0.0)
 		{
 			temp1 = r1 * cos(phi1) - r_prime * cos(phi_prime);
 			temp2 = r1 * sin(phi1) - r_prime * sin(phi_prime);
-			cw[j] = sqrt(temp1*temp1 + temp2*temp2) / temp3;
+			flags->cw[j] = sqrt(temp1*temp1 + temp2*temp2) / temp3;
 		}
 		else
-			cw[j] = 0;
+			flags->cw[j] = 0;
 	}
 
 
@@ -385,8 +386,8 @@ void					psycho_anal
 #if RING_BUFFER==0
 		for (j = 0, k = 0, idx = 128*(2 + b);  j < BLKSIZE_s/2;  j++)
 		{	/* window data with HANN window */
-			wsamp_r[j] = window_s[k++] * savebuf[idx++];
-			wsamp_i[j] = window_s[k++] * savebuf[idx++];
+			wsamp_r[j] = flags->window_s[k++] * savebuf[idx++];
+			wsamp_i[j] = flags->window_s[k++] * savebuf[idx++];
 		}
 #else
 		j = 0;  k = 0;
@@ -396,16 +397,16 @@ void					psycho_anal
 		{
 			while (idx < 2048)
 			{
-				wsamp_r[j] = window_s[k++] * savebuf[idx++];
-				wsamp_i[j] = window_s[k++] * savebuf[idx++];
+				wsamp_r[j] = flags->window_s[k++] * savebuf[idx++];
+				wsamp_i[j] = flags->window_s[k++] * savebuf[idx++];
 				j++;
 			}
 			idx = 0;
 		}
 		while (idx < fin)
 		{
-			wsamp_r[j] = window_s[k++] * savebuf[idx++];
-			wsamp_i[j] = window_s[k++] * savebuf[idx++];
+			wsamp_r[j] = flags->window_s[k++] * savebuf[idx++];
+			wsamp_i[j] = flags->window_s[k++] * savebuf[idx++];
 			j++;
 		}
 #endif
@@ -427,12 +428,12 @@ void					psycho_anal
 		{
 			temp1 = r1 * cos(phi1) - r_prime * cos(phi_prime);
 			temp2 = r1 * sin(phi1) - r_prime * sin(phi_prime);
-			cw[j] = sqrt(temp1*temp1 + temp2*temp2) / temp3;
+			flags->cw[j] = sqrt(temp1*temp1 + temp2*temp2) / temp3;
 		}
 		else
-			cw[j] = 0.0;
+			flags->cw[j] = 0.0;
 
-		cw[j+1] = cw[j+2] = cw[j+3] = cw[j];
+		flags->cw[j+1] = flags->cw[j+2] = flags->cw[j+3] = flags->cw[j];
 	}
 
 
@@ -443,7 +444,7 @@ void					psycho_anal
 
 
 	j = 0;
-	for (b = 0;  b < cbmax_l;  b++)
+	for (b = 0;  b < flags->cbmax_l;  b++)
 	{
 		eb[b] = 0.0;
 		cb[b] = 0.0;
@@ -454,20 +455,20 @@ void					psycho_anal
 
 			cbmax_l holds the number of valid numlines_l entries
 		*/
-		k = numlines_l[b];
+		k = flags->numlines_l[b];
 		do {
 			eb[b] += energy[j];
-			cb[b] += cw[j] * energy[j];
+			cb[b] += flags->cw[j] * energy[j];
 		} while (j++, --k);
 	}
 
-	s3_ptr = normed_s3_l;
+	s3_ptr = flags->normed_s3_l;
 
 
 
 	*pe = 0.0;
 	
-	for (b = 0;  b < cbmax_l;  b++)
+	for (b = 0;  b < flags->cbmax_l;  b++)
 	{
 		FLOAT					nb;
 		FLOAT					ecb = 0.0;
@@ -480,7 +481,7 @@ void					psycho_anal
 			convolve the partitioned energy and unpredictability
 			with the spreading function, normed_s3_l[b][k]
 		*/
-		for (k = lo_s3_l[b];  k < hi_s3_l[b];  k++)
+		for (k = flags->lo_s3_l[b];  k < flags->hi_s3_l[b];  k++)
 		{
 			ecb += *s3_ptr   * eb[k];  /* sprdngf for Layer III */
 			ctb += *s3_ptr++ * cb[k];
@@ -503,7 +504,7 @@ void					psycho_anal
 			tbb = 0.0;  /* cbb==0 => -0.299-0.43*cbb<0 => tbb=0*/
 
 		/* TMN=29.0,NMT=6.0 for all calculation partitions */
-		SNR_l = MAX (minval[b], 23.0 * tbb + 6.0);   /* 29*tbb + 6*(1-tbb) */
+		SNR_l = MAX (flags->minval[b], 23.0 * tbb + 6.0);   /* 29*tbb + 6*(1-tbb) */
 	
 		/* calculate the threshold for each partition */
 	    nb = ecb * exp(-SNR_l * LN_TO_LOG10);   /* our ecb is already normed */
@@ -511,9 +512,9 @@ void					psycho_anal
 		/*
 			pre-echo control
 		*/
-		thr[b] = MAX (qthr_l[b], MIN(nb, nb_2[ch][b]));
-		nb_2[ch][b] = MIN(2.0 * nb, 16.0 * nb_1[ch][b]);
-	    nb_1[ch][b] = nb;
+		thr[b] = MAX (flags->qthr_l[b], MIN(nb, flags->nb_2[ch][b]));
+		flags->nb_2[ch][b] = MIN(2.0 * nb, 16.0 * flags->nb_1[ch][b]);
+	    flags->nb_1[ch][b] = nb;
 
 
 		/*
@@ -522,7 +523,7 @@ void					psycho_anal
 			thr[b] -> thr[b]+1.0 : for non sound portition
 		*/
 		if (eb[b] > thr[b])
-			*pe += numlines_l[b] * log((eb[b]+1.0) / (thr[b]+1.0));
+			*pe += flags->numlines_l[b] * log((eb[b]+1.0) / (thr[b]+1.0));
 	}
 	
 
@@ -533,7 +534,7 @@ void					psycho_anal
 	{
 		/* no attack : use long blocks */
 
-		if (blocktype_old[ch] == SHORT_TYPE)
+		if (flags->blocktype_old[ch] == SHORT_TYPE)
 			blocktype = STOP_TYPE;
 		else   /* NORM_TYPE, STOP_TYPE */
 			blocktype = NORM_TYPE;
@@ -543,24 +544,24 @@ void					psycho_anal
 
 		for (sfb = 0;  sfb < SBMAX_l;  sfb++)
 		{
-			int		bu = bu_l[sfb];
-			int		bo = bo_l[sfb];
-			double	en = w1_l[sfb] * eb[bu] + w2_l[sfb] * eb[bo];
+			int		bu = flags->bu_l[sfb];
+			int		bo = flags->bo_l[sfb];
+			double	en = flags->w1_l[sfb] * eb[bu] + flags->w2_l[sfb] * eb[bo];
 
 			for (b = bu+1;  b < bo;  b++)
 				en += eb[b];
 
 			if (en != 0.0)
 			{
-				double	thm = w1_l[sfb] * thr[bu] + w2_l[sfb] * thr[bo];
+				double	thm = flags->w1_l[sfb] * thr[bu] + flags->w2_l[sfb] * thr[bo];
 
 				for (b = bu+1;  b < bo;  b++)
 					thm += thr[b];
 
-				ratio[ch][sfb] = thm / en;
+				flags->ratio[ch][sfb] = thm / en;
 			}
 			else
-				ratio[ch][sfb] = 0.0;
+				flags->ratio[ch][sfb] = 0.0;
 		}
 	}
 	else
@@ -568,15 +569,15 @@ void					psycho_anal
 		/* attack : use short blocks */
 		blocktype = SHORT_TYPE;
 #if ORG_BLOCK_SELECT
-		if (blocktype_old[ch] == NORM_TYPE)
-			blocktype_old[ch] = START_TYPE;
+		if (flags->blocktype_old[ch] == NORM_TYPE)
+			flags->blocktype_old[ch] = START_TYPE;
 		else   /* SHORT_TYPE, STOP_TYPE */
-			blocktype_old[ch] = SHORT_TYPE;
+			flags->blocktype_old[ch] = SHORT_TYPE;
 #else   /* ISO */
-		if (blocktype_old[ch] == SHORT_TYPE)
-			blocktype_old[ch] = SHORT_TYPE;
+		if (flags->blocktype_old[ch] == SHORT_TYPE)
+			flags->blocktype_old[ch] = SHORT_TYPE;
 		else   /* NORM_TYPE, STOP_TYPE */
-			blocktype_old[ch] = START_TYPE;
+			flags->blocktype_old[ch] = START_TYPE;
 #endif
 
 
@@ -586,7 +587,7 @@ void					psycho_anal
 		{
 
 			j = 0;
-			for (b = 0;  b < cbmax_s;  b++)
+			for (b = 0;  b < flags->cbmax_s;  b++)
 			{
 				eb[b] = 0.0;
 
@@ -594,53 +595,53 @@ void					psycho_anal
 					Calculate the energy and the unpredictability in the threshold
 					calculation partitions
 
-					cbmax_s holds the number of valid numlines_s entries
+					cbmax_s holds the number of valid flags->numlines_s entries
 				*/
-				k = numlines_s[b];
+				k = flags->numlines_s[b];
 				do {
 					eb[b] += energy_s[sblock][j];
 				} while (j++, --k);
 			}
 
-			s3_ptr = normed_s3_s;
+			s3_ptr = flags->normed_s3_s;
 
-			for (b = 0;  b < cbmax_s;  b++)
+			for (b = 0;  b < flags->cbmax_s;  b++)
 			{
 				FLOAT					nb;
 				FLOAT					ecb = 0.0;
 
-				for (k = lo_s3_s[b];  k < hi_s3_s[b];  k++)
+				for (k = flags->lo_s3_s[b];  k < flags->hi_s3_s[b];  k++)
 					ecb += *s3_ptr++ * eb[k];
 
-				nb = ecb * exp((double) SNR_s[b] * LN_TO_LOG10);   /* our ecb is already normed */
-				thr[b] = MAX(qthr_s[b], nb);
+				nb = ecb * exp((double) flags->SNR_s[b] * LN_TO_LOG10);   /* our ecb is already normed */
+				thr[b] = MAX(flags->qthr_s[b], nb);
 			}
 
 			for (sfb = 0;  sfb < SBMAX_s;  sfb++)
 			{
-				int		bu = bu_s[sfb];
-				int		bo = bo_s[sfb];
-				double	en = w1_s[sfb] * eb[bu] + w2_s[sfb] * eb[bo];
+				int		bu = flags->bu_s[sfb];
+				int		bo = flags->bo_s[sfb];
+				double	en = flags->w1_s[sfb] * eb[bu] + flags->w2_s[sfb] * eb[bo];
 
 				for (b = bu+1;  b < bo;  b++)
 					en += eb[b];
 				if (en != 0.0)
 				{
-					double	thm = w1_s[sfb] * thr[bu] + w2_s[sfb] * thr[bo];
+					double	thm = flags->w1_s[sfb] * thr[bu] + flags->w2_s[sfb] * thr[bo];
 
 					for (b = bu+1;  b < bo;  b++)
 						thm += thr[b];
 
-					ratio_s[ch][sfb][sblock] = thm / en;
+					flags->ratio_s[ch][sfb][sblock] = thm / en;
 				}
 				else
-					ratio_s[ch][sfb][sblock] = 0.0;
+					flags->ratio_s[ch][sfb][sblock] = 0.0;
 			}
 		}
 	} 
 	
-	cod_info->block_type = blocktype_old[ch];
-	blocktype_old[ch] = blocktype;
+	cod_info->block_type = flags->blocktype_old[ch];
+	flags->blocktype_old[ch] = blocktype;
 
 	if ( cod_info->block_type == NORM_TYPE )
 	    cod_info->window_switching_flag = 0;
@@ -656,18 +657,13 @@ void					psycho_anal
 
 /*____ L3para_read() __________________________________________________________*/
 
-static void				L3para_read (	encoder_flags_and_data* flags, int sfreq)
+static void				L3para_read (encoder_flags_and_data* flags, int sfreq)
 {
 	int						sfreq_idx;
 	l3_parm_block			*parm;
 	double					*bval_l, *bval_s;
 
-#if ORG_NUMLINES_NORM
-	int						cbmax_l, cbmax_s;
-	int						i, j, k;
-#else
 	double					*norm_l, *norm_s;
-#endif
 
 
 	/*
@@ -686,22 +682,12 @@ static void				L3para_read (	encoder_flags_and_data* flags, int sfreq)
 	/*
 		Read long block data
 	*/
-	cbmax_l    = parm->long_data.cbmax_l;
+	flags->cbmax_l    = parm->long_data.cbmax_l;
 
-#if ORG_NUMLINES_NORM
-	for (i = 0, j = 0;  i < cbmax_l;  i++)
-	{
-		numlines_l[i] = parm->long_data.numlines_l[i];
-
-		for (k = 0;  k < numlines_l[i];  k++)
-			partition_l[j++] = i;
-	}
-#else
-	numlines_l = parm->long_data.numlines_l;
-#endif
+	flags->numlines_l = parm->long_data.numlines_l;
 		
-	minval     = parm->long_data.minval;
-	qthr_l     = parm->long_data.qthr_l;
+	flags->minval     = parm->long_data.minval;
+	flags->qthr_l     = parm->long_data.qthr_l;
 	norm_l     = parm->long_data.norm_l;
 	bval_l     = parm->long_data.bval_l;
 
@@ -709,57 +695,19 @@ static void				L3para_read (	encoder_flags_and_data* flags, int sfreq)
 	/*
 		Compute the normed spreading function norm_l[i] * s3_l[i][j]
 	*/
-#if ORG_NUMLINES_NORM
-	for (i = 0;  i < cbmax_l;  i++)
-	{
-		double x, temp, tempx, tempy;
-
-		for (j = 0;  j < cbmax_l;  j++)
-		{
-/*			tempx = (bval_l[i]-bval_l[j]) * 1.05; */
-			if (j >= i)
-				tempx = (bval_l[i]-bval_l[j]) * 3.0;
-			else
-				tempx = (bval_l[i]-bval_l[j]) * 1.5;
-/*			if (j >= i)  tempx = (bval_l[j]-bval_l[i]) * 3.0;
-			else         tempx = (bval_l[j]-bval_l[i]) * 1.5; */
-			if (tempx > 0.5  &&  tempx < 2.5)
-			{
-				temp = tempx - 0.5;
-				x = 8.0 * temp * (temp-2.0);
-			}
-			else  x = 0.0;
-			tempx += 0.474;
-			tempy = 15.811389 + 7.5*tempx - 17.5*sqrt(1.0+tempx*tempx);
-			if (tempy <= -60.0)  s3_l[i][j] = 0.0;
-			else                 s3_l[i][j] = exp((x + tempy) * LN_TO_LOG10);
-		}
-	}
-#else
-	calc_normed_spreading (flags, cbmax_l, bval_l, normed_s3_l, lo_s3_l, hi_s3_l, norm_l);
-#endif
+	calc_normed_spreading (flags, flags->cbmax_l, bval_l, flags->normed_s3_l, flags->lo_s3_l, flags->hi_s3_l, norm_l);
 
 
 	/*
 		Read short block data
 	*/
-	cbmax_s    = parm->short_data.cbmax_s;
+	flags->cbmax_s    = parm->short_data.cbmax_s;
 
-#if ORG_NUMLINES_NORM
-	for (i = 0, j = 0;  i < cbmax_s;  i++)
-	{
-		numlines_l[i] = parm->short_data.numlines_s[i];
+	flags->numlines_s = parm->short_data.numlines_s;
 
-		for (k = 0;  k < numlines_l[i];  k++)
-			partition_s[j++] = i;
-	}
-#else
-	numlines_s = parm->short_data.numlines_s;
-#endif
-
-	qthr_s     = parm->short_data.qthr_s;
+	flags->qthr_s     = parm->short_data.qthr_s;
 	norm_s     = parm->short_data.norm_s;
-	SNR_s      = parm->short_data.SNR_s;
+	flags->SNR_s      = parm->short_data.SNR_s;
 	bval_s     = parm->short_data.bval_s;
 
 
@@ -768,7 +716,7 @@ static void				L3para_read (	encoder_flags_and_data* flags, int sfreq)
 	/*
 		Compute the normed spreading function norm_s[i] * s3_s[i][j]
 	*/
-	calc_normed_spreading (flags, cbmax_s, bval_s, normed_s3_s, lo_s3_s, hi_s3_s, norm_s);
+	calc_normed_spreading (flags, flags->cbmax_s, bval_s, flags->normed_s3_s, flags->lo_s3_s, flags->hi_s3_s, norm_s);
 
 #endif
 
@@ -777,22 +725,22 @@ static void				L3para_read (	encoder_flags_and_data* flags, int sfreq)
 		Read long block data for converting threshold
 		calculation partitions to scale factor bands
 	*/
-	cbw_l = parm->long_thres.cbw_l;
-	bu_l  = parm->long_thres.bu_l;
-	bo_l  = parm->long_thres.bo_l;
-	w1_l  = parm->long_thres.w1_l;
-	w2_l  = parm->long_thres.w2_l;
+	flags->cbw_l = parm->long_thres.cbw_l;
+	flags->bu_l  = parm->long_thres.bu_l;
+	flags->bo_l  = parm->long_thres.bo_l;
+	flags->w1_l  = parm->long_thres.w1_l;
+	flags->w2_l  = parm->long_thres.w2_l;
 
 
 	/*
 		Read short block data for converting threshold
 		calculation partitions to scale factor bands
 	*/
-	cbw_s = parm->short_thres.cbw_s;
-	bu_s  = parm->short_thres.bu_s;
-	bo_s  = parm->short_thres.bo_s;
-	w1_s  = parm->short_thres.w1_s;
-	w2_s  = parm->short_thres.w2_s;
+	flags->cbw_s = parm->short_thres.cbw_s;
+	flags->bu_s  = parm->short_thres.bu_s;
+	flags->bo_s  = parm->short_thres.bo_s;
+	flags->w1_s  = parm->short_thres.w1_s;
+	flags->w2_s  = parm->short_thres.w2_s;
 }
 
 
