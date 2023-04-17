@@ -42,7 +42,7 @@
 
 
 
-
+#if 0
 static	int				stereo = 1;
 static	frame_params	*fr_ps  = NULL;
 
@@ -63,7 +63,7 @@ static	BitHolder		*userFrameDataPH;
 
 static	BF_FrameData	sFrameData;
 static	BF_FrameResults	sFrameResults;
-
+#endif
 
 
 
@@ -81,6 +81,7 @@ static	BF_FrameResults	sFrameResults;
 
 void					III_format_bitstream
 (
+	encoder_flags_and_data* flags,
 	int						bitsPerFrame,
 	frame_params			*in_fr_ps,
 	int						l3_enc[2][2][576],
@@ -93,37 +94,37 @@ void					III_format_bitstream
 {
 	int						gr, ch, i, mode_gr;
 
-	fr_ps = in_fr_ps;
-	stereo = fr_ps->stereo;
+	flags->fr_ps_bitstream = in_fr_ps;
+	flags->stereo = flags->fr_ps_bitstream->stereo;
 	mode_gr = 2;
 
-	if (!PartHoldersInitialized)
+	if (!flags->PartHoldersInitialized)
 	{
-		 headerPH = initBitHolder (&sFrameData.header, 16*2);
-		frameSIPH = initBitHolder (&sFrameData.frameSI, 4*2);
+		 flags->headerPH = initBitHolder (&flags->sFrameData.header, 16*2);
+		flags->frameSIPH = initBitHolder (&flags->sFrameData.frameSI, 4*2);
 
 		for (ch = 0;  ch < MAX_CHANNELS;  ch++)
-			channelSIPH[ch] = initBitHolder (&sFrameData.channelSI[ch], 8*2);
+			flags->channelSIPH[ch] = initBitHolder (&flags->sFrameData.channelSI[ch], 8*2);
 
 		for (gr = 0;  gr < MAX_GRANULES;  gr++)
 		{
 			for (ch = 0;  ch < MAX_CHANNELS;  ch++)
 			{
-				  spectrumSIPH[gr][ch] = initBitHolder (&sFrameData.  spectrumSI[gr][ch],  32*2);
-				scaleFactorsPH[gr][ch] = initBitHolder (&sFrameData.scaleFactors[gr][ch],  64*2);
-				   codedDataPH[gr][ch] = initBitHolder (&sFrameData.   codedData[gr][ch], 576*2);
-				userSpectrumPH[gr][ch] = initBitHolder (&sFrameData.userSpectrum[gr][ch],   4*2);
+				  flags->spectrumSIPH[gr][ch] = initBitHolder (&flags->sFrameData.  spectrumSI[gr][ch],  32*2);
+				flags->scaleFactorsPH[gr][ch] = initBitHolder (&flags->sFrameData.scaleFactors[gr][ch],  64*2);
+				   flags->codedDataPH[gr][ch] = initBitHolder (&flags->sFrameData.   codedData[gr][ch], 576*2);
+				flags->userSpectrumPH[gr][ch] = initBitHolder (&flags->sFrameData.userSpectrum[gr][ch],   4*2);
 			}
 		}
-		userFrameDataPH = initBitHolder (&sFrameData.userFrameData, 8*2);
+		flags->userFrameDataPH = initBitHolder (&flags->sFrameData.userFrameData, 8*2);
 
-		PartHoldersInitialized = 1;
+		flags->PartHoldersInitialized = 1;
 	}
 
 #if 1
 	for (gr = 0;  gr < mode_gr;  gr++)
 	{
-		for (ch = 0;  ch < stereo;  ch++)
+		for (ch = 0;  ch < flags->stereo;  ch++)
 		{
 			int						*pi = &l3_enc[gr][ch][0];
 			double					*pr =     &xr[gr][ch][0];
@@ -135,53 +136,53 @@ void					III_format_bitstream
 	}
 #endif
 
-	encodeSideInfo (l3_side);
-	encodeMainData (l3_enc, l3_side, scalefac);
-	write_ancillary_data (ancillary, ancillary_bits);
+	encodeSideInfo (flags, l3_side);
+	encodeMainData (flags, l3_enc, l3_side, scalefac);
+	write_ancillary_data (flags, ancillary, ancillary_bits);
 
 	if (l3_side->resvDrain)
-		drain_into_ancillary_data (l3_side->resvDrain);
+		drain_into_ancillary_data (flags, l3_side->resvDrain);
 
-	sFrameData.frameLength = bitsPerFrame;
-	sFrameData.nGranules   = mode_gr;
-	sFrameData.nChannels   = stereo;
+	flags->sFrameData.frameLength = bitsPerFrame;
+	flags->sFrameData.nGranules   = mode_gr;
+	flags->sFrameData.nChannels   = flags->stereo;
 
-	writeFrame (&sFrameData, &sFrameResults);
+	writeFrame (flags, &flags->sFrameData, &flags->sFrameResults);
 
 	/* we set this here -- it will be tested in the next loops iteration */
-	l3_side->main_data_begin = sFrameResults.nextBackPtr;
+	l3_side->main_data_begin = flags->sFrameResults.nextBackPtr;
 }
 
 
 
 
 
-void					III_FlushBitstream (void)
+void					III_FlushBitstream (	encoder_flags_and_data* flags)
 {
 	int						gr, ch;
 
-	if (PartHoldersInitialized)
+	if (flags->PartHoldersInitialized)
 	{
-		exitBitHolder (&sFrameData.header);
-		exitBitHolder (&sFrameData.frameSI);
+		exitBitHolder (&flags->sFrameData.header);
+		exitBitHolder (&flags->sFrameData.frameSI);
 
 		for (ch = 0;  ch < MAX_CHANNELS;  ch++)
-			exitBitHolder (&sFrameData.channelSI[ch]);
+			exitBitHolder (&flags->sFrameData.channelSI[ch]);
 
 
 		for (gr = 0;  gr < MAX_GRANULES;  gr++)
 		{
 			for (ch = 0;  ch < MAX_CHANNELS;  ch++)
 			{
-				exitBitHolder (&sFrameData.  spectrumSI[gr][ch]);
-				exitBitHolder (&sFrameData.scaleFactors[gr][ch]);
-				exitBitHolder (&sFrameData.   codedData[gr][ch]);
-				exitBitHolder (&sFrameData.userSpectrum[gr][ch]);
+				exitBitHolder (&flags->sFrameData.  spectrumSI[gr][ch]);
+				exitBitHolder (&flags->sFrameData.scaleFactors[gr][ch]);
+				exitBitHolder (&flags->sFrameData.   codedData[gr][ch]);
+				exitBitHolder (&flags->sFrameData.userSpectrum[gr][ch]);
 			}
 		}
-		exitBitHolder (&sFrameData.userFrameData);
+		exitBitHolder (&flags->sFrameData.userFrameData);
 
-		PartHoldersInitialized = 0;
+		flags->PartHoldersInitialized = 0;
 	}
 
 	/* BF_FlushBitstream (frameData, frameResults); */
@@ -198,8 +199,9 @@ static	unsigned		slen2_tab[16] = { 0, 1, 2, 3, 0, 1, 2, 3, 1, 2, 3, 1, 2, 3, 2, 
 
 
 
-static	void			encodeMainData
+void			encodeMainData
 (
+	encoder_flags_and_data* flags,
 	int						l3_enc[2][2][576],
 	III_side_info_t			*side_info,
 	III_scalefac_t			*scalefac
@@ -211,20 +213,20 @@ static	void			encodeMainData
 
 
 	for (gr = 0;  gr < mode_gr;  gr++)
-		for (ch = 0;  ch < stereo;  ch++)
-			scaleFactorsPH[gr][ch]->nrEntries = 0;
+		for (ch = 0;  ch < flags->stereo;  ch++)
+			flags->scaleFactorsPH[gr][ch]->nrEntries = 0;
 
 
 	for (gr = 0;  gr < mode_gr;  gr++)
-		for (ch = 0;  ch < stereo;  ch++)
-			codedDataPH[gr][ch]->nrEntries = 0;
+		for (ch = 0;  ch < flags->stereo;  ch++)
+			flags->codedDataPH[gr][ch]->nrEntries = 0;
 
 
 	for (gr = 0;  gr < 2;  gr++)
 	{
-		for (ch = 0;  ch < stereo;  ch++)
+		for (ch = 0;  ch < flags->stereo;  ch++)
 		{
-			BitHolder				*ph = scaleFactorsPH[gr][ch];		
+			BitHolder				*ph = flags->scaleFactorsPH[gr][ch];		
 			gr_info					*cod_info = &side_info->gr[gr].ch[ch].tt;
 			unsigned				slen1 = slen1_tab[cod_info->scalefac_compress];
 			unsigned				slen2 = slen2_tab[cod_info->scalefac_compress];
@@ -279,7 +281,7 @@ static	void			encodeMainData
 						addBits (ph, scalefac->l[gr][ch][sfb], slen2);
 			}
 
-			Huffmancodebits (codedDataPH[gr][ch], ix, cod_info);
+			Huffmancodebits (flags, flags->codedDataPH[gr][ch], ix, cod_info);
 		} /* for ch */
 	} /* for gr */
 } /* main_data */
@@ -290,52 +292,52 @@ static	void			encodeMainData
 
 /*____ encodeSideInfo() _____________________________________________________*/
 
-static	int				encodeSideInfo (III_side_info_t *side_info)
+int				encodeSideInfo (encoder_flags_and_data* flags, III_side_info_t *side_info)
 {
 	int						gr, ch, scfsi_band, region, b, bits_sent, mode_gr;
-	layer					*info = fr_ps->header;
+	layer					*info = flags->fr_ps_bitstream->header;
 
 	mode_gr =  2;
 
 
-	headerPH->nrEntries = 0;
+	flags->headerPH->nrEntries = 0;
 
-	addBits (headerPH, 0xfff                   , 12);
-	addBits (headerPH, 1                       ,  1);
-	addBits (headerPH, 4 - 3                   ,  2);   /* 4 - Layer */
-	addBits (headerPH, !info->error_protection ,  1);
-	addBits (headerPH, info->bitrate_index     ,  4);
-	addBits (headerPH, info->sampling_frequency,  2);
-	addBits (headerPH, info->padding           ,  1);
-	addBits (headerPH, info->extension         ,  1);
-	addBits (headerPH, info->mode              ,  2);
-	addBits (headerPH, info->mode_ext          ,  2);
-	addBits (headerPH, info->copyright         ,  1);
-	addBits (headerPH, info->original          ,  1);
-	addBits (headerPH, info->emphasis          ,  2);
+	addBits (flags->headerPH, 0xfff                   , 12);
+	addBits (flags->headerPH, 1                       ,  1);
+	addBits (flags->headerPH, 4 - 3                   ,  2);   /* 4 - Layer */
+	addBits (flags->headerPH, !info->error_protection ,  1);
+	addBits (flags->headerPH, info->bitrate_index     ,  4);
+	addBits (flags->headerPH, info->sampling_frequency,  2);
+	addBits (flags->headerPH, info->padding           ,  1);
+	addBits (flags->headerPH, info->extension         ,  1);
+	addBits (flags->headerPH, info->mode              ,  2);
+	addBits (flags->headerPH, info->mode_ext          ,  2);
+	addBits (flags->headerPH, info->copyright         ,  1);
+	addBits (flags->headerPH, info->original          ,  1);
+	addBits (flags->headerPH, info->emphasis          ,  2);
 
 	bits_sent = 32;
 
 	if (info->error_protection)
 	{
-		addBits (headerPH, 0, 16);   /* Just a dummy add. Real CRC calculated & inserted in writeSideInfo() */
+		addBits (flags->headerPH, 0, 16);   /* Just a dummy add. Real CRC calculated & inserted in writeSideInfo() */
 		bits_sent += 16;
 	}
 
 
-	frameSIPH->nrEntries = 0;
+	flags->frameSIPH->nrEntries = 0;
 
-	addBits (frameSIPH, side_info->main_data_begin, 9);
+	addBits (flags->frameSIPH, side_info->main_data_begin, 9);
 
-	if (stereo == 2)
-		addBits (frameSIPH, side_info->private_bits, 3);
+	if (flags->stereo == 2)
+		addBits (flags->frameSIPH, side_info->private_bits, 3);
 	else
-		addBits (frameSIPH, side_info->private_bits, 5);
+		addBits (flags->frameSIPH, side_info->private_bits, 5);
 
 
-	for (ch = 0;  ch < stereo;  ch++)
+	for (ch = 0;  ch < flags->stereo;  ch++)
 	{
-		BitHolder				*ph = channelSIPH[ch];
+		BitHolder				*ph = flags->channelSIPH[ch];
 
 		ph->nrEntries = 0;
 
@@ -346,9 +348,9 @@ static	int				encodeSideInfo (III_side_info_t *side_info)
 
 	for (gr = 0;  gr < 2;  gr++)
 	{
-		for (ch = 0;  ch < stereo;  ch++)
+		for (ch = 0;  ch < flags->stereo;  ch++)
 		{
-			BitHolder				*ph = spectrumSIPH[gr][ch];
+			BitHolder				*ph = flags->spectrumSIPH[gr][ch];
 			gr_info					*cod_info = &side_info->gr[gr].ch[ch].tt;
 
 			ph->nrEntries = 0;
@@ -386,7 +388,7 @@ static	int				encodeSideInfo (III_side_info_t *side_info)
 	}
 
 
-	if (stereo == 2)
+	if (flags->stereo == 2)
 		bits_sent += 256;
 	else
 		bits_sent += 136;
@@ -401,8 +403,9 @@ static	int				encodeSideInfo (III_side_info_t *side_info)
 
 /*____ write_ancillary_data() _______________________________________________*/
 
-static	void			write_ancillary_data
+void			write_ancillary_data
 (
+	encoder_flags_and_data* flags,
 	char					*theData,
 	int						lengthInBits
 )
@@ -411,18 +414,18 @@ static	void			write_ancillary_data
 	int						remainingBits = lengthInBits % 8;
 	unsigned				wrd;
 
-	userFrameDataPH->nrEntries = 0;
+	flags->userFrameDataPH->nrEntries = 0;
 
 	while (bytesToSend--)
 	{
 		wrd = *theData++;
-		addBits (userFrameDataPH, wrd, 8);
+		addBits (flags->userFrameDataPH, wrd, 8);
 	}
 	if (remainingBits)
 	{
 		/* right-justify remaining bits */
 		wrd = *theData >> (8 - remainingBits);
-		addBits (userFrameDataPH, wrd, remainingBits);
+		addBits (flags->userFrameDataPH, wrd, remainingBits);
 	}
 }
 
@@ -436,19 +439,19 @@ static	void			write_ancillary_data
 	indicate main_data_length. In these situations, we put stuffing bits into
 	the ancillary data...
 */
-static	void			drain_into_ancillary_data (int lengthInBits)
+void			drain_into_ancillary_data (	encoder_flags_and_data* flags, int lengthInBits)
 {
 	int						wordsToSend   = lengthInBits / 32;
 	int						remainingBits = lengthInBits % 32;
 
 	/*
-		userFrameDataPH->part->nrEntries set by call to write_ancillary_data()
+		flags->userFrameDataPH->part->nrEntries set by call to write_ancillary_data()
 	*/
 
 	while (wordsToSend--)
-		addBits (userFrameDataPH, 0, 32);
+		addBits (flags->userFrameDataPH, 0, 32);
 	if (remainingBits)
-		addBits (userFrameDataPH, 0, remainingBits); 
+		addBits (flags->userFrameDataPH, 0, remainingBits); 
 }
 
 
@@ -460,8 +463,9 @@ static	void			drain_into_ancillary_data (int lengthInBits)
 	and 29 of the IS, as well as the definitions of the side
 	information on pages 26 and 27.
 */
-static	void			Huffmancodebits
+void			Huffmancodebits
 (
+	encoder_flags_and_data* flags,
 	BitHolder				*ph,
 	int						*ix,
 	gr_info					*cod_info
@@ -487,7 +491,7 @@ static	void			Huffmancodebits
 		if (cod_info->window_switching_flag  &&  (cod_info->block_type == SHORT_TYPE))
 		{
 			int							(*ix_s)[3] = (int (*)[3]) ix;
-			int							*scalefac = &sfBandIndex[fr_ps->header->sampling_frequency].s[0];
+			int							*scalefac = &sfBandIndex[flags->fr_ps_bitstream->header->sampling_frequency].s[0];
 
 			table = cod_info->table_select[0];
 			if (table)
@@ -495,7 +499,7 @@ static	void			Huffmancodebits
 				if (cod_info->mixed_block_flag)  /* Mixed blocks long, short */
 				{
 					for (line=0; line<36; line+=2)   /* cod_info->address1 = 36 */
-						bitsWritten += writeHuffmanCode (ph, table, ix[line], ix[line+1]);
+						bitsWritten += writeHuffmanCode (flags, ph, table, ix[line], ix[line+1]);
 				}
 				else
 				{
@@ -506,7 +510,7 @@ static	void			Huffmancodebits
 
 						for (window=0; window<3; window++)
 							for (line=start; line<end; line+=2)
-								bitsWritten += writeHuffmanCode (ph, table, ix_s[line][window], ix_s[line+1][window]);
+								bitsWritten += writeHuffmanCode (flags, ph, table, ix_s[line][window], ix_s[line+1][window]);
 					}
 				}
 			}
@@ -521,7 +525,7 @@ static	void			Huffmancodebits
 
 					for (window=0; window<3; window++)
 						for (line=start; line<end; line+=2)
-							bitsWritten += writeHuffmanCode (ph, table, ix_s[line][window], ix_s[line+1][window]);
+							bitsWritten += writeHuffmanCode (flags, ph, table, ix_s[line][window], ix_s[line+1][window]);
 				}
 			}
 		}
@@ -533,17 +537,17 @@ static	void			Huffmancodebits
 			table = cod_info->table_select[0];
 			if (table)
 				for (line=0; line<region1Start; line+=2)
-					bitsWritten += writeHuffmanCode (ph, table, ix[line], ix[line+1]);
+					bitsWritten += writeHuffmanCode (flags, ph, table, ix[line], ix[line+1]);
 
 			table = cod_info->table_select[1];
 			if (table)
 				for (line=region1Start; line<region2Start; line+=2)
-					bitsWritten += writeHuffmanCode (ph, table, ix[line], ix[line+1]);
+					bitsWritten += writeHuffmanCode (flags, ph, table, ix[line], ix[line+1]);
 
 			table = cod_info->table_select[2];
 			if (table)
 				for (line=region2Start; line<bigvalues; line+=2)
-					bitsWritten += writeHuffmanCode (ph, table, ix[line], ix[line+1]);
+					bitsWritten += writeHuffmanCode (flags, ph, table, ix[line], ix[line+1]);
 		}
 	}
 
@@ -607,8 +611,9 @@ static	void			Huffmancodebits
 	aaaaaaaaaaaaaaargh --- why don«t write the code immediately?
 */
 
-static	int				writeHuffmanCode
+int				writeHuffmanCode
 (
+	encoder_flags_and_data* flags,
 	BitHolder				*ph,
 	int						table,
 	int						x,

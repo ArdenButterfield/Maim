@@ -32,9 +32,6 @@
 
 
 
-#define		MAX_CHANNELS			2
-#define		MAX_GRANULES			2
-
 
 
 
@@ -42,43 +39,6 @@
 
 /*____ Structure Definitions ________________________________________________*/
 
-typedef		struct
-			{
-				unsigned int			value;
-				int						length;
-			}					BitHolderElement;
-
-
-typedef		struct
-			{
-				int						max_elements;
-				int						nrEntries;
-				BitHolderElement		*element;
-			}					BitHolder;
-
-
-typedef		struct BF_FrameData
-			{
-				int						frameLength;
-				int						nGranules;
-				int						nChannels;
-				BitHolder				header;
-				BitHolder				frameSI;
-				BitHolder				   channelSI[MAX_CHANNELS];
-				BitHolder				  spectrumSI[MAX_GRANULES][MAX_CHANNELS];
-				BitHolder				scaleFactors[MAX_GRANULES][MAX_CHANNELS];
-				BitHolder				   codedData[MAX_GRANULES][MAX_CHANNELS];
-				BitHolder				userSpectrum[MAX_GRANULES][MAX_CHANNELS];
-				BitHolder				userFrameData;
-			}					BF_FrameData;
-
-
-typedef		struct BF_FrameResults
-			{
-				int						SILength;
-				int						mainDataLength;
-				int						nextBackPtr;
-			}					BF_FrameResults;
 
 
 
@@ -89,10 +49,10 @@ typedef		struct BF_FrameResults
 BitHolder				*initBitHolder (BitHolder *wp, int elements);
 void					exitBitHolder (BitHolder *wp);
 void					addBits (BitHolder *wp, unsigned int value, int length);
-void					writeFrame (BF_FrameData *psFrame, BF_FrameResults *results);
-void					initFormatBitstream (void);
-void					exitFormatBitstream (void);
-void					flushFrame (void);
+void					writeFrame (encoder_flags_and_data* flags, BF_FrameData *psFrame, BF_FrameResults *results);
+void					initFormatBitstream (encoder_flags_and_data* flags);
+void					exitFormatBitstream (encoder_flags_and_data* flags);
+void					flushFrame (encoder_flags_and_data* flags);
 
 
 

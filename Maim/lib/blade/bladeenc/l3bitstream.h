@@ -55,6 +55,7 @@
 
 void					III_format_bitstream
 (
+	encoder_flags_and_data* flags,
 	int						bitsPerFrame,
 	frame_params			*in_fr_ps,
 	int						l3_enc[2][2][576],
@@ -65,9 +66,9 @@ void					III_format_bitstream
 	int						anc_bits
 );
 
-void					III_FlushBitstream (void);
+void					III_FlushBitstream (encoder_flags_and_data* flags);
 
-void					fixStatic_l3bitstream (void);
+void					fixStatic_l3bitstream (encoder_flags_and_data* flags);
 
 
 

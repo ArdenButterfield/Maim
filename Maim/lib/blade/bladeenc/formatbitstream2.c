@@ -49,45 +49,38 @@ extern	int		outputBit;
 
 /*____ Structure Definitions _________________________________________________*/
 
-typedef		struct HeaderDef
-			{
-				int						size;
-				int						frameSize;
-				char					data[128];
-				struct HeaderDef		*pNext;
-			}						Header;
-
+// header struct moved to common.h
 
 
 
 
 /*____ Function Prototypes ___________________________________________________*/
 
-static	int				writeMainDataBits (BF_FrameData *psFrame, BitHolder *psBH);
-static	void			putbits (unsigned int val, int n);
-static	int				generateHeader (BF_FrameData *psFrame);
+int				writeMainDataBits (encoder_flags_and_data* flags, BF_FrameData *psFrame, BitHolder *psBH);
+void			putbits (	encoder_flags_and_data* flags, unsigned int val, int n);
+int				generateHeader (encoder_flags_and_data* flags, BF_FrameData *psFrame);
 
 
 
 
-
+#if 0
 /*____ Static Data ___________________________________________________________*/
 
 static	int				BitsRemaining     = 0;
 static	Header			*pHeaderChain     = NULL;
 static	Header			*pFreeHeaderChain = NULL;
-
+#endif
 
 
 
 
 /*____ initFormatBitstream() ________________________________________________*/
 
-void					initFormatBitstream (void)
+void					initFormatBitstream (encoder_flags_and_data* flags)
 {
-	BitsRemaining    = 0;
-	pHeaderChain     = NULL;
-	pFreeHeaderChain = NULL;
+	flags->BitsRemaining    = 0;
+	flags->pHeaderChain     = NULL;
+	flags->pFreeHeaderChain = NULL;
 }
 
 
@@ -96,27 +89,27 @@ void					initFormatBitstream (void)
 
 /*____ exitFormatBitstream() _________________________________________________*/
 
-void					exitFormatBitstream (void)
+void					exitFormatBitstream (encoder_flags_and_data* flags)
 {
 	Header					*psFree;
 
 	/* Fill out the last frame with 0xFF */
 
-	flushFrame ();
+	flushFrame (flags);
 
 	/* Dealocate Headers */
 
-	while (pHeaderChain != NULL)
+	while (flags->pHeaderChain != NULL)
 	{
-		psFree = pHeaderChain;
-		pHeaderChain = psFree->pNext;
+		psFree = flags->pHeaderChain;
+		flags->pHeaderChain = psFree->pNext;
 		free (psFree);
 	}
 
-	while (pFreeHeaderChain != NULL)
+	while (flags->pFreeHeaderChain != NULL)
 	{
-		psFree = pFreeHeaderChain;
-		pFreeHeaderChain = psFree->pNext;
+		psFree = flags->pFreeHeaderChain;
+		flags->pFreeHeaderChain = psFree->pNext;
 		free (psFree);
 	}
 }
@@ -127,20 +120,20 @@ void					exitFormatBitstream (void)
 
 /*____ flushFrame() _________________________________________________________*/
 
-void					flushFrame (void)
+void					flushFrame (encoder_flags_and_data* flags)
 {
 	/* Fill out the last frame with 0xFF */
 
-	while (BitsRemaining > 32)
+	while (flags->BitsRemaining > 32)
 	{
-		putbits (0xFFFFFFFF, 32);
-			BitsRemaining -= 32;
+		putbits (flags, 0xFFFFFFFF, 32);
+			flags->BitsRemaining -= 32;
 	}
 
-	if (BitsRemaining > 0)
-		putbits (0xFFFFFFFF, BitsRemaining);
+	if (flags->BitsRemaining > 0)
+		putbits (flags, 0xFFFFFFFF, flags->BitsRemaining);
 
-	BitsRemaining = 0;
+	flags->BitsRemaining = 0;
 }
 
 
@@ -217,6 +210,7 @@ void					addBits
 
 void					writeFrame
 (
+	encoder_flags_and_data* flags,
 	BF_FrameData			*psFrame,
 	BF_FrameResults			*results
 )
@@ -230,7 +224,7 @@ void					writeFrame
 
 	/* Generate and save header, return size of SideInfo.*/
 
-	results->SILength = generateHeader (psFrame);
+	results->SILength = generateHeader (flags, psFrame);
 
 
 	/* Put the bits and compute size of mainData */
@@ -240,12 +234,12 @@ void					writeFrame
 	{
 		for (ch = 0;  ch < psFrame->nChannels;  ch++)
 		{
-			bits += writeMainDataBits (psFrame, &psFrame->scaleFactors[gr][ch]);
-			bits += writeMainDataBits (psFrame, &psFrame->   codedData[gr][ch]);
-			bits += writeMainDataBits (psFrame, &psFrame->userSpectrum[gr][ch]);
+			bits += writeMainDataBits (flags, psFrame, &psFrame->scaleFactors[gr][ch]);
+			bits += writeMainDataBits (flags, psFrame, &psFrame->   codedData[gr][ch]);
+			bits += writeMainDataBits (flags, psFrame, &psFrame->userSpectrum[gr][ch]);
 		}
 	}
-	bits += writeMainDataBits (psFrame, &psFrame->userFrameData);
+	bits += writeMainDataBits (flags, psFrame, &psFrame->userFrameData);
 
 	results->mainDataLength = bits;
 
@@ -255,14 +249,14 @@ void					writeFrame
 	sizeRemainHeaders = 0;
 	sizeRemainFrames  = 0;
 
-	for (psHeader = pHeaderChain;  psHeader != NULL;  psHeader = psHeader->pNext)
+	for (psHeader = flags->pHeaderChain;  psHeader != NULL;  psHeader = psHeader->pNext)
 	{
 		sizeRemainHeaders += psHeader->size;
 		sizeRemainFrames  += psHeader->frameSize;
 	}
 
 
-	results->nextBackPtr = (BitsRemaining / 8) + sizeRemainFrames - sizeRemainHeaders;	/* BitsRemaining must be dividable by 8 */
+	results->nextBackPtr = (flags->BitsRemaining / 8) + sizeRemainFrames - sizeRemainHeaders;	/* BitsRemaining must be dividable by 8 */
 }
 
 
@@ -279,14 +273,14 @@ void					writeFrame
 
 /*____ writeBitHolder() _____________________________________________________*/
 
-static	void			writeBitHolder (BitHolder *part)
+void			writeBitHolder (	encoder_flags_and_data* flags, BitHolder *part)
 {
 	BitHolderElement		*ep;
 	int						i;
 
 	ep = part->element;
 	for (i = 0;  i < part->nrEntries;  i++, ep++)
-		putbits (ep->value, ep->length);
+		putbits (flags, ep->value, ep->length);
 }
 
 
@@ -295,7 +289,7 @@ static	void			writeBitHolder (BitHolder *part)
 
 /*____ calcCRC() ____________________________________________________________*/
 
-static	int				calcCRC
+int				calcCRC
 (
 	char					*pData,
 	int						size
@@ -336,7 +330,7 @@ static	int				calcCRC
 
 /*____ generateHeader() ____________________________________________________*/
 
-static	int				generateHeader (BF_FrameData *psFrame)
+int				generateHeader (encoder_flags_and_data* flags, BF_FrameData *psFrame)
 {
 	int						gr, ch;
 	int						crc;
@@ -347,51 +341,51 @@ static	int				generateHeader (BF_FrameData *psFrame)
 
 	/* Get a Free Header structure */
 
-	if( pFreeHeaderChain == NULL )
-	psHeader = (Header *) malloc( sizeof( Header ) );
+	if( flags->pFreeHeaderChain == NULL )
+		psHeader = (Header *) malloc( sizeof( Header ) );
 	else
 	{
-	psHeader = pFreeHeaderChain;
-	pFreeHeaderChain = psHeader->pNext;
+		psHeader = flags->pFreeHeaderChain;
+		flags->pFreeHeaderChain = psHeader->pNext;
 	}
 	psHeader->pNext = NULL;
-	for( wpLink = &pHeaderChain ; * wpLink != NULL ; wpLink = &((*wpLink)->pNext) )
+	for( wpLink = &(flags->pHeaderChain) ; * wpLink != NULL ; wpLink = &((*wpLink)->pNext) )
 	{}   /* avoid compiler warning */
 	*wpLink = psHeader;
 
 
 	/* Generate the Header */
 
-	pOldEncodedOutput = pEncodedOutput;
-	pEncodedOutput = psHeader->data;
-	pEncodedOutput[0] = 0;										/* Need to be cleared since we OR in data... */
+	pOldEncodedOutput = flags->pEncodedOutput;
+	flags->pEncodedOutput = psHeader->data;
+	flags->pEncodedOutput[0] = 0;										/* Need to be cleared since we OR in data... */
 
 
-	writeBitHolder (&psFrame->header);
-	writeBitHolder (&psFrame->frameSI);
+	writeBitHolder (flags, &psFrame->header);
+	writeBitHolder (flags, &psFrame->frameSI);
 
 	for (ch = 0;  ch < psFrame->nChannels;  ch++)
-		writeBitHolder (&psFrame->channelSI[ch]);
+		writeBitHolder (flags, &psFrame->channelSI[ch]);
 
 	for (gr = 0;  gr < psFrame->nGranules;  gr++)
 		for (ch = 0;  ch < psFrame->nChannels;  ch++)
-			writeBitHolder (&psFrame->spectrumSI[gr][ch]);
+			writeBitHolder (flags, &psFrame->spectrumSI[gr][ch]);
 
 
 	/* Checksum generation (if CRC enabled).*/
 
 	if (!(psHeader->data[1] & 0x1))
 	{
-		crc = calcCRC (psHeader->data, pEncodedOutput - psHeader->data);
+		crc = calcCRC (psHeader->data, flags->pEncodedOutput - psHeader->data);
 		psHeader->data[4] = (char) (crc >> 8);
 		psHeader->data[5] = (char) crc;
 	}
 
 
-	psHeader->size      = pEncodedOutput - psHeader->data;
+	psHeader->size      = flags->pEncodedOutput - psHeader->data;
 	psHeader->frameSize = psFrame->frameLength / 8;
 
-	pEncodedOutput = pOldEncodedOutput;
+	flags->pEncodedOutput = pOldEncodedOutput;
 
 
 	return	psHeader->size * 8;
@@ -403,18 +397,18 @@ static	int				generateHeader (BF_FrameData *psFrame)
 
 /*____ writeHeader() _______________________________________________________*/
 
-static	int				writeHeader (void)
+int				writeHeader (encoder_flags_and_data* flags)
 {
 	Header					*psHeader;
 
-	psHeader = pHeaderChain;
-	memcpy (pEncodedOutput, psHeader->data, psHeader->size);
-	pEncodedOutput += psHeader->size;
-	*pEncodedOutput = 0;
+	psHeader = flags->pHeaderChain;
+	memcpy (flags->pEncodedOutput, psHeader->data, psHeader->size);
+	flags->pEncodedOutput += psHeader->size;
+	*(flags->pEncodedOutput) = 0;
 
-	pHeaderChain = psHeader->pNext;
-	psHeader->pNext = pFreeHeaderChain;
-	pFreeHeaderChain = psHeader;
+	flags->pHeaderChain = psHeader->pNext;
+	psHeader->pNext = flags->pFreeHeaderChain;
+	flags->pFreeHeaderChain = psHeader;
 
 	return	(psHeader->frameSize - psHeader->size) * 8;
 }
@@ -425,8 +419,9 @@ static	int				writeHeader (void)
 
 /*____ writeMainDataBits() __________________________________________________*/
 
-static	int				writeMainDataBits
+int				writeMainDataBits
 (
+	encoder_flags_and_data* flags,
 	BF_FrameData			*psFrame,   /* avoid compiler warning */
 	BitHolder				*psBH
 )
@@ -441,18 +436,18 @@ static	int				writeMainDataBits
 		val   = psElem->value;
 		nBits = psElem->length;
 
-		if (BitsRemaining == 0)
-			BitsRemaining = writeHeader ();
+		if (flags->BitsRemaining == 0)
+			flags->BitsRemaining = writeHeader (flags);
 
-		if (nBits > BitsRemaining)
+		if (nBits > flags->BitsRemaining)
 		{
-			nBits -= BitsRemaining;
-			putbits (val >> nBits, BitsRemaining);
-			BitsRemaining = writeHeader ();
+			nBits -= flags->BitsRemaining;
+			putbits (flags, val >> nBits, flags->BitsRemaining);
+			flags->BitsRemaining = writeHeader (flags);
 		}
 
-		putbits (val, nBits);
-		BitsRemaining -= nBits;
+		putbits (flags, val, nBits);
+		flags->BitsRemaining -= nBits;
 
 		bits += psElem->length;
 	}
@@ -469,8 +464,9 @@ static	int				writeMainDataBits
 
 /*write n bits into the bit stream */
 
-static	void			putbits
+void			putbits
 (
+	encoder_flags_and_data* flags,
 	unsigned int			val,
 	int						n
 )
@@ -479,22 +475,22 @@ static	void			putbits
 	if (n == 0)
 		return;
 
-	while (n >= outputBit)
+	while (n >= flags->outputBit)
 	{
-		n -= outputBit;
+		n -= flags->outputBit;
 
-		*pEncodedOutput |= val >> n;
+		*(flags->pEncodedOutput) |= val >> n;
 
-		outputBit = 8;
-		pEncodedOutput++;
-		*pEncodedOutput = 0;
+		flags->outputBit = 8;
+		flags->pEncodedOutput++;
+		*(flags->pEncodedOutput) = 0;
 	}
 
 	if (n > 0)   /* n < outputBit */
 	{
-		outputBit -= n;
+		flags->outputBit -= n;
 
-		*pEncodedOutput |= val << outputBit;
+		*(flags->pEncodedOutput) |= val << flags->outputBit;
 	}
 }
 

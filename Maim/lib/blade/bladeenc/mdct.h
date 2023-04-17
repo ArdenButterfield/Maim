@@ -52,7 +52,6 @@
 
 
 
-typedef		double					L3SBS[2][3][18][SBLIMIT];   /* [gr][ch] */
 
 
 

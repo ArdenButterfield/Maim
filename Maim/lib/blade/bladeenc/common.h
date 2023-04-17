@@ -261,7 +261,152 @@ extern	void			*mem_alloc (unsigned int block, char *item);
 extern	void			mem_free (void **ptr_addr);
 
 
+typedef		struct
+			{
+				int						frequency;   /* 48000, 44100 and 32000 allowed. */
+				int						mode;        /* 0 = Stereo, 2 = Dual Channel, 3 = Mono */
+				int						bitrate;     
+				int						emphasis;    /* 0 = None, 1 = 50/15 microsec, 3 = CCITT J.17 */
+				int						fPrivate;               
+				int						fCRC;
+				int						fCopyright;
+				int						fOriginal;
+			}						CodecInitIn;
 
+
+typedef		struct
+			{
+				int						nSamples;
+				int						bufferSize;
+			}						CodecInitOut;
+
+
+
+
+/************************************************************************/
+
+#define	SAMPLES_PER_FRAME		1152
+
+#define		MAX_CHANNELS			2
+#define		MAX_GRANULES			2
+
+
+typedef		double					L3SBS[2][3][18][SBLIMIT];   /* [gr][ch] */
+
+typedef		struct
+			{
+				unsigned int			value;
+				int						length;
+			}					BitHolderElement;
+
+
+typedef		struct
+			{
+				int						max_elements;
+				int						nrEntries;
+				BitHolderElement		*element;
+			}					BitHolder;
+
+
+typedef		struct BF_FrameData
+			{
+				int						frameLength;
+				int						nGranules;
+				int						nChannels;
+				BitHolder				header;
+				BitHolder				frameSI;
+				BitHolder				   channelSI[MAX_CHANNELS];
+				BitHolder				  spectrumSI[MAX_GRANULES][MAX_CHANNELS];
+				BitHolder				scaleFactors[MAX_GRANULES][MAX_CHANNELS];
+				BitHolder				   codedData[MAX_GRANULES][MAX_CHANNELS];
+				BitHolder				userSpectrum[MAX_GRANULES][MAX_CHANNELS];
+				BitHolder				userFrameData;
+			}					BF_FrameData;
+
+
+typedef		struct BF_FrameResults
+			{
+				int						SILength;
+				int						mainDataLength;
+				int						nextBackPtr;
+			}					BF_FrameResults;
+
+
+typedef		struct HeaderDef
+			{
+				int						size;
+				int						frameSize;
+				char					data[128];
+				struct HeaderDef		*pNext;
+			}						Header;
+
+
+typedef struct encoder_flags_and_data_struct {
+	// codec
+	L3SBS					l3_sb_sample;
+
+	layer					info;
+
+
+
+#if ORG_BUFFERS
+	short					buffer[2][1152];
+	/*	static	float					snr32[32]; */
+	short					sam[2][2048];
+#else
+	FLOAT					buffer[2][2048];
+	int						buffer_idx;
+#endif
+
+
+
+	int						whole_SpF;
+
+	double					frac_SpF, slot_lag;
+
+	int						error_protection;
+
+	III_side_info_t			l3_side;
+	CodecInitOut			sOut;
+
+	frame_params			fr_ps;
+
+
+
+	char					*pEncodedOutput;
+	int						outputBit;
+
+	double			avg_slots_per_frame;
+
+	// l3bitstream
+	int				stereo;
+	frame_params	*fr_ps_bitstream;
+
+	int				PartHoldersInitialized;
+
+
+
+	BitHolder		       *headerPH;
+	BitHolder		      *frameSIPH;
+	BitHolder		    *channelSIPH[MAX_CHANNELS];
+	BitHolder		   *spectrumSIPH[MAX_GRANULES][MAX_CHANNELS];
+	BitHolder		 *scaleFactorsPH[MAX_GRANULES][MAX_CHANNELS];
+	BitHolder		    *codedDataPH[MAX_GRANULES][MAX_CHANNELS];
+	BitHolder		 *userSpectrumPH[MAX_GRANULES][MAX_CHANNELS];
+	BitHolder		*userFrameDataPH;
+
+
+
+	BF_FrameData	sFrameData;
+	BF_FrameResults	sFrameResults;
+
+
+	// formatbitstream2
+	int				BitsRemaining;
+	Header			*pHeaderChain;
+	Header			*pFreeHeaderChain;
+
+} encoder_flags_and_data;
 
 
 #endif		/* __COMMON__ */

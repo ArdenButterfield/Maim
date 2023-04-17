@@ -42,67 +42,6 @@ extern	int				fInit_fft;
 
 
 
-/************************************************************************/
-
-#define	SAMPLES_PER_FRAME		1152
-
-typedef struct encoder_flags_and_data_struct {
-	L3SBS					l3_sb_sample;
-
-	layer					info;
-
-
-
-#if ORG_BUFFERS
-	short					buffer[2][1152];
-	/*	static	float					snr32[32]; */
-	short					sam[2][2048];
-#else
-	FLOAT					buffer[2][2048];
-	int						buffer_idx;
-#endif
-
-
-
-	int						whole_SpF;
-
-	double					frac_SpF, slot_lag;
-
-	int						stereo, error_protection;
-
-	III_side_info_t			l3_side;
-	CodecInitOut			sOut;
-
-	frame_params			fr_ps;
-
-
-
-	char					*pEncodedOutput;
-	int						outputBit;
-
-	double			avg_slots_per_frame;
-} encoder_flags_and_data;
-
-
-
-typedef		struct
-			{
-				int						frequency;   /* 48000, 44100 and 32000 allowed. */
-				int						mode;        /* 0 = Stereo, 2 = Dual Channel, 3 = Mono */
-				int						bitrate;     
-				int						emphasis;    /* 0 = None, 1 = 50/15 microsec, 3 = CCITT J.17 */
-				int						fPrivate;               
-				int						fCRC;
-				int						fCopyright;
-				int						fOriginal;
-			}						CodecInitIn;
-
-
-typedef		struct
-			{
-				int						nSamples;
-				int						bufferSize;
-			}						CodecInitOut;
 
 
 

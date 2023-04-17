@@ -32,32 +32,37 @@
 
 
 
-static	void			encodeMainData
+void			encodeMainData
 (
+		encoder_flags_and_data* flags,
+
 	int						l3_enc[2][2][576],
 	III_side_info_t			*side_info,
 	III_scalefac_t			*scalefac
 );
 
-static	int				encodeSideInfo (III_side_info_t *side_info);
+int				encodeSideInfo (encoder_flags_and_data* flags, III_side_info_t *side_info);
 
-static	void			write_ancillary_data
-(
+void			write_ancillary_data
+(	
+	encoder_flags_and_data* flags,
 	char					*theData,
 	int						lengthInBits
 );
 
-static	void			drain_into_ancillary_data (int lengthInBits);
+void			drain_into_ancillary_data (	encoder_flags_and_data* flags, int lengthInBits);
 
-static	void			Huffmancodebits
+void			Huffmancodebits
 (
+	encoder_flags_and_data* flags,
 	BitHolder				*ph,
 	int						*ix,
 	gr_info					*cod_info
 );
 
-static	int				writeHuffmanCode
+int				writeHuffmanCode
 (
+	encoder_flags_and_data* flags,
 	BitHolder				*ph,
 	int						table,
 	int						x,

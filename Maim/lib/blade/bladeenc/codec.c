@@ -53,6 +53,8 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 
 	/* Read psIn */
 
+	flags->PartHoldersInitialized = 0;
+
 	switch (psIn->frequency)
 	{
 		case 48000:  flags->info.sampling_frequency = 1;  break;
@@ -105,7 +107,7 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 
     psycho_anal_init (psIn->frequency);
 	initWindowFilterSubband ();
-	initFormatBitstream ();
+	initFormatBitstream (flags);
 
 /*     clear buffers */
 	memset ((char *) flags->l3_sb_sample, 0, sizeof(flags->l3_sb_sample));
@@ -320,6 +322,7 @@ unsigned int			codecEncodeChunk
 
 	III_format_bitstream
 	(
+		flags,
 		bitsPerFrame,
 		&flags->fr_ps,
 		l3_enc,
@@ -347,8 +350,8 @@ unsigned int			codecExit (encoder_flags_and_data* flags, char *pDest)
 	flags->pEncodedOutput[0] = 0;
 
 	psycho_anal_exit ();
-	exitFormatBitstream ();
-	III_FlushBitstream ();
+	exitFormatBitstream (flags);
+	III_FlushBitstream (flags);
 
 	return flags->pEncodedOutput - pDest;
 }
@@ -365,7 +368,7 @@ unsigned int			codecFlush (encoder_flags_and_data* flags, char *pDest)
 	flags->outputBit = 8;
 	flags->pEncodedOutput[0] = 0;
 
-	flushFrame ();
+	flushFrame (flags);
 
 	flags->whole_SpF = (int) flags->avg_slots_per_frame;
 	flags->frac_SpF  = flags->avg_slots_per_frame - (double) flags->whole_SpF;
