@@ -105,7 +105,7 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 
 /*___________________________________*/
 
-    psycho_anal_init (psIn->frequency);
+    psycho_anal_init (flags, psIn->frequency);
 	initWindowFilterSubband ();
 	initFormatBitstream (flags);
 
@@ -213,7 +213,7 @@ unsigned int			codecEncodeChunk
 	for (gr = 0;  gr < 2;  gr++)
 		for (ch = 0;  ch < flags->stereo;  ch++)
 			psycho_anal
-			(
+			( flags,
 #if ORG_BUFFERS
 				&flags->buffer[ch][gr*576],
 				&flags->sam[ch][0],
@@ -349,7 +349,7 @@ unsigned int			codecExit (encoder_flags_and_data* flags, char *pDest)
 	flags->outputBit = 8;
 	flags->pEncodedOutput[0] = 0;
 
-	psycho_anal_exit ();
+	psycho_anal_exit (flags);
 	exitFormatBitstream (flags);
 	III_FlushBitstream (flags);
 

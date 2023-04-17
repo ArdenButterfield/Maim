@@ -72,6 +72,7 @@
 
 void					psycho_anal
 (
+	encoder_flags_and_data* flags,
 #if ORG_BUFFERS
 	short int				*buffer,
 	short int				savebuf[2048],
@@ -88,9 +89,9 @@ void					psycho_anal
 	gr_info					*cod_info
 );
 
-void					psycho_anal_init (double sfreq);
+void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq);
 
-void					psycho_anal_exit (void);
+void					psycho_anal_exit (encoder_flags_and_data* flags);
 
 
 

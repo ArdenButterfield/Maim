@@ -150,11 +150,12 @@ static	double			ratio_s     [2][SBMAX_s][3];
 
 
 
-static	void			L3para_read (int sfreq);
+static	void			L3para_read (encoder_flags_and_data* flags, int sfreq);
 
 #if !ORG_NUMLINES_NORM
 static	void			calc_normed_spreading
 (
+	encoder_flags_and_data* flags,
 	int						cbmax,			/* number of lines and rows           */
 	const double			bval[],			/* input values to compute the matrix */
 	FLOAT					s3_ptr[],		/* the resulting non-zero entries     */
@@ -165,14 +166,9 @@ static	void			calc_normed_spreading
 #endif
 
 
-
-
-
-
-
 /*____ psycho_anal_init() ___________________________________________________*/
 
-void					psycho_anal_init (double sfreq)
+void					psycho_anal_init (encoder_flags_and_data* flags, double sfreq)
 {
 	unsigned int			ch, sfb, b, i, j;
 
@@ -248,7 +244,7 @@ void					psycho_anal_init (double sfreq)
 	}
 
 
-	L3para_read ((int) sfreq);
+	L3para_read (flags, (int) sfreq);
 
 
 	/* Set unpredicatiblility of remaining spectral lines to 0.4 */
@@ -257,13 +253,9 @@ void					psycho_anal_init (double sfreq)
 		cw[j] = 0.4;
 }
 
-
-
-
-
 /*____ psycho_anal_exit() ___________________________________________________*/
 
-void psycho_anal_exit( void )
+void psycho_anal_exit( encoder_flags_and_data* flags )
 {
 	/* nothing to do */
 }
@@ -276,6 +268,7 @@ void psycho_anal_exit( void )
 									
 void					psycho_anal
 (
+	encoder_flags_and_data* flags,
 #if ORG_BUFFERS
 	short int				*buffer,
 	short int				savebuf[2048],
@@ -747,7 +740,7 @@ void					psycho_anal
 
 /*____ L3para_read() __________________________________________________________*/
 
-static void				L3para_read (int sfreq)
+static void				L3para_read (	encoder_flags_and_data* flags, int sfreq)
 {
 	int						sfreq_idx;
 	l3_parm_block			*parm;
@@ -827,7 +820,7 @@ static void				L3para_read (int sfreq)
 		}
 	}
 #else
-	calc_normed_spreading (cbmax_l, bval_l, normed_s3_l, lo_s3_l, hi_s3_l, norm_l);
+	calc_normed_spreading (flags, cbmax_l, bval_l, normed_s3_l, lo_s3_l, hi_s3_l, norm_l);
 #endif
 
 
@@ -859,7 +852,7 @@ static void				L3para_read (int sfreq)
 	/*
 		Compute the normed spreading function norm_s[i] * s3_s[i][j]
 	*/
-	calc_normed_spreading (cbmax_s, bval_s, normed_s3_s, lo_s3_s, hi_s3_s, norm_s);
+	calc_normed_spreading (flags, cbmax_s, bval_s, normed_s3_s, lo_s3_s, hi_s3_s, norm_s);
 
 #endif
 
@@ -913,6 +906,7 @@ static void				L3para_read (int sfreq)
 
 static	void			calc_normed_spreading
 (
+	encoder_flags_and_data* flags,
 	int						cbmax,			/* number of lines and rows           */
 	const double			bval[],			/* input values to compute the matrix */
 	FLOAT					s3_ptr[],		/* the resulting non-zero entries     */
