@@ -44,12 +44,6 @@
 *
 ***********************************************************************/
 
-/* Psychoacoustic Model 2 Definitions */
-
-#define BLKSIZE         1024
-#define HBLKSIZE        513
-#define CBANDS          63
-
 
 
 

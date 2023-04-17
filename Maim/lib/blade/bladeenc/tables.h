@@ -31,7 +31,7 @@
 
 
 
-#define		NEW_L3PARM_TABLES		1
+#define		NEW_L3PARM_TABLES		1 // DON"T CHANGE THIS -- awb
 #define		CALC_NORM				0
 
 

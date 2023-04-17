@@ -65,30 +65,6 @@
 /*              keeping backward compatability                                                */
 /*  ========================================================================================  */
 
-#define		ORG_NUMLINES_NORM		0   /* 0 = don't overwrite long numline entries with short numline entries */
-#define		ORG_BLOCK_SELECT		0   /* 0 = ISO draft paper states slightly different block selection */
-#define		ORG_SHORT_CW_LIMIT		0   /* 0 = ISO draft paper says first element starts at 6/4 = 1 (not 2) */
-
-
-
-
-
-/*	#define		CBANDS					  63 */
-#define		CBANDS_s				42
-#define		BLKSIZE_s				256
-#define		HBLKSIZE_s				129
-#define		TCBMAX_l				63
-#define		TCBMAX_s				42
-#define		SBMAX_l					21
-#define		SBMAX_s					12
-
-
-
-/*	#define		switch_pe				1800 */
-#define		NORM_TYPE				0
-#define		START_TYPE				1
-#define		SHORT_TYPE				2
-#define		STOP_TYPE				3
 
 
 

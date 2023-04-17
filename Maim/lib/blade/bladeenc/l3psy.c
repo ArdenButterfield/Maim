@@ -150,9 +150,6 @@ static	double			ratio_s     [2][SBMAX_s][3];
 
 
 
-
-#if NEW_L3PARM_TABLES
-
 static	void			L3para_read (int sfreq);
 
 #if !ORG_NUMLINES_NORM
@@ -167,34 +164,7 @@ static	void			calc_normed_spreading
 );
 #endif
 
-#else
 
-static	void			L3para_read
-(
-	int						sfreq,
-	int						numlines_l[CBANDS],
-	int						partition_l[HBLKSIZE],
-	double					minval[CBANDS],
-	double					qthr_l[CBANDS],
-	double					norm_l[CBANDS],
-	double					s3_l[CBANDS][CBANDS],
-	int						partition_s[HBLKSIZE_s],
-	double					qthr_s[CBANDS_s],
-	double					norm_s[CBANDS_s],
-	double					SNR_s[CBANDS_s],
-	int						cbw_l[SBMAX_l],
-	int						bu_l[SBMAX_l],
-	int						bo_l[SBMAX_l],
-	double					w1_l[SBMAX_l],
-	double					w2_l[SBMAX_l],
-	int						cbw_s[SBMAX_s],
-	int						bu_s[SBMAX_s],
-	int						bo_s[SBMAX_s],
-	double					w1_s[SBMAX_s],
-	double					w2_s[SBMAX_s]
-);
-
-#endif
 
 
 
@@ -278,18 +248,7 @@ void					psycho_anal_init (double sfreq)
 	}
 
 
-#if NEW_L3PARM_TABLES
 	L3para_read ((int) sfreq);
-#else
-	L3para_read
-	(
-		(int) sfreq,
-		numlines_l, partition_l, minval, qthr_l, norm_l, s3_l,
-		partition_s, qthr_s, norm_s, SNR_s,
-		cbw_l, bu_l, bo_l, w1_l, w2_l,
-		cbw_s, bu_s, bo_s, w1_s, w2_s
-	);
-#endif
 
 
 	/* Set unpredicatiblility of remaining spectral lines to 0.4 */
@@ -788,8 +747,6 @@ void					psycho_anal
 
 /*____ L3para_read() __________________________________________________________*/
 
-#if NEW_L3PARM_TABLES
-
 static void				L3para_read (int sfreq)
 {
 	int						sfreq_idx;
@@ -928,174 +885,6 @@ static void				L3para_read (int sfreq)
 	w1_s  = parm->short_thres.w1_s;
 	w2_s  = parm->short_thres.w2_s;
 }
-
-#else		/* NEW_L3PARM_TABLES */
-
-static	void			L3para_read
-(
-	int						sfreq,
-	int						numlines_l[CBANDS],
-	int						partition_l[HBLKSIZE],
-	double					minval[CBANDS],
-	double					qthr_l[CBANDS],
-	double					norm_l[CBANDS],
-	double					s3_l[CBANDS][CBANDS],
-	int						partition_s[HBLKSIZE_s],
-	double					qthr_s[CBANDS_s],
-	double					norm_s[CBANDS_s],
-	double					SNR_s[CBANDS_s],
-	int						cbw_l[SBMAX_l],
-	int						bu_l[SBMAX_l],
-	int						bo_l[SBMAX_l],
-	double					w1_l[SBMAX_l],
-	double					w2_l[SBMAX_l],
-	int						cbw_s[SBMAX_s],
-	int						bu_s[SBMAX_s],
-	int						bo_s[SBMAX_s],
-	double					w1_s[SBMAX_s],
-	double					w2_s[SBMAX_s]
-)
-{
-	static	double			bval_l[CBANDS];
-	int						cbmax_tp;
-
-	int						sbmax;
-	int						i, j, k, k2;
-
-
-	psyDataElem				*rpa1;
-	psyDataElem2			*rpa2;
-	psyDataElem3			*rpa3;
-
-
-/* Read long block data */
-
-	switch (sfreq)
-	{
-		case 32000:  rpa1 = psy_longBlock_32000_58;  cbmax_tp = 59;  break;
-		case 44100:  rpa1 = psy_longBlock_44100_62;  cbmax_tp = 63;  break;
-		case 48000:  rpa1 = psy_longBlock_48000_61;  cbmax_tp = 62;  break;
-		default   :  return;  /* Just to avoid compiler warnings */
-	}
-
-	for (i = 0, k2 = 0;  i < cbmax_tp;  i++)
-	{
-		numlines_l[i] = rpa1->lines;
-		minval[i]     = rpa1->minVal;
-		qthr_l[i]     = rpa1->qthr;
-		norm_l[i]     = rpa1->norm;
-		bval_l[i]     = rpa1->bVal;
-		rpa1++;
-
-		for (k = 0;  k < numlines_l[i];  k++)
-			partition_l[k2++] = i;
-	}
-
-		
-/************************************************************************
- * Now compute the spreading function, s[j][i], the value of the spread-*
- * ing function, centered at band j, for band i, store for later use    *
- ************************************************************************/
-
-	for (i = 0;  i < cbmax_tp;  i++)
-	{
-		double x, temp, tempx, tempy;
-
-		for (j = 0;  j < cbmax_tp;  j++)
-		{
-/*			tempx = (bval_l[i]-bval_l[j]) * 1.05; */
-			if (j >= i)
-				tempx = (bval_l[i]-bval_l[j]) * 3.0;
-			else
-				tempx = (bval_l[i]-bval_l[j]) * 1.5;
-/*			if (j >= i)  tempx = (bval_l[j]-bval_l[i]) * 3.0;
-			else         tempx = (bval_l[j]-bval_l[i]) * 1.5; */
-			if (tempx > 0.5  &&  tempx < 2.5)
-			{
-				temp = tempx - 0.5;
-				x = 8.0 * temp * (temp-2.0);
-			}
-			else  x = 0.0;
-			tempx += 0.474;
-			tempy = 15.811389 + 7.5*tempx - 17.5*sqrt(1.0+tempx*tempx);
-			if (tempy <= -60.0)  s3_l[i][j] = 0.0;
-			else                 s3_l[i][j] = exp((x + tempy) * LN_TO_LOG10);
-		}
-	}
-
-
-/* Read short block data */
-
-	switch (sfreq)
-	{
-		case 32000:  rpa2 = psy_shortBlock_32000_41;  cbmax_tp = 42;  break;
-		case 44100:  rpa2 = psy_shortBlock_44100_38;  cbmax_tp = 39;  break;
-		case 48000:  rpa2 = psy_shortBlock_48000_37;  cbmax_tp = 38;  break;
-		default   :  return;  /* Just to avoid compiler warnings */
-	}
-
-	for (i = 0, k2 = 0;  i < cbmax_tp;  i++)
-	{
-		numlines_l[i] = rpa2->lines;
-		qthr_s[i]     = rpa2->qthr;
-		norm_s[i]     = rpa2->norm;
-		SNR_s[i]      = rpa2->snr;
-		rpa2++;
-
-		for (k = 0;  k < numlines_l[i];  k++)
-			partition_s[k2++] = i;
-	}
-
-
-/* Read long block data for converting threshold calculation
-   partitions to scale factor bands */
-
-	switch (sfreq)
-	{
-		case 32000:  rpa3 = psy_data3_32000_20;  break;
-		case 44100:  rpa3 = psy_data3_44100_20;  break;
-		case 48000:  rpa3 = psy_data3_48000_20;  break;
-		default   :  return;  /* Just to avoid compiler warnings */
-	}
-	sbmax = SBMAX_l;
-
-	for (i = 0;  i < sbmax;  i++)
-	{
-		cbw_l[i] = rpa3->cbw;
-		bu_l[i] = rpa3->bu;
-		bo_l[i] = rpa3->bo;
-		w1_l[i] = rpa3->w1;
-		w2_l[i] = rpa3->w2;
-		rpa3++;		
-	}
-
-
-/* Read short block data for converting threshold calculation
-   partitions to scale factor bands */
-
-	switch (sfreq)
-	{
-		case 32000:  rpa3 = psy_data4_32000_11;  break;
-		case 44100:  rpa3 = psy_data4_44100_11;  break;
-		case 48000:  rpa3 = psy_data4_48000_11;  break;
-		default   :  return;  /* Just to avoid compiler warnings */
-	}
-	sbmax = SBMAX_s;
-
-	for (i = 0;  i < sbmax;  i++)
-	{
-		cbw_s[i] = rpa3->cbw;
-		bu_s[i] = rpa3->bu;
-		bo_s[i] = rpa3->bo;
-		w1_s[i] = rpa3->w1;
-		w2_s[i] = rpa3->w2;
-		rpa3++;		
-	}	
-}
-
-#endif		/* NEW_L3PARM_TABLES */
-
-
 
 
 

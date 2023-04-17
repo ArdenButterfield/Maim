@@ -170,19 +170,19 @@ unsigned int			codecEncodeChunk
 	char					*pDest
 )
 {
-	static	double				xr[2][2][576];
-	static	double				xr_dec[2][2][576];
-	static	double				pe[2][2];
-	static	int					l3_enc[2][2][576];
-	static	III_psy_ratio		ratio;
-	static	III_scalefac_t		scalefac;
+	double				xr[2][2][576];
+	double				xr_dec[2][2][576];
+	double				pe[2][2];
+	int					l3_enc[2][2][576];
+	III_psy_ratio		ratio;
+	III_scalefac_t		scalefac;
 	int							gr, ch;
 	int							mean_bits, sideinfo_len;
 	int							bitsPerFrame;
 	int							j;
 
 /*
-	static	int					fFirst = TRUE;
+	int					fFirst = TRUE;
 
 	if (fFirst)
 	{

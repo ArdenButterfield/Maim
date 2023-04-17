@@ -280,6 +280,43 @@ typedef		struct
 				int						bufferSize;
 			}						CodecInitOut;
 
+// encoder
+
+			
+/* Psychoacoustic Model 2 Definitions */
+
+#define BLKSIZE         1024
+#define HBLKSIZE        513
+#define CBANDS          63
+
+
+// l3psy
+
+
+#define		ORG_NUMLINES_NORM		0   /* 0 = don't overwrite long numline entries with short numline entries */
+#define		ORG_BLOCK_SELECT		0   /* 0 = ISO draft paper states slightly different block selection */
+#define		ORG_SHORT_CW_LIMIT		0   /* 0 = ISO draft paper says first element starts at 6/4 = 1 (not 2) */
+
+
+
+
+
+/*	#define		CBANDS					  63 */
+#define		CBANDS_s				42
+#define		BLKSIZE_s				256
+#define		HBLKSIZE_s				129
+#define		TCBMAX_l				63
+#define		TCBMAX_s				42
+#define		SBMAX_l					21
+#define		SBMAX_s					12
+
+
+
+/*	#define		switch_pe				1800 */
+#define		NORM_TYPE				0
+#define		START_TYPE				1
+#define		SHORT_TYPE				2
+#define		STOP_TYPE				3
 
 
 
@@ -377,6 +414,91 @@ typedef struct encoder_flags_and_data_struct {
 	int						outputBit;
 
 	double			avg_slots_per_frame;
+
+	// l3spy
+
+		int				new_, old, oldest;
+	int				flush, sync_flush, syncsize;
+
+#if RING_BUFFER==1
+	int				savebuf_start_idx[2];
+#endif
+
+
+
+#if NEW_L3PARM_TABLES
+
+	double			*minval, *qthr_l;
+	double			*qthr_s, *SNR_s;
+	int				*cbw_l, *bu_l, *bo_l;
+	int				*cbw_s, *bu_s, *bo_s;
+	double			*w1_l, *w2_l;
+	double			*w1_s, *w2_s;
+
+#if ORG_NUMLINES_NORM
+
+	int				cbmax_l = CBANDS, cbmax_s = CBANDS_s;
+	int				numlines_l  [CBANDS];
+
+	int				partition_l [HBLKSIZE];
+	int				partition_s [HBLKSIZE_s];
+	double			s3_l        [CBANDS][CBANDS];
+	double			*norm_l, *norm_s;
+
+#else
+
+	int				cbmax_l, cbmax_s;
+	int				*numlines_l;
+	int				*numlines_s;
+
+						/* the non-zero entries of norm_l[i] * s3_l[i][j] */
+	FLOAT			normed_s3_l [900];   /* a bit more space than needed [799|855|735] */
+	int				lo_s3_l     [CBANDS];
+	int				hi_s3_l		[CBANDS];
+
+	FLOAT			normed_s3_s [500];   /* a bit more space than needed [445|395|378] */
+	int				lo_s3_s     [CBANDS_s];
+	int				hi_s3_s		[CBANDS_s];
+
+#endif		/* ORG_NUMLINES_NORM */
+
+#else
+
+	double			minval[CBANDS], qthr_l[CBANDS], norm_l[CBANDS];
+	double			qthr_s[CBANDS_s], norm_s[CBANDS_s], SNR_s[CBANDS_s];
+	int				cbw_l[SBMAX_l],bu_l[SBMAX_l],bo_l[SBMAX_l];
+	int				cbw_s[SBMAX_s],bu_s[SBMAX_s],bo_s[SBMAX_s];
+	double			w1_l[SBMAX_l], w2_l[SBMAX_l];
+	double			w1_s[SBMAX_s], w2_s[SBMAX_s];
+
+	int				numlines_l  [CBANDS];
+
+	int				partition_l [HBLKSIZE];
+	int				partition_s [HBLKSIZE_s];
+	double			s3_l        [CBANDS][CBANDS];
+
+#endif		/* NEW_L3PARM_TABLES */
+
+
+
+/* Scale Factor Bands */
+	int				blocktype_old[2];
+
+
+
+	double			nb_1        [2][CBANDS];
+	double			nb_2        [2][CBANDS];
+
+	double			cw          [HBLKSIZE];
+
+	FLOAT			window      [BLKSIZE];
+	FLOAT			r			[2][2][6];
+	FLOAT			phi_sav		[2][2][6];
+
+	FLOAT			window_s    [BLKSIZE_s];
+
+	double			ratio       [2][SBMAX_l];
+	double			ratio_s     [2][SBMAX_s][3];
 
 	// l3bitstream
 	int				stereo;
