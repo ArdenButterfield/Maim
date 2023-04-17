@@ -73,7 +73,6 @@ static	int				savebuf_start_idx[2];
 
 
 
-#if NEW_L3PARM_TABLES
 
 static	double			*minval, *qthr_l;
 static	double			*qthr_s, *SNR_s;
@@ -81,18 +80,6 @@ static	int				*cbw_l, *bu_l, *bo_l;
 static	int				*cbw_s, *bu_s, *bo_s;
 static	double			*w1_l, *w2_l;
 static	double			*w1_s, *w2_s;
-
-#if ORG_NUMLINES_NORM
-
-static	int				cbmax_l = CBANDS, cbmax_s = CBANDS_s;
-static	int				numlines_l  [CBANDS];
-
-static	int				partition_l [HBLKSIZE];
-static	int				partition_s [HBLKSIZE_s];
-static	double			s3_l        [CBANDS][CBANDS];
-static	double			*norm_l, *norm_s;
-
-#else
 
 static	int				cbmax_l, cbmax_s;
 static	int				*numlines_l;
@@ -106,25 +93,6 @@ static	int				hi_s3_l		[CBANDS];
 static	FLOAT			normed_s3_s [500];   /* a bit more space than needed [445|395|378] */
 static	int				lo_s3_s     [CBANDS_s];
 static	int				hi_s3_s		[CBANDS_s];
-
-#endif		/* ORG_NUMLINES_NORM */
-
-#else
-
-static	double			minval[CBANDS], qthr_l[CBANDS], norm_l[CBANDS];
-static	double			qthr_s[CBANDS_s], norm_s[CBANDS_s], SNR_s[CBANDS_s];
-static	int				cbw_l[SBMAX_l],bu_l[SBMAX_l],bo_l[SBMAX_l];
-static	int				cbw_s[SBMAX_s],bu_s[SBMAX_s],bo_s[SBMAX_s];
-static	double			w1_l[SBMAX_l], w2_l[SBMAX_l];
-static	double			w1_s[SBMAX_s], w2_s[SBMAX_s];
-
-static	int				numlines_l  [CBANDS];
-
-static	int				partition_l [HBLKSIZE];
-static	int				partition_s [HBLKSIZE_s];
-static	double			s3_l        [CBANDS][CBANDS];
-
-#endif		/* NEW_L3PARM_TABLES */
 
 
 
@@ -152,7 +120,6 @@ static	double			ratio_s     [2][SBMAX_s][3];
 
 static	void			L3para_read (encoder_flags_and_data* flags, int sfreq);
 
-#if !ORG_NUMLINES_NORM
 static	void			calc_normed_spreading
 (
 	encoder_flags_and_data* flags,
@@ -163,7 +130,6 @@ static	void			calc_normed_spreading
 	int						hi_s3[],
 	const double			norm[]
 );
-#endif
 
 
 /*____ psycho_anal_init() ___________________________________________________*/
@@ -290,9 +256,7 @@ void					psycho_anal
 	double					r_prime, phi_prime; /* not FLOAT */
 	double					temp1, temp2, temp3;
 
-#if !ORG_NUMLINES_NORM && NEW_L3PARM_TABLES
 	FLOAT					*s3_ptr;
-#endif
 
 	int						sblock;
 
@@ -477,24 +441,6 @@ void					psycho_anal
 *    calculation partitions                                           *
 **********************************************************************/
 
-#if ORG_NUMLINES_NORM || !NEW_L3PARM_TABLES
-
-	for (b = 0;  b < cbmax_l;  b++)
-	{
-		eb[b] = 0.0;
-		cb[b] = 0.0;
-	}
-	for (j = 0;  j < HBLKSIZE;  j++)
-	{
-		int tp = partition_l[j];
-		if (tp >= 0)
-		{
-			eb[tp] += energy[j];
-			cb[tp] += cw[j] * energy[j];
-		}
-	}
-
-#else
 
 	j = 0;
 	for (b = 0;  b < cbmax_l;  b++)
@@ -517,7 +463,6 @@ void					psycho_anal
 
 	s3_ptr = normed_s3_l;
 
-#endif
 
 
 	*pe = 0.0;
@@ -535,19 +480,11 @@ void					psycho_anal
 			convolve the partitioned energy and unpredictability
 			with the spreading function, normed_s3_l[b][k]
 		*/
-#if ORG_NUMLINES_NORM || !NEW_L3PARM_TABLES
-		for (k = 0;  k < cbmax_l;  k++)
-		{
-			ecb += s3_l[b][k] * eb[k];  /* sprdngf for Layer III */
-			ctb += s3_l[b][k] * cb[k];
-		}
-#else
 		for (k = lo_s3_l[b];  k < hi_s3_l[b];  k++)
 		{
 			ecb += *s3_ptr   * eb[k];  /* sprdngf for Layer III */
 			ctb += *s3_ptr++ * cb[k];
 		}
-#endif
 
 
 		/*
@@ -569,11 +506,7 @@ void					psycho_anal
 		SNR_l = MAX (minval[b], 23.0 * tbb + 6.0);   /* 29*tbb + 6*(1-tbb) */
 	
 		/* calculate the threshold for each partition */
-#if ORG_NUMLINES_NORM || !NEW_L3PARM_TABLES
-	    nb = ecb * norm_l[b] * exp(-SNR_l * LN_TO_LOG10);
-#else
 	    nb = ecb * exp(-SNR_l * LN_TO_LOG10);   /* our ecb is already normed */
-#endif
 
 		/*
 			pre-echo control
@@ -651,15 +584,6 @@ void					psycho_anal
 
 		for (sblock = 0;  sblock < 3;  sblock++)
 		{
-#if ORG_NUMLINES_NORM || !NEW_L3PARM_TABLES
-
-			for (b = 0;  b < cbmax_s;  b++)
-				eb[b] = 0.0;
-
-			for (j = 0;  j < HBLKSIZE_s;  j++)
-				eb[partition_s[j]] += energy_s[sblock][j];
-
-#else
 
 			j = 0;
 			for (b = 0;  b < cbmax_s;  b++)
@@ -679,24 +603,16 @@ void					psycho_anal
 			}
 
 			s3_ptr = normed_s3_s;
-#endif
 
 			for (b = 0;  b < cbmax_s;  b++)
 			{
 				FLOAT					nb;
 				FLOAT					ecb = 0.0;
 
-#if ORG_NUMLINES_NORM || !NEW_L3PARM_TABLES
-				for (k = 0;  k < cbmax_s;  k++)
-					ecb += s3_l[b][k] * eb[k];
-
-				nb = ecb * norm_l[b] * exp((double) SNR_s[b] * LN_TO_LOG10);
-#else
 				for (k = lo_s3_s[b];  k < hi_s3_s[b];  k++)
 					ecb += *s3_ptr++ * eb[k];
 
 				nb = ecb * exp((double) SNR_s[b] * LN_TO_LOG10);   /* our ecb is already normed */
-#endif
 				thr[b] = MAX(qthr_s[b], nb);
 			}
 

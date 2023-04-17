@@ -282,7 +282,7 @@ typedef		struct
 
 // encoder
 
-			
+
 /* Psychoacoustic Model 2 Definitions */
 
 #define BLKSIZE         1024
@@ -293,7 +293,7 @@ typedef		struct
 // l3psy
 
 
-#define		ORG_NUMLINES_NORM		0   /* 0 = don't overwrite long numline entries with short numline entries */
+#define		ORG_NUMLINES_NORM		0   /* 0 = don't overwrite long numline entries with short numline entries */ // DON"T CHANGE THIS --awb
 #define		ORG_BLOCK_SELECT		0   /* 0 = ISO draft paper states slightly different block selection */
 #define		ORG_SHORT_CW_LIMIT		0   /* 0 = ISO draft paper says first element starts at 6/4 = 1 (not 2) */
 
@@ -426,7 +426,6 @@ typedef struct encoder_flags_and_data_struct {
 
 
 
-#if NEW_L3PARM_TABLES
 
 	double			*minval, *qthr_l;
 	double			*qthr_s, *SNR_s;
@@ -435,17 +434,7 @@ typedef struct encoder_flags_and_data_struct {
 	double			*w1_l, *w2_l;
 	double			*w1_s, *w2_s;
 
-#if ORG_NUMLINES_NORM
 
-	int				cbmax_l = CBANDS, cbmax_s = CBANDS_s;
-	int				numlines_l  [CBANDS];
-
-	int				partition_l [HBLKSIZE];
-	int				partition_s [HBLKSIZE_s];
-	double			s3_l        [CBANDS][CBANDS];
-	double			*norm_l, *norm_s;
-
-#else
 
 	int				cbmax_l, cbmax_s;
 	int				*numlines_l;
@@ -460,24 +449,8 @@ typedef struct encoder_flags_and_data_struct {
 	int				lo_s3_s     [CBANDS_s];
 	int				hi_s3_s		[CBANDS_s];
 
-#endif		/* ORG_NUMLINES_NORM */
 
-#else
 
-	double			minval[CBANDS], qthr_l[CBANDS], norm_l[CBANDS];
-	double			qthr_s[CBANDS_s], norm_s[CBANDS_s], SNR_s[CBANDS_s];
-	int				cbw_l[SBMAX_l],bu_l[SBMAX_l],bo_l[SBMAX_l];
-	int				cbw_s[SBMAX_s],bu_s[SBMAX_s],bo_s[SBMAX_s];
-	double			w1_l[SBMAX_l], w2_l[SBMAX_l];
-	double			w1_s[SBMAX_s], w2_s[SBMAX_s];
-
-	int				numlines_l  [CBANDS];
-
-	int				partition_l [HBLKSIZE];
-	int				partition_s [HBLKSIZE_s];
-	double			s3_l        [CBANDS][CBANDS];
-
-#endif		/* NEW_L3PARM_TABLES */
 
 
 
