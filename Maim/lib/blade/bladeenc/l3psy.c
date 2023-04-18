@@ -38,9 +38,6 @@
 	-	use some explicit type casting to avoid compiler warnings
 */
 
-#define		RING_BUFFER				1
-
-
 
 
 
