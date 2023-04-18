@@ -1,0 +1,83 @@
+BladeEnc was started by Tord Jansson as a project to make a decent, free
+encoder for high-bitrate MP3 encoding, heavily based on the ISO source code
+for a reference encoder. Since then it has developed into a free software
+project (Open Source) with many contributors:
+
+===============================================================================
+Project initiator and maintainer:
+===============================================================================
+Tord Jansson <tord.jansson@swipnet.se>
+
+===============================================================================
+Major contributors:
+===============================================================================
+Andre' Piotrowski		Numerous improvements to the MP3 encoding routines.
+Jeff Squyres			Maintains MPI port (now discontinued), various contributions.
+Petteri Kamppuri		Maintains MacOS port.
+
+
+
+===============================================================================
+Contributors:
+===============================================================================
+Mikael Kjellström
+Kevin Doherty
+Milan Hodoscek
+Wesley Hosking
+Jon Watte
+Dmitri Kalintsev
+William Thompson
+Olaf Pueschel
+Marc Schefer
+Lennart Börjeson
+John DuBois
+Jeremy Prior
+Frans E. van Dorsselaer
+Roger Fujii
+Robert Schlabbach
+Marco Amrein
+Vitor Sessak
+Serg 'Ice' Tsyganenko
+Rich West
+Ben Slusky
+Simon Burge
+Brad
+Matt Craven
+Paul Cantrell
+Petter Reinholdtsen
+Paul Martin
+Troy Engel
+Chris DeLise
+Sadruddin Rejeb
+Mauro Manfrin
+Rob Ekl
+Jeffrey Hawk
+Stephen from Minnesota
+
+===============================================================================
+People who helped port BladeEnc to different architectures before it went
+Open Source:
+===============================================================================
+Trevor Phillips, Zac Livingston, Jon Coyle, Alexey Marinichev
+Mikael Kjellström, Steve Burns, Markus Ridinger, Giao Nguyen, Joel Fredrikson
+Marca Registrada, Rob Braun.
+
+
+===============================================================================
+The ISO reference sourcecode credits the following people as its developers
+and contributors:
+===============================================================================
+Bill Aspromonte, Shaun Astarabadi, R. Bittner, Karlheinz Brandenburg
+W. Joseph Carter, Jack Chang, Mike Coleman, Johnathan Devine, Ernst Eberlein
+Dan Ellis, Peter Farrett, Jean-Georges Fritsch, Vlad Fruchter, Hendrik Fuchs
+Bernhard Grill, Amit Gulati, Munsi Haque, Chuck Hsiao, Toshiyuki Ishino
+Masahiro Iwadare, Earl Jennings, James Johnston, Leon v.d. Kerkhof, Don Lee
+Mike Li, Yu-Tang Lin, Soren Neilsen, Simao F. Campos Neto,Mark Paley
+Davis Pan,  Tan Ah Peng,  Kevin Peterson,  Juan Pineda,  Ernst F. Schroeder
+Peter Siebert,  Jens Spille,  Sam Stewart,  Al Tabayoyon,  Kathy Wang
+Franz-Otto Witte,  Douglas Wong.
+
+
+
+IF YOU BELIEVE THAT I HAVE MISSED SOME CONTRIBUTOR IN THIS LIST, PLEASE E-MAIL
+ME (tord.jansson@swipnet.se) AND I'LL CORRECT ANY MISSTAKE!

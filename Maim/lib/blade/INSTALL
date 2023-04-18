@@ -1,0 +1,108 @@
+Ok, I've finally taken the time to replace the generic default installation
+instructions with my own more specific ones, so now we should cover all
+architectures.
+
+/Tord
+BladeEnc Maintainer
+
+
+Windows (using Visual C++):
+===========================
+
+1. Create a new, empty "Win32 Console Application" project.
+2. Add all the .C and .H files from the folder "bladeenc" to this new project.
+3. Compile. You should now have a working binary.
+
+NOTE!:
+Some older versions of Visual C++ have been known to generated degraded
+versions of BladeEnc, generating bad output. This might no longer be an issue
+due to changes in BladeEnc, but in order to be sure, follow the quality
+test steps at the end of this file.
+
+
+All UNIX systems (Linux, FreeBSD, Solaris, AIX, UnixWare, HPUX etc)
+===================================================================
+
+Use the normal procedure of "./configure", "make" and "make install".
+
+That is:
+
+1. Uncompress the tar.gz archive.
+
+2. Step into the bladeenc directory.
+
+3. Type "./configure", wait for the script to finish. BladeEnc is by default
+   installed to /usr/local/bin which may not be in your path --many unixes
+   (including Linux distributions like RedHat) do *not* put /usr/local/bin in
+   your path by default.
+
+   If that's the case, either put /usr/local/bin in your path or install to
+   /usr/bin instead by typing "./configure --prefix=/usr".
+
+4. Type "make" and watch BladeEnc being built. Ignore any warnings.
+
+5. As root (use "su" to switch to root if you're not), type "make install".
+
+BladeEnc should now be correctly installed on your system.
+
+
+Alternatively you can on some systems (tested on Linux) just go to the bladeenc
+subdirectory and type:
+
+gcc -O3 -o bladeenc *.c -lm
+
+( -lm might be necessary on some systems, but might give you problems on others,
+test without if it doesn't work).
+
+
+BeOS (i386 & PPC):
+==================
+
+Go to the bladeenc subdirectory and type:
+
+gcc -O3 -o bladeenc *.c
+
+
+OS/2
+====
+
+First you need to change the SYSTEM-define in system.h to IBM_OS2 (if somebody
+can patch system.h to autodetect OS/2 I will be gratefull).
+
+Then you can (hopefully) use the supplied Makefile.os2 to build on OS/2. 
+If the makefile is out of date, either fix it and send me a patch or
+just follow the instructions for other architectures below.
+
+
+Other architectures / compilers:
+================================
+
+If your architecture is listed at the top of system.h it is supported (or at
+least supposed to be, it can be temporarily broken) and should be able to
+create an executable using any good compiler following these easy steps:
+
+1. Change the SYSTEM-define in system.h to reflect your architecture.
+2. Compile all .C files in the bladeenc-subdirectory into an executable
+   using whatever compiler you prefer. Hopefully it works.
+
+
+
+Quality test:
+=============
+
+Some compilers (including certain revisions of both Visual C++ and GNU C) have
+been found to generate degraded versions of BladeEnc if optimizations are
+turned on. To be sure that you don't have any quality degradation, follow these
+easy steps:
+
+1. Compile BladeEnc without any optimizations enabled (in VC++: use "debug").
+2. Encode a sample (at least 10 seconds) with the unoptimized BladeEnc.
+3. Compile BladeEnc using all optimizations you want.
+4. Encode the same sample, using the same settings with this optimized
+   BladeEnc.
+5. Compare the generated mp3-files using any kind of file comparison programs
+   or checksum programs. The files should be 100% identical.
+
+As far as I know has no compiler generated a degraded BladeEnc when
+optimizations are disabled.
+

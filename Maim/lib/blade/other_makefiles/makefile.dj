@@ -1,0 +1,30 @@
+# bladeenc makefile for DJGPP (http://www.delorie.com/)
+# created by Michael Langner (katharsis@geoshock.com)
+
+CC = gcc
+LD = gcc
+
+CFLAGS= -Wall \
+	-O6 \
+	-march=pentiumpro \
+	-mcpu=pentiumpro \
+	-ffast-math
+
+COREOBJS = codec.o bladesys.o common.o encode.o subs.o \
+	formatbitstream2.o l3bitstream.o l3psy.o \
+	loop.o main.o mdct.o reservoir.o samplein.o strupr.o \
+	tables.o arglink.o
+
+all: bladeenc
+
+bladeenc: $(COREOBJS)
+	$(LD) $(COREOBJS) -o bladeenc.exe
+
+codec.o: codec.c
+	$(CC) -Wall -O1 -march=pentiumpro -mcpu=pentiumpro -ffast-math -c -o codec.o codec.c
+..c.o:
+	$(CC) -c $(CFLAGS) $<
+
+clean: bladeenc
+	del *.o
+	del bladeenc.exe

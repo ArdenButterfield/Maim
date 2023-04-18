@@ -42,6 +42,9 @@ Maim/maim\ audiohost\ setup.filtergraph
 *.out
 *.app
 Maim/lib/lame/frontend/lame
+Maim/lib/blade/bladeenc/bladeenc
 
 # misc
 **/.DS_Store
+**/*.asd
+**/*.dSYM
