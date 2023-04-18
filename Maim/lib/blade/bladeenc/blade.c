@@ -38,7 +38,7 @@ int blade_encode_chunk(encoder_flags_and_data* flags, float* left, float* right,
 		readBuffer[i * 2] = (short)(left[i] * (1 << 15));
 		readBuffer[i * 2 + 1] = (short)(right[i] * (1 << 15));
 	}
-	return codecEncodeChunk (flags_and_data, 2304, readBuffer, output);
+	return codecEncodeChunk (flags, 2304, readBuffer, output);
 }
 
 void blade_deinit(encoder_flags_and_data* flags)

@@ -37,6 +37,34 @@
 
 */
 
+
+#include <stdio.h>
+#include <math.h>
+
+#include "blade.h"
+
+int main()
+{
+	float left[1152];
+	float right[1152];
+	char out[10000];
+	int numout;
+	int i = 0;
+	encoder_flags_and_data* flags = blade_init(44100, 320);
+	for (int round = 0; round < 1000; ++round){
+		for (i = 0; i < 1152; ++i) {
+			left[i] = sin((float)((round * 1152 + i) / 1000.f));
+			right[i] = sin((float)((round * 1152 + i) / 1000.f));
+		}
+		numout = blade_encode_chunk(flags, left, right, out);
+		for (int c = 0; c < numout; ++c) {
+			putchar(out[c]);
+		}
+	}
+	blade_deinit(flags);
+}
+
+#if 0
 #include	<stdio.h>
 #include    <stdlib.h>
 #include    <string.h>
@@ -1638,6 +1666,6 @@ int						removeJobQueueEntry (Job *psJob)
 
 	return TRUE;
 }
-
+#endif
 
 
