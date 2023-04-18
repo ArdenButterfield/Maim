@@ -484,7 +484,10 @@ int						main (int argc, char* argv[])
 		/* Encoding loop */
 		while  ((nSamples = readSamples (&psJobQueue->sInput, samplesPerFrame - nNoGapSamples, readBuffer + noGapOfs)) > 0)
 		{
-			printf("%i %i\n", nSamples, samplesPerFrame);
+			for (int i = 0; i < 2304; ++i) {
+				printf("%i ", readBuffer[i]);
+			}
+			printf("\n");
 			nSamples     += nNoGapSamples;
 			nNoGapSamples = 0;
 			noGapOfs      = 0;

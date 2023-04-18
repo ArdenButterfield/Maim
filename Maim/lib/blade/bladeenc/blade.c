@@ -28,10 +28,20 @@ encoder_flags_and_data* blade_init(int samplerate, int bitrate)
 
 int blade_get_chunk_size(encoder_flags_and_data* flags)
 {
-	return 0;
+	return 1152;
 }
 
-blade_deinit(encoder_flags_and_data* flags)
+int blade_encode_chunk(encoder_flags_and_data* flags, float* left, float* right, char* output)
+{
+	short readBuffer[2304];
+	for (int i = 0; i < 1152; ++i) {
+		readBuffer[i * 2] = (short)(left[i] * (1 << 15));
+		readBuffer[i * 2 + 1] = (short)(right[i] * (1 << 15));
+	}
+	return codecEncodeChunk (flags_and_data, 2304, readBuffer, output);
+}
+
+void blade_deinit(encoder_flags_and_data* flags)
 {
 	free(flags);
 }
