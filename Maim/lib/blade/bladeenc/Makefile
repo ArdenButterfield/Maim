@@ -1,11 +1,11 @@
 sources = $(wildcard *.c)
 objects = $(addsuffix .o, $(basename $(sources)))
 flags = -g -W -Wall
-target = bladeenc
+target = libblade.a
 # startflags = -m32
 
 $(target) : $(objects)
-	clang $(startflags) -o $(target) $(objects)
+	ar rcs $(target) $(objects)
 
 %.o : %.c
 	clang $(startflags) -c $(flags) $< -o $@

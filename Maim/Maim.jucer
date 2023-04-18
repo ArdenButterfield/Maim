@@ -3,7 +3,8 @@
 <JUCERPROJECT id="sSUksU" name="Maim" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               pluginManufacturer="Wildergarden" pluginManufacturerCode="Awbb"
-              pluginName="Maim" headerPath="../lib/lame/include" pluginFormats="buildAU,buildVST3">
+              pluginName="Maim" headerPath="../lib/lame/include&#10;../lib/blade/bladeenc"
+              pluginFormats="buildAU,buildVST3">
   <MAINGROUP id="AXwNpi" name="Maim">
     <GROUP id="{08B509AB-B546-790E-080C-857E3BAD52FE}" name="Source">
       <GROUP id="{0D544590-D22F-C70E-E1F7-D80B68DB01F0}" name="GUIelements">
@@ -53,6 +54,10 @@
       <FILE id="ibjFZL" name="AutoGain.cpp" compile="1" resource="0" file="Source/AutoGain.cpp"/>
       <FILE id="JkY2wL" name="AutoGain.h" compile="0" resource="0" file="Source/AutoGain.h"/>
       <FILE id="uYkYsx" name="QueueBuffer.h" compile="0" resource="0" file="Source/QueueBuffer.h"/>
+      <FILE id="WkATd4" name="BladeController.cpp" compile="1" resource="0"
+            file="Source/BladeController.cpp"/>
+      <FILE id="ddTUf5" name="BladeController.h" compile="0" resource="0"
+            file="Source/BladeController.h"/>
       <FILE id="P31oi2" name="LameController.cpp" compile="1" resource="0"
             file="Source/LameController.cpp"/>
       <FILE id="OdqKO6" name="LameController.h" compile="0" resource="0"
@@ -89,8 +94,8 @@
         <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <XCODE_MAC targetFolder="Builds/MacOSX" extraCompilerFlags="-I../../lib/lame/include"
-               extraLinkerFlags="../../lib/lame/libmp3lame/.libs/libmp3lame.a">
+    <XCODE_MAC targetFolder="Builds/MacOSX" extraCompilerFlags="-I../../lib/lame/include&#10;-I../../lib/blade/bladeenc"
+               extraLinkerFlags="../../lib/lame/libmp3lame/.libs/libmp3lame.a&#10;../../lib/blade/bladeenc/libblade.a">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="Maim"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Maim"/>
