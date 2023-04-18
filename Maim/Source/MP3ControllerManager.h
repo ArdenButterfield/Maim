@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    LameControllerManager.h
+    MP3ControllerManager.h
     Created: 10 Apr 2023 5:05:43pm
     Author:  Arden Butterfield
 
@@ -15,18 +15,19 @@
 #include <cmath>
 
 #include "LameController.h"
+#include "BladeController.h"
 
 #define NUM_REASSIGNMENT_BANDS 20
 
-class LameControllerManager : public juce::AudioProcessorValueTreeState::Listener,
+class MP3ControllerManager : public juce::AudioProcessorValueTreeState::Listener,
 public juce::Timer
 {
 public:
-    LameControllerManager(int samplerate,
+    MP3ControllerManager(int samplerate,
                           int initialBitrate,
                           int samplesPerBlock,
                           juce::AudioProcessorValueTreeState& parameters);
-    ~LameControllerManager();
+    ~MP3ControllerManager();
 
     void changeBitrate(int newBitrate);
     void processBlock(juce::AudioBuffer<float>& buffer);
@@ -72,9 +73,9 @@ private:
     const int blocksBeforeSwitch;
     int switchCountdown;
     
-    std::array<LameController, 2> controllers;
-    LameController* currentController;
-    LameController* offController;
+    std::array<BladeController, 2> controllers;
+    BladeController* currentController;
+    BladeController* offController;
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;

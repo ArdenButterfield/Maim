@@ -15,7 +15,6 @@
 #include <vector>
 #include <array>
 #include <lame.h>
-#include <stdlib.h>
 #include <memory>
 #include <cstring>
 #include <iostream>
