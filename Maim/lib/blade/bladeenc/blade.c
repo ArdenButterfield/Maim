@@ -1,6 +1,5 @@
 #include "blade.h"
 #include	"codec.h"
-#include    "samplein.h"
 
 #include <stdlib.h>
 
