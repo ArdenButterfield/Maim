@@ -379,6 +379,7 @@ typedef		struct HeaderDef
 
 
 typedef struct encoder_flags_and_data_struct {
+	CodecInitIn codec_data;
 	// codec
 	L3SBS					l3_sb_sample;
 

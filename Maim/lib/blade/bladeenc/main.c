@@ -463,6 +463,7 @@ int						main (int argc, char* argv[])
 				samplesPerFrame /= 2;
 			pBuffer = (char *) malloc (pCodecInfo->bufferSize);
 		}
+		printf("samples per frame: %i\n", samplesPerFrame);
 
 		if (strcmp (psJobQueue->outputFilename, "STDOUT") == 0)
 		{
@@ -481,9 +482,9 @@ int						main (int argc, char* argv[])
 		}
 
 		/* Encoding loop */
-
 		while  ((nSamples = readSamples (&psJobQueue->sInput, samplesPerFrame - nNoGapSamples, readBuffer + noGapOfs)) > 0)
 		{
+			printf("%i %i\n", nSamples, samplesPerFrame);
 			nSamples     += nNoGapSamples;
 			nNoGapSamples = 0;
 			noGapOfs      = 0;
