@@ -73,9 +73,9 @@ private:
     const int blocksBeforeSwitch;
     int switchCountdown;
     
-    std::array<BladeController, 2> controllers;
-    BladeController* currentController;
-    BladeController* offController;
+    std::array<LameController, 2> controllers;
+    LameController* currentController;
+    LameController* offController;
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;
