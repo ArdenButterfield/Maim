@@ -40,7 +40,7 @@ struct huffcodetab {
 };
 
 
-extern struct huffcodetab	ht[34];
+extern struct huffcodetab	blade_ht[34];
 /* global memory block               */
 /* array of all huffcodtable headers */
 /* 0..31 Huffman code table 0..31    */

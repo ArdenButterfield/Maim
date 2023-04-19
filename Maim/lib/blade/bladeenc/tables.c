@@ -1576,7 +1576,7 @@ unsigned char huff_hlen33[16*1] = {
     4
 };
 
-struct huffcodetab ht[34] = {
+struct huffcodetab blade_ht[34] = {
     { 0, 0, 0, 0, -1, 0, 0 },
     { 2, 2, 0, 0, -1, huff_tab1, huff_hlen1 },
     { 3, 3, 0, 0, -1, huff_tab2, huff_hlen2 },

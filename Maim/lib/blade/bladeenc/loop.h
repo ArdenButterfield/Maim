@@ -74,7 +74,7 @@ extern	int				fInit_huffman_read_flag;
 */
 
 
-extern	int				pretab[];
+extern	int				blade_pretab[];
 
 
 struct	scalefac_struct
@@ -83,7 +83,7 @@ struct	scalefac_struct
 	int s[14];
 };
 
-extern	struct scalefac_struct		sfBandIndex[];  /* Table B.8 -- in loop.c */
+extern	struct scalefac_struct		blade_sfBandIndex[];  /* Table B.8 -- in loop.c */
 
 
 

@@ -48,9 +48,9 @@ void BladeController::init(const int sampleRate,
 void BladeController::deInit()
 {
     bInitialized = false;
-    if (lame_enc_handler) {
+    if (blade_encoder) {
         blade_deinit(blade_encoder);
-        lame_enc_handler = nullptr;
+        blade_encoder = nullptr;
     }
     if (lame_dec_handler) {
         hip_decode_exit(lame_dec_handler);

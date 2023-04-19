@@ -165,7 +165,7 @@ int						my_nint (double in)
 	       + (fr_ps->header->version * 3)
 */
 
-struct scalefac_struct sfBandIndex[3] =
+struct scalefac_struct blade_sfBandIndex[3] =
 {
 	{ /* Table B.8.b: 44.1 kHz */
 		{0,4,8,12,16,20,24,30,36,44,52,62,74,90,110,134,162,196,238,288,342,418,576},
@@ -229,7 +229,7 @@ static unsigned nr_of_sfb_block[6][3][4] =
 
 
 /* Table B.6: layer3 preemphasis */
-int  pretab[21] =
+int  blade_pretab[21] =
 {
 	0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 1, 1, 1, 
@@ -260,8 +260,8 @@ int						tjBitOverflow2;
 
 void fixStatic_loop( void )
 {
-	scalefac_band_long  = &sfBandIndex[0].l[0];
-	scalefac_band_short = &sfBandIndex[0].s[0];
+	scalefac_band_long  = &blade_sfBandIndex[0].l[0];
+	scalefac_band_short = &blade_sfBandIndex[0].s[0];
 }
 
 
@@ -440,8 +440,8 @@ void					iteration_loop
 	}
 	mode_gr = 2;
 
-	scalefac_band_long  = &sfBandIndex[info->sampling_frequency].l[0];
-	scalefac_band_short = &sfBandIndex[info->sampling_frequency].s[0];
+	scalefac_band_long  = &blade_sfBandIndex[info->sampling_frequency].l[0];
+	scalefac_band_short = &blade_sfBandIndex[info->sampling_frequency].s[0];
 
 
 	ResvFrameBegin (fr_ps, side_info, mean_bits, bitsPerFrame);
@@ -1025,13 +1025,13 @@ static	int				needed_bits_for_storing_scalefactors
 		if (!cod_info->preflag)
 		{
 			for (sfb = 11;  sfb < SBMAX_l;  sfb++)
-				if (scalefac_l[sfb] < (1 + cod_info->scalefac_scale) * pretab[sfb])
+				if (scalefac_l[sfb] < (1 + cod_info->scalefac_scale) * blade_pretab[sfb])
 					break;
 
 			if (sfb == SBMAX_l)
 			{
 				for (sfb = 11;  sfb < SBMAX_l;  sfb++)
-					scalefac_l[sfb] -= (1 + cod_info->scalefac_scale) * pretab[sfb];
+					scalefac_l[sfb] -= (1 + cod_info->scalefac_scale) * blade_pretab[sfb];
 				cod_info->preflag = 1;
 			}
 		}
@@ -1277,11 +1277,11 @@ static	int				amplify_long
 
 			cod_info->preflag = 1;
 
-			stop_at = 11;   /* pretab[sfb] = 0  for  sfb = 0..10 */
+			stop_at = 11;   /* blade_pretab[sfb] = 0  for  sfb = 0..10 */
 
 			for (sfb = stop_at;  sfb < max_used_sfb_l;  sfb++)
 			{
-				expo16_l[sfb] += pre_expo_off[sfb] = expo16_off * pretab[sfb];
+				expo16_l[sfb] += pre_expo_off[sfb] = expo16_off * blade_pretab[sfb];
 
 				mark_tab_l[mark_idx_l++] = sfb;
 			}
@@ -1592,8 +1592,8 @@ static	int				count_bits_long (void)
 		if (ix_l[bigv_region-3])  bits++, p |= 2;
 		if (ix_l[bigv_region-4])  bits++, p |= 1;
 
-		sum0 += ht[32].hlen[p];
-		sum1 += ht[33].hlen[p];
+		sum0 += blade_ht[32].hlen[p];
+		sum1 += blade_ht[33].hlen[p];
 	}
 
 	cod_info->count1     = (zero_region-bigv_region) / 4;
@@ -1824,8 +1824,8 @@ static	void			choose_table_long
 
 	if (max < 15)
 	{
-		choice0 = 1;  /* we can start with 1 because ht[0].xlen == 0 <= max */
-		while (ht[choice0].xlen <= max)
+		choice0 = 1;  /* we can start with 1 because blade_ht[0].xlen == 0 <= max */
+		while (blade_ht[choice0].xlen <= max)
 			choice0++;
 
 		switch (choice0)
@@ -1849,13 +1849,13 @@ static	void			choose_table_long
 		max -= 15;
 
 #if ORG_HUFFMAN_CODING
-		choice0 = 15;  while (ht[choice0].linmax < max)  choice0++;
+		choice0 = 15;  while (blade_ht[choice0].linmax < max)  choice0++;
 #else
-		choice0 = 16;  while (ht[choice0].linmax < max)  choice0++;
+		choice0 = 16;  while (blade_ht[choice0].linmax < max)  choice0++;
 #endif
 
 assert(choice0 < 24);
-		choice1 = 24;  while (ht[choice1].linmax < max)  choice1++;
+		choice1 = 24;  while (blade_ht[choice1].linmax < max)  choice1++;
 assert(choice1 < 32);
 
 #if ORG_HUFFMAN_CODING
@@ -1908,8 +1908,8 @@ static	void 			choose_table_short
 
 	if (max < 15)
 	{
-		choice0 = 1;  /* we can start with 1 because ht[0].xlen == 0 <= max */
-		while (ht[choice0].xlen <= max)
+		choice0 = 1;  /* we can start with 1 because blade_ht[0].xlen == 0 <= max */
+		while (blade_ht[choice0].xlen <= max)
 			choice0++;
 
 #if ORG_HUFFMAN_CODING
@@ -1938,15 +1938,15 @@ static	void 			choose_table_short
 
 #if ORG_HUFFMAN_CODING
 
-		choice0 = 15;  while (ht[choice0].linmax < max)  choice0++;
+		choice0 = 15;  while (blade_ht[choice0].linmax < max)  choice0++;
 assert(choice0 < 24);
 		tiny_single_Huffman_2 (start, end, choice0, table, bit_sum);
 
 #else
 
-		choice0 = 16;  while (ht[choice0].linmax < max)  choice0++;
+		choice0 = 16;  while (blade_ht[choice0].linmax < max)  choice0++;
 assert(choice0 < 24);
-		choice1 = 24;  while (ht[choice1].linmax < max)  choice1++;
+		choice1 = 24;  while (blade_ht[choice1].linmax < max)  choice1++;
 assert(choice1 < 32);
 		tiny_double_Huffman_2 (start, end, choice0, choice1, table, bit_sum);
 
@@ -1982,7 +1982,7 @@ static	void			single_Huffman
 */
 	unsigned				bits0, signs, idx;
 
-	static	struct huffcodetab		*h0 = ht + /* table0 */ 1;   /* static because of the constant!!! */
+	static	struct huffcodetab		*h0 = blade_ht + /* table0 */ 1;   /* static because of the constant!!! */
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == 2 */
@@ -2025,7 +2025,7 @@ static	void			tiny_single_Huffman
 	int						v0, v1, v2;
 	unsigned				bits0, signs, idx0, idx1, idx2;
 
-	struct huffcodetab		*h0 = ht + table0;
+	struct huffcodetab		*h0 = blade_ht + table0;
 
 	unsigned				ylen = h0->ylen;
 
@@ -2066,7 +2066,7 @@ static	void tiny_single_Huffman
 */
 	unsigned				bits0, signs, idx0, idx1, idx2;
 
-	static	struct huffcodetab		*h0 = ht + /* table0 */ 1;   /* static because of the constant!!! */
+	static	struct huffcodetab		*h0 = blade_ht + /* table0 */ 1;   /* static because of the constant!!! */
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == 2 --- static because of the constant!!! */
@@ -2111,7 +2111,7 @@ static	void tiny_single_Huffman_2   /* Escape tables */
 	int						v0, v1, v2;
 	unsigned				bits0, signs, xbits, idx0, idx1, idx2;
 
-	struct huffcodetab		*h0 = ht + table0;
+	struct huffcodetab		*h0 = blade_ht + table0;
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == 16 --- static because of the constant!!! */
@@ -2163,8 +2163,8 @@ static	void			double_Huffman
 	int						v;
 	unsigned				bits0, bits1, signs, idx;
 
-	struct huffcodetab		*h0 = ht + table0;
-	struct huffcodetab		*h1 = ht + table1;
+	struct huffcodetab		*h0 = blade_ht + table0;
+	struct huffcodetab		*h1 = blade_ht + table1;
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen */
 
@@ -2209,8 +2209,8 @@ static	void			tiny_double_Huffman
 	int						v0, v1, v2;
 	unsigned				bits0, bits1, signs, idx0, idx1, idx2;
 
-	struct huffcodetab		*h0 = ht + table0;
-	struct huffcodetab		*h1 = ht + table1;
+	struct huffcodetab		*h0 = blade_ht + table0;
+	struct huffcodetab		*h1 = blade_ht + table1;
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen */
 
@@ -2264,9 +2264,9 @@ static	void			triple_Huffman
 	int						v;
 	unsigned				bits0, bits1, bits2, signs, idx;
 
-	struct huffcodetab		*h0 = ht + table0;
-	struct huffcodetab		*h1 = ht + table1;
-	struct huffcodetab		*h2 = ht + table2;
+	struct huffcodetab		*h0 = blade_ht + table0;
+	struct huffcodetab		*h1 = blade_ht + table1;
+	struct huffcodetab		*h2 = blade_ht + table2;
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */
 
@@ -2318,9 +2318,9 @@ static	void			tiny_triple_Huffman
 	int						v0, v1, v2;
 	unsigned				bits0, bits1, bits2, signs, idx0, idx1, idx2;
 
-	struct huffcodetab		*h0 = ht + table0;
-	struct huffcodetab		*h1 = ht + table1;
-	struct huffcodetab		*h2 = ht + table2;
+	struct huffcodetab		*h0 = blade_ht + table0;
+	struct huffcodetab		*h1 = blade_ht + table1;
+	struct huffcodetab		*h2 = blade_ht + table2;
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */
 
@@ -2384,9 +2384,9 @@ static	void			triple_Huffman_2
 	int						v;
 	unsigned				bits0, bits1, bits2, signs, idx;
 
-	static	struct huffcodetab		*h0 = ht + /* table0 */ 13;   /* all static declarations because of the constant values!!! */
-	static	struct huffcodetab		*h1 = ht + /* table1 */ 15;
-	static	struct huffcodetab		*h2 = ht + /* table2 */ 24;
+	static	struct huffcodetab		*h0 = blade_ht + /* table0 */ 13;   /* all static declarations because of the constant values!!! */
+	static	struct huffcodetab		*h1 = blade_ht + /* table1 */ 15;
+	static	struct huffcodetab		*h2 = blade_ht + /* table2 */ 24;
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */   /* == 16 */
@@ -2440,9 +2440,9 @@ static	void			tiny_triple_Huffman_2
 	int						v0, v1, v2;
 	unsigned				bits0, bits1, bits2, signs, idx0, idx1, idx2;
 
-	static	struct huffcodetab		*h0 = ht + /* table0 */ 13;   /* all static declarations because of the constant values!!! */
-	static	struct huffcodetab		*h1 = ht + /* table1 */ 15;
-	static	struct huffcodetab		*h2 = ht + /* table2 */ 24;
+	static	struct huffcodetab		*h0 = blade_ht + /* table0 */ 13;   /* all static declarations because of the constant values!!! */
+	static	struct huffcodetab		*h1 = blade_ht + /* table1 */ 15;
+	static	struct huffcodetab		*h2 = blade_ht + /* table2 */ 24;
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */   /* == 16 */
@@ -2506,8 +2506,8 @@ static	void			double_Huffman_2   /* Escape tables */
 	int						v;
 	unsigned				bits0, bits1, signs, xbits, idx;
 
-	struct huffcodetab		*h0 = ht + table0;
-	struct huffcodetab		*h1 = ht + table1;
+	struct huffcodetab		*h0 = blade_ht + table0;
+	struct huffcodetab		*h1 = blade_ht + table1;
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen */   /* == 16 */
@@ -2558,8 +2558,8 @@ static	void			tiny_double_Huffman_2   /* Escape tables */
 	int						v0, v1, v2;
 	unsigned				bits0, bits1, signs, xbits, idx0, idx1, idx2;
 
-	struct huffcodetab		*h0 = ht + table0;
-	struct huffcodetab		*h1 = ht + table1;
+	struct huffcodetab		*h0 = blade_ht + table0;
+	struct huffcodetab		*h1 = blade_ht + table1;
 
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == 16 --- static because of the constant!!! */
