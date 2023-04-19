@@ -45,10 +45,10 @@ void LameController::deinit_encoder()
 
 int LameController::validate_samplerate(const int samplerate)
 {
-    const int* test_rate = std::find(std::begin(allowed_samplerates),
-                              std::end(allowed_samplerates),
+    auto test_rate = std::find(allowed_samplerates.begin(),
+                              allowed_samplerates.end(),
                               samplerate);
-    if (test_rate == std::end(allowed_samplerates)) {
+    if (test_rate == allowed_samplerates.end()) {
         return 44100;
     } else {
         return samplerate;
@@ -58,7 +58,14 @@ int LameController::validate_samplerate(const int samplerate)
 
 int LameController::validate_bitrate(int bitrate)
 {
-    return bitrate;
+    auto test_rate = std::find(allowed_samplerates.begin(),
+                              allowed_samplerates.end(),
+                              samplerate);
+    if (test_rate == allowed_samplerates.end()) {
+        return 96;
+    } else {
+        return samplerate;
+    }
 }
 
 void LameController::addNextInput(float* left_input,

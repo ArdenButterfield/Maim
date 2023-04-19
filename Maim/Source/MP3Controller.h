@@ -39,23 +39,24 @@ public:
     virtual void setBitrateSquishBends(float squish) = 0;
     virtual void setThresholdBias(float bias) = 0;
     virtual void setMDCTfeedback(float feedback) = 0;
-
+    
     virtual float* getPsychoanalThreshold() = 0;
     virtual float* getPsychoanalEnergy() = 0;
     virtual int getShortBlockStatus() = 0;
-
+    
 protected:
-
+    
     float pcm_convert(short samp) {
         return samp / (float)std::numeric_limits<short>::max();
     }
-
+    
     virtual bool init_encoder() = 0;
     virtual void deinit_encoder() = 0;
     virtual int validate_bitrate(int bitrate) = 0;
     virtual int validate_samplerate(int samplerate) = 0;
-        
+    
     bool bInitialized;
+    
     hip_global_flags *lame_dec_handler = nullptr;
     
     std::vector<unsigned char> mp3Buffer;
