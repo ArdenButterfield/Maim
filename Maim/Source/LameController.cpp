@@ -14,6 +14,21 @@ bool LameController::init_encoder()
 {
     lame_enc_handler = lame_init();
     lame_clear_bends(lame_enc_handler);
+    
+    lame_set_in_samplerate(lame_enc_handler, samplerate);
+    lame_set_out_samplerate(lame_enc_handler, samplerate);
+    
+    lame_set_brate(lame_enc_handler, bitrate);
+    
+    // Constant bitrate with no bit reservoir, to cut down on latency.
+    // TODO: we get some sort of vector error when using the bir reservoir
+    lame_set_VBR(lame_enc_handler, vbr_off);
+    lame_set_disable_reservoir(lame_enc_handler, 1);
+    if (lame_init_params(lame_enc_handler) != 0) {
+        lame_close(lame_enc_handler);
+        std::cout << "Bad params\n";
+        return false;
+    }
     if (!lame_enc_handler) {
         return false;
     }

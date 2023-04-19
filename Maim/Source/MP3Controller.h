@@ -70,6 +70,7 @@ protected:
     std::unique_ptr<QueueBuffer<float>> outputBufferR;
     
     int bitrate;
+    int samplerate;
     
     int input_buf_size;
     int mp3_buf_size;

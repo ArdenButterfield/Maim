@@ -9,19 +9,11 @@
 */
 
 #pragma once
-
-#include <vector>
-#include <array>
-#include <memory>
-#include <cstring>
-#include <iostream>
-
 #include <blade.h>
-#include <lame.h>
 
-#include "QueueBuffer.h"
+#include "MP3Controller.h"
 
-class BladeController
+class BladeController : public MP3Controller
 {
 public:
     BladeController();
