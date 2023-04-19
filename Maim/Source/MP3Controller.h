@@ -22,7 +22,7 @@
 class MP3Controller
 {
 public:
-    virtual ~MP3Controller() { deInit(); }
+    virtual ~MP3Controller() { }
     bool init(const int sampleRate,
               const int maxSamplesPerBlock,
               const int bitrate);

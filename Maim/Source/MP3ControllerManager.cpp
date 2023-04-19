@@ -13,7 +13,7 @@
 MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, juce::AudioProcessorValueTreeState& p) :
     samplerate(s),
     samplesPerBlock(spb),
-    blocksBeforeSwitch(3000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
+    blocksBeforeSwitch(6000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
     parameters(p),
     currentEncoder(lame),
     currentControllerIndex(0)
@@ -130,7 +130,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     
     currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
     if (wantingToSwitch && (switchCountdown > 0)) {
-
+        std::cout << "adding input swich countdown\n";
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
         if (offController->copyOutput(nullptr, nullptr, buffer.getNumSamples())) {
             --switchCountdown;
@@ -138,6 +138,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         }
     } else if (wantingToSwitch) {
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
+        std::cout << "adding input\n";
         if (offController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
             auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
                                                        buffer.getNumSamples());
@@ -162,6 +163,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     if (!currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
         memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
         memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());
+        std::cout << "can't copy out\n";
     }
 }
 
