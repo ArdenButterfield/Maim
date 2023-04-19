@@ -458,7 +458,44 @@ typedef struct loop_flags_and_data_struct {
 
 } loop_flags_and_data;
 
+typedef struct blade_bend_flags_struct {
+	float butterfly_bubu;
+    float butterfly_bubd;
+    float butterfly_bdbu;
+    float butterfly_bdbd;
+
+    // mdct band step flags
+    int mdct_band_step;
+    int mdct_invert;
+
+    int mdct_post_h_shift;
+    float mdct_post_v_shift;
+
+    int mdct_window_increment;
+    int mdct_samp_increment; // Turned off with #define in newmdct. It was buggy and sounded bad.
+
+    float bitrate_squish;
+
+    int mdct_band_reassignments[32];
+
+    float psychoanal_energy[22]; // SBMAX_l in encoder.h 
+    float psychoanal_threshold[22];
+    // we're only plotting the long block bands, for now.
+
+
+    float threshold_bias[22];
+    // Likewise, we are currently only biasing the long blocks.
+
+    float mdct_feedback;
+    int prev_block_long;
+
+    int in_short_block;
+    float feedback_data[2][2][576];
+} blade_bend_flags;
+
 typedef struct encoder_flags_and_data_struct {
+	blade_bend_flags bends;
+
 	CodecInitIn codec_data;
 
 	// reservoir

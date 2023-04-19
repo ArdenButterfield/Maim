@@ -162,6 +162,20 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 
 
 /*____ codecEncodeChunk() _____________________________________________________*/
+float apply_v_shift(float v, float v_shift) 
+{
+    float v_mag, v_sign;
+    v_mag = fabsf(v);
+    v_sign = (0 < v) - (v < 0);
+    if ((v_shift > 0) && (v != 0)) {
+        v = (v_mag + (v_shift)) * v_sign;
+    // } else if (v_shift < 0) {
+    //     v = fmaxf(0, v_mag + v_shift) * v_sign;
+    } else if ((v_shift < 0) && (v_mag < -v_shift)) {
+        v = 0;
+    }
+    return v;
+}
 
 unsigned int			codecEncodeChunk
 (
@@ -262,6 +276,28 @@ unsigned int			codecEncodeChunk
 
 	mdct_sub (&flags->l3_sb_sample, xr, flags->stereo, &flags->l3_side, 2);
 
+    int h_shift = flags->blade_bend_flags->mdct_post_h_shift;
+    float v_shift = flags->blade_bend_flags->mdct_post_v_shift;
+    float v;
+    if (h_shift < 0) {
+        for (gr = 0; gr < cfg->mode_gr; gr++) {
+            for (ch = 0; ch < cfg->channels_out; ch++) {
+                for (int i = 0; i < 576; ++i) {
+                    v = gfc->l3_side.tt[gr][ch].xr[(i+576-h_shift)%576];
+                    gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
+                }
+            }
+        }
+    } else {
+        for (gr = 0; gr < cfg->mode_gr; gr++) {
+            for (ch = 0; ch < cfg->channels_out; ch++) {
+                for (int i = 576-1; i >= 0; --i) {
+                    v = gfc->l3_side.tt[gr][ch].xr[(i+576-h_shift)%576];
+                    gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
+                }
+            }
+        }
+    }
 
 	flags->pEncodedOutput = pDest;
 	flags->outputBit = 8;
