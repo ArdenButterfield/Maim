@@ -60,7 +60,8 @@ void blade_set_mdct_step_bends(encoder_flags_and_data* flags, int invert, int st
 
 void blade_set_mdct_post_shift_bends(encoder_flags_and_data* flags, int h_shift, float v_shift)
 {
-
+	flags->bends.mdct_post_v_shift = v_shift;
+	flags->bends.mdct_post_h_shift = h_shift;
 }
 
 void blade_set_mdct_window_increment_bends(encoder_flags_and_data* flags, int window_inc)
@@ -105,7 +106,8 @@ int blade_is_short_block(encoder_flags_and_data* flags)
 
 void blade_clear_bends(encoder_flags_and_data* flags)
 {
-	
+	flags->bends.mdct_post_v_shift = 0;
+	flags->bends.mdct_post_h_shift = 0;
 }
 
 

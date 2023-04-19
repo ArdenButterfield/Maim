@@ -276,24 +276,24 @@ unsigned int			codecEncodeChunk
 
 	mdct_sub (&flags->l3_sb_sample, xr, flags->stereo, &flags->l3_side, 2);
 
-    int h_shift = flags->blade_bend_flags->mdct_post_h_shift;
-    float v_shift = flags->blade_bend_flags->mdct_post_v_shift;
+    int h_shift = flags->bends.mdct_post_h_shift;
+    float v_shift = flags->bends.mdct_post_v_shift;
     float v;
     if (h_shift < 0) {
-        for (gr = 0; gr < cfg->mode_gr; gr++) {
-            for (ch = 0; ch < cfg->channels_out; ch++) {
+        for (gr = 0; gr < 2; gr++) {
+            for (ch = 0; ch < flags->stereo; ch++) {
                 for (int i = 0; i < 576; ++i) {
-                    v = gfc->l3_side.tt[gr][ch].xr[(i+576-h_shift)%576];
-                    gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
+                    v = xr[gr][ch][(i+576-h_shift)%576];
+                    xr[gr][ch][i] = apply_v_shift(v, v_shift);
                 }
             }
         }
     } else {
-        for (gr = 0; gr < cfg->mode_gr; gr++) {
-            for (ch = 0; ch < cfg->channels_out; ch++) {
+        for (gr = 0; gr < 2; gr++) {
+            for (ch = 0; ch < flags->stereo; ch++) {
                 for (int i = 576-1; i >= 0; --i) {
-                    v = gfc->l3_side.tt[gr][ch].xr[(i+576-h_shift)%576];
-                    gfc->l3_side.tt[gr][ch].xr[i] = apply_v_shift(v, v_shift);
+                    v = xr[gr][ch][(i+576-h_shift)%576];
+                    xr[gr][ch][i] = apply_v_shift(v, v_shift);
                 }
             }
         }
