@@ -491,7 +491,7 @@ void			Huffmancodebits
 		if (cod_info->window_switching_flag  &&  (cod_info->block_type == SHORT_TYPE))
 		{
 			int							(*ix_s)[3] = (int (*)[3]) ix;
-			int							*scalefac = &sfBandIndex[flags->fr_ps_bitstream->header->sampling_frequency].s[0];
+			int							*scalefac = &blade_sfBandIndex[flags->fr_ps_bitstream->header->sampling_frequency].s[0];
 
 			table = cod_info->table_select[0];
 			if (table)
@@ -554,7 +554,7 @@ void			Huffmancodebits
 	/* 2: Write count1 area */
 	if (cod_info->count1)
 	{
-		struct huffcodetab		*h = ht + (cod_info->count1table_select + 32);
+		struct huffcodetab		*h = blade_ht + (cod_info->count1table_select + 32);
 
 		int						*pos = ix + bigvalues;
 		int						*end = ix + bigvalues + (cod_info->count1 * 4);
@@ -620,7 +620,7 @@ int				writeHuffmanCode
 	int						y
 )
 {
-	struct huffcodetab		*h = ht + table;
+	struct huffcodetab		*h = blade_ht + table;
 
 	unsigned				signx = (x <= 0) ? (x = -x, 1) : 0;
 	unsigned				signy = (y <= 0) ? (y = -y, 1) : 0;

@@ -28,6 +28,10 @@
 #ifndef		__COMMON__
 #define		__COMMON__
 
+#if defined(__cplusplus)
+extern "C" {
+
+#endif
 
 
 
@@ -504,5 +508,8 @@ typedef struct encoder_flags_and_data_struct {
 
 } encoder_flags_and_data;
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif		/* __COMMON__ */

@@ -13,7 +13,7 @@
 #include <atomic>
 #include <string>
 
-#include "LameControllerManager.h"
+#include "MP3ControllerManager.h"
 
 //==============================================================================
 
@@ -80,7 +80,7 @@ private:
     std::atomic<bool> parametersNeedUpdating;
     juce::AudioProcessorValueTreeState parameters;
     
-    std::unique_ptr<LameControllerManager> lameControllerManager;
+    std::unique_ptr<MP3ControllerManager> mp3ControllerManager;
         
     std::array<juce::IIRFilter, 2> postFilter;
     

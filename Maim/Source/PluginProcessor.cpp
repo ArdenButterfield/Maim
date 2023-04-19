@@ -178,8 +178,8 @@ void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
-    int bitrate = LameControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    lameControllerManager = std::make_unique<LameControllerManager>((int)fs, bitrate, samplesPerBlock, parameters);
+    int bitrate = MP3ControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    mp3ControllerManager = std::make_unique<MP3ControllerManager>((int)fs, bitrate, samplesPerBlock, parameters);
     parametersNeedUpdating = true;
 }
 
@@ -254,7 +254,7 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.applyGain(preGain);
     }
         
-    lameControllerManager->processBlock(buffer);
+    mp3ControllerManager->processBlock(buffer);
     
     if (buffer.getNumChannels() == 2) {
         auto samplesL = buffer.getWritePointer(0);
