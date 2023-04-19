@@ -54,6 +54,9 @@
       <FILE id="ibjFZL" name="AutoGain.cpp" compile="1" resource="0" file="Source/AutoGain.cpp"/>
       <FILE id="JkY2wL" name="AutoGain.h" compile="0" resource="0" file="Source/AutoGain.h"/>
       <FILE id="uYkYsx" name="QueueBuffer.h" compile="0" resource="0" file="Source/QueueBuffer.h"/>
+      <FILE id="gv7uXu" name="MP3Controller.cpp" compile="1" resource="0"
+            file="Source/MP3Controller.cpp"/>
+      <FILE id="CuH3K9" name="MP3Controller.h" compile="0" resource="0" file="Source/MP3Controller.h"/>
       <FILE id="WkATd4" name="BladeController.cpp" compile="1" resource="0"
             file="Source/BladeController.cpp"/>
       <FILE id="ddTUf5" name="BladeController.h" compile="0" resource="0"

@@ -83,7 +83,7 @@
 
 #define		ORG_HUFFMAN_CODING		0   /* 0 = use better Huffman tables for shorter code */
 #define		ORG_BINARY_SEARCH		0   /* 0 = use a correct implemented binary search */
-#define		ORG_QUANTANF_INIT		0   /* 0 = use better quantization start value */
+#define		ORG_QUANTANF_INIT		0   /* 0 = use better quantization start value */ // DON"T CHANGE THIS ONE
 #define		ORG_PREEMPHASING		0   /* 0 = use a more ISO-like preemphasing algorithm */
 #define		ORG_SCF_COMPRESS		0   /* 0 = choose better scalefactor compression tables and smart preemphasing */
 #define		ORG_OUTER_LOOP			0   /* 0 = differ between marked as "been amplified" and "should be amplified" */
@@ -134,9 +134,10 @@ static	void			tiny_single_Huffman_2   /* Escape tables */
 
 
 
-static	int				amplify_short (void);
+static	int				amplify_short (encoder_flags_and_data* flags);
 static	int				amplify_long
 (
+	encoder_flags_and_data* flags,
 	int						iteration
 );
 
@@ -258,7 +259,7 @@ int						tjBitOverflow2;
    into a struct.
 */
 
-void fixStatic_loop( void )
+void fixStatic_loop( encoder_flags_and_data* flags )
 {
 	scalefac_band_long  = &blade_sfBandIndex[0].l[0];
 	scalefac_band_short = &blade_sfBandIndex[0].s[0];
@@ -286,7 +287,7 @@ static	double					noisePowTab[8191+15];
 
 
 
-void genNoisePowTab (void)
+void genNoisePowTab (encoder_flags_and_data* data)
 {
 	int	i;
 
@@ -306,78 +307,77 @@ void genNoisePowTab (void)
 /*  ========================================================================  */
 
 
-
-static	int						gr;   /* the current granule */
-static	int						ch;   /* the current channel */
-
-
-
-static	III_side_info_t			*side_info;   /* the current side information */
-static	gr_info					*cod_info;    /* the current coding information */
+// static	int						gr;   /* the current granule */
+// static	int						ch;   /* the current channel */
 
 
 
-static	double			   *xr_org_l;             /* the initial magnitudes of the spectral values */
-static	double				  xr34_l[576];        /* the magnitudes powered by 3/4 */
-static	int					   *ix_l;             /* quantized values */
-
-static	double				energy_l[SFB_LMAX];
-static	double				  xmin_l[SFB_LMAX];   /* the allowed distortion of the scalefactor band */
-static	double				  xfsf_l[SFB_LMAX];   /* the current distortion of the scalefactor band */
-static	int					expo16_l[SFB_LMAX];   /* sixteen times the scale factor band exponent */
-static	int				 *scalefac_l;             /* the current scale factors */
-static	int			   *scalefac_0_l;             /* scale factors for first granule */
-
-static	double			  (*xr_org_s)[3];         /* some short block versions */
-static	double				(*xr34_s)[3] = (double (*)[3]) xr34_l;
-static	int					  (*ix_s)[3];
-
-static	double				energy_s[SFB_SMAX][3];
-static	double				  xmin_s[SFB_SMAX][3];
-static	double				  xfsf_s[SFB_SMAX][3];
-static	int					expo16_s[SFB_SMAX][3];
-static	int				(*scalefac_s)[3];
+// static	III_side_info_t			*side_info;   /* the current side information */
+// static	gr_info					*cod_info;    /* the current coding information */
 
 
 
-static	int						max_used_sfb_l;
-static	int						min_used_sfb_s;
+// static	double			   *xr_org_l;             /* the initial magnitudes of the spectral values */
+// static	double				  xr34_l[576];        /* the magnitudes powered by 3/4 */
+// static	int					   *ix_l;             /* quantized values */
 
-static	int						end_sfb_l;
-static	int						end_sfb_s;
+// static	double				energy_l[SFB_LMAX];
+// static	double				  xmin_l[SFB_LMAX];   /* the allowed distortion of the scalefactor band */
+// static	double				  xfsf_l[SFB_LMAX];   /* the current distortion of the scalefactor band */
+// static	int					expo16_l[SFB_LMAX];   /* sixteen times the scale factor band exponent */
+// static	int				 *scalefac_l;             /* the current scale factors */
+// static	int			   *scalefac_0_l;             /* scale factors for first granule */
+
+// static	double			  (*xr_org_s)[3];         /* some short block versions */
+// static	double				(*xr34_s)[3] = (double (*)[3]) xr34_l;
+// static	int					  (*ix_s)[3];
+
+// static	double				energy_s[SFB_SMAX][3];
+// static	double				  xmin_s[SFB_SMAX][3];
+// static	double				  xfsf_s[SFB_SMAX][3];
+// static	int					expo16_s[SFB_SMAX][3];
+// static	int				(*scalefac_s)[3];
 
 
 
-static	double				    xmax_l[SFB_LMAX];		/* The initial (absolute) maximum magnitude */
-static	int				   xmax_line_l[SFB_LMAX];		/* of the long bands and their line indices */
+// static	int						max_used_sfb_l;
+// static	int						min_used_sfb_s;
 
-static	double				    xmax_s[SFB_SMAX][3];	/* Guess ... */
-static	int				   xmax_line_s[SFB_SMAX][3];
-
-
-
-static	int						mark_idx_l;				/* speed up - partial quantizing */
-static	int						mark_tab_l[SFB_LMAX];	/* changed sfb-s                 */ 
-
-static	int						mark_idx_s;
-static	int						mark_tab_s[SFB_SMAX*3*2];	/* changed (sfb,b)-s         */
+// static	int						end_sfb_l;
+// static	int						end_sfb_s;
 
 
+
+// static	double				    xmax_l[SFB_LMAX];		/* The initial (absolute) maximum magnitude */
+// static	int				   xmax_line_l[SFB_LMAX];		/* of the long bands and their line indices */
+
+// static	double				    xmax_s[SFB_SMAX][3];	/* Guess ... */
+// static	int				   xmax_line_s[SFB_SMAX][3];
+
+
+
+// static	int						mark_idx_l;				/* speed up - partial quantizing */
+// static	int						mark_tab_l[SFB_LMAX];	/* changed sfb-s                 */ 
+
+// static	int						mark_idx_s;
+// static	int						mark_tab_s[SFB_SMAX*3*2];	/* changed (sfb,b)-s         */
 
 #if !ORG_QUANTANF_INIT
 
-static	int						lo_quant_l [SFB_LMAX];
-static	int						hi_quant_l [SBMAX_l];
+// static	int						lo_quant_l [SFB_LMAX];
+// static	int						hi_quant_l [SBMAX_l];
 
-static	int						lo_quant_s [SFB_SMAX][3];
-static	int						hi_quant_s [SFB_SMAX][3];
+// static	int						lo_quant_s [SFB_SMAX][3];
+// static	int						hi_quant_s [SFB_SMAX][3];
 
-static	int						the_lo_quant;
-static	int						the_hi_quant;
+// static	int						the_lo_quant;
+// static	int						the_hi_quant;
 
+// numerical constants: these can stay
 static	double					log_2, cc, dd;
 
 #endif
+
 
 
 
@@ -389,6 +389,7 @@ static	double					log_2, cc, dd;
 
 void					iteration_loop
 (
+	encoder_flags_and_data* flags,
 	double					pe[][2],
 	double					xr_org[2][2][576],
 	III_psy_ratio			*ratio,
@@ -412,20 +413,17 @@ void					iteration_loop
 
 	int						start, end;
 
-#if ORG_QUANTANF_INIT
-	double					log_sum;
-#endif
 	double					total_energy, temp, x;
 
 
 
-	side_info = l3_side;
+	flags->loop_flags.side_info = l3_side;
 
-	main_data_begin = &side_info->main_data_begin;
+	main_data_begin = &(flags->loop_flags.side_info)->main_data_begin;
 	info = fr_ps->header;
 
 
-	side_info->resvDrain = 0;
+	(flags->loop_flags.side_info)->resvDrain = 0;
 
 	if (!fInit_iteration_loop)
 	{
@@ -444,112 +442,112 @@ void					iteration_loop
 	scalefac_band_short = &blade_sfBandIndex[info->sampling_frequency].s[0];
 
 
-	ResvFrameBegin (fr_ps, side_info, mean_bits, bitsPerFrame);
+	BladeResvFrameBegin (flags, fr_ps, (flags->loop_flags.side_info), mean_bits, bitsPerFrame);
 
-	for (gr = 0;  gr < mode_gr;  gr++)
+	for (flags->loop_flags.gr = 0;  flags->loop_flags.gr < mode_gr; flags->loop_flags.gr++)
 	{
-		for (ch = 0;  ch < stereo;  ch++)
+		for (flags->loop_flags.ch = 0;  flags->loop_flags.ch < stereo;  flags->loop_flags.ch++)
 		{
-			xr_org_l = xr_org[gr][ch];
-			xr_org_s = (double (*)[3]) xr_org_l;
+			flags->loop_flags.xr_org_l = xr_org[flags->loop_flags.gr][flags->loop_flags.ch];
+			flags->loop_flags.xr_org_s = (double (*)[3]) flags->loop_flags.xr_org_l;
 
-			ix_l = l3_enc[gr][ch];
-			ix_s = (int (*)[3]) ix_l;
+			flags->loop_flags.ix_l = l3_enc[flags->loop_flags.gr][flags->loop_flags.ch];
+			flags->loop_flags.ix_s = (int (*)[3]) flags->loop_flags.ix_l;
 
-			cod_info = &side_info->gr[gr].ch[ch].tt;
+			(flags->loop_flags.cod_info) = &(flags->loop_flags.side_info)->gr[flags->loop_flags.gr].ch[flags->loop_flags.ch].tt;
 
-			scalefac_l = scalefac->l[gr][ch];  scalefac_0_l = scalefac->l[0][ch];
-			scalefac_s = scalefac->s[gr][ch];
+			flags->loop_flags.scalefac_l = scalefac->l[flags->loop_flags.gr][flags->loop_flags.ch];  flags->loop_flags.scalefac_0_l = scalefac->l[0][flags->loop_flags.ch];
+			flags->loop_flags.scalefac_s = scalefac->s[flags->loop_flags.gr][flags->loop_flags.ch];
 
 
 
 			/* reset of iteration variables */
 
 			for (scfsi_band = 0;  scfsi_band < 4;  scfsi_band++)
-				cod_info->slen[scfsi_band] = 0;
+				(flags->loop_flags.cod_info)->slen[scfsi_band] = 0;
 
-			cod_info->sfb_partition_table = &nr_of_sfb_block[0][0][0];
-			cod_info->part2_3_length      = 0;
-			cod_info->big_values          = 0;
-			cod_info->count1              = 0;
-			cod_info->scalefac_compress   = 0;
-			cod_info->table_select[0]     = 0;
-			cod_info->table_select[1]     = 0;
-			cod_info->table_select[2]     = 0;
-			cod_info->subblock_gain[0]    = 0;
-			cod_info->subblock_gain[1]    = 0;
-			cod_info->subblock_gain[2]    = 0;
-			cod_info->region0_count       = 0;
-			cod_info->region1_count       = 0;
-			cod_info->part2_length        = 0;
-			cod_info->preflag             = 0;
-			cod_info->scalefac_scale      = 0;
-			cod_info->quantizerStepSize   = 0.0;
-			cod_info->count1table_select  = 0;
+			flags->loop_flags.cod_info->sfb_partition_table = &nr_of_sfb_block[0][0][0];
+			flags->loop_flags.cod_info->part2_3_length      = 0;
+			flags->loop_flags.cod_info->big_values          = 0;
+			flags->loop_flags.cod_info->count1              = 0;
+			flags->loop_flags.cod_info->scalefac_compress   = 0;
+			flags->loop_flags.cod_info->table_select[0]     = 0;
+			flags->loop_flags.cod_info->table_select[1]     = 0;
+			flags->loop_flags.cod_info->table_select[2]     = 0;
+			flags->loop_flags.cod_info->subblock_gain[0]    = 0;
+			flags->loop_flags.cod_info->subblock_gain[1]    = 0;
+			flags->loop_flags.cod_info->subblock_gain[2]    = 0;
+			flags->loop_flags.cod_info->region0_count       = 0;
+			flags->loop_flags.cod_info->region1_count       = 0;
+			flags->loop_flags.cod_info->part2_length        = 0;
+			flags->loop_flags.cod_info->preflag             = 0;
+			flags->loop_flags.cod_info->scalefac_scale      = 0;
+			flags->loop_flags.cod_info->quantizerStepSize   = 0.0;
+			flags->loop_flags.cod_info->count1table_select  = 0;
 
 
 
 /*  ========    gr_deco    ========  */
 
-	if (cod_info->window_switching_flag && (cod_info->block_type == SHORT_TYPE))
+	if (flags->loop_flags.cod_info->window_switching_flag && (flags->loop_flags.cod_info->block_type == SHORT_TYPE))
 	{
-		if (cod_info->mixed_block_flag)
+		if (flags->loop_flags.cod_info->mixed_block_flag)
 		{
 			/*
 				In mixed blocks there come first 8 long scale factor band areas covering
 				the place normally used by the first 3 short scale factor band areas.
 			*/
-			max_used_sfb_l = cod_info->sfb_lmax = 8;
-			min_used_sfb_s = cod_info->sfb_smax = 3;
+			flags->loop_flags.max_used_sfb_l = flags->loop_flags.cod_info->sfb_lmax = 8;
+			flags->loop_flags.min_used_sfb_s = flags->loop_flags.cod_info->sfb_smax = 3;
 
 			/* The following values don«t need to be set again and again ... */
-			cod_info->region0_count =  7;   /* scalefac_band_long[7+1   ] =  36               */
-			cod_info->region1_count = 13;   /* scalefac_band_long[7+13+2] = 576  (no region2) */
+			flags->loop_flags.cod_info->region0_count =  7;   /* scalefac_band_long[7+1   ] =  36               */
+			flags->loop_flags.cod_info->region1_count = 13;   /* scalefac_band_long[7+13+2] = 576  (no region2) */
 		}
 		else
 		{
-			max_used_sfb_l = cod_info->sfb_lmax = 0;  /* No long blocks */
-			min_used_sfb_s = cod_info->sfb_smax = 0;
+			flags->loop_flags.max_used_sfb_l = flags->loop_flags.cod_info->sfb_lmax = 0;  /* No long blocks */
+			flags->loop_flags.min_used_sfb_s = flags->loop_flags.cod_info->sfb_smax = 0;
 
 			/* The following values don«t need to be set again and again ... */
-			cod_info->region0_count =  8;   /*                   scalefac_band_short[(8+1   )/3] =  12  ( 12*3 =  36) */
-			cod_info->region1_count = 36;   /* 36? should be 29: scalefac_band_short[(8+29+2)/3] = 192  (192*3 = 576) */
+			flags->loop_flags.cod_info->region0_count =  8;   /*                   scalefac_band_short[(8+1   )/3] =  12  ( 12*3 =  36) */
+			flags->loop_flags.cod_info->region1_count = 36;   /* 36? should be 29: scalefac_band_short[(8+29+2)/3] = 192  (192*3 = 576) */
 										    /* probably meant  : scalefac_band_short[36/3 + 1  ] = 192  (192*3 = 576) */
 		                                    /* 2000-02-27 AP      no effect on output because block_type != NORM_TYPE */
 		}
 
 		/* to access the entire array we need the last scalefac_band_short area */
-		end_sfb_l = max_used_sfb_l; /*cod_info->sfb_lmax;*/
-		end_sfb_s = SFB_SMAX;
+		flags->loop_flags.end_sfb_l = flags->loop_flags.max_used_sfb_l; /*flags->loop_flags.cod_info->sfb_lmax;*/
+		flags->loop_flags.end_sfb_s = SFB_SMAX;
 
 		/* The following values don«t need to be set again and again ... */
-		cod_info->count1     =   0;         /* (zero_region-bigv_region) / 4; */
-		cod_info->big_values = 288;         /*              bigv_region  / 2; */
+		flags->loop_flags.cod_info->count1     =   0;         /* (zero_region-bigv_region) / 4; */
+		flags->loop_flags.cod_info->big_values = 288;         /*              bigv_region  / 2; */
 
-		cod_info->count1table_select = 1;   /* sum0 == sum1 == 0 */
+		flags->loop_flags.cod_info->count1table_select = 1;   /* sum0 == sum1 == 0 */
 
-		cod_info->address1 =  36;           /* choose one of the region0_count formulas above */
-		cod_info->address2 = 576;           /* bigv_region; */
-		cod_info->address3 =   0;
+		flags->loop_flags.cod_info->address1 =  36;           /* choose one of the region0_count formulas above */
+		flags->loop_flags.cod_info->address2 = 576;           /* bigv_region; */
+		flags->loop_flags.cod_info->address3 =   0;
 	}
 	else
 	{
-		max_used_sfb_l = cod_info->sfb_lmax = SBMAX_l;
-		min_used_sfb_s = cod_info->sfb_smax = SBMAX_s;  /* No short blocks */
+		flags->loop_flags.max_used_sfb_l = flags->loop_flags.cod_info->sfb_lmax = SBMAX_l;
+		flags->loop_flags.min_used_sfb_s = flags->loop_flags.cod_info->sfb_smax = SBMAX_s;  /* No short blocks */
 
 		/* to access the entire array we need the last scalefac_band_long area */
-		end_sfb_l = SFB_LMAX;
-		end_sfb_s = min_used_sfb_s; /*cod_info->sfb_smax;*/
+		flags->loop_flags.end_sfb_l = SFB_LMAX;
+		flags->loop_flags.end_sfb_s = flags->loop_flags.min_used_sfb_s; /*flags->loop_flags.cod_info->sfb_smax;*/
 	}
 
 
 			/* reset of iteration variables */
 
-			for (sfb = 0;  sfb < max_used_sfb_l/*SFB_LMAX-1*/;  sfb++)
-				scalefac_l[sfb] = 0;
-			for (sfb = min_used_sfb_s/*0*/;  sfb < SFB_SMAX-1;  sfb++)
+			for (sfb = 0;  sfb < flags->loop_flags.max_used_sfb_l/*SFB_LMAX-1*/;  sfb++)
+				flags->loop_flags.scalefac_l[sfb] = 0;
+			for (sfb = flags->loop_flags.min_used_sfb_s/*0*/;  sfb < SFB_SMAX-1;  sfb++)
 				for (b = 0;  b < 3;  b++)
-					scalefac_s[sfb][b] = 0;
+					flags->loop_flags.scalefac_s[sfb][b] = 0;
 
 /*  ========    calc_xmin and start of quantanf_init    ========  */
 /*
@@ -563,64 +561,64 @@ void					iteration_loop
 #endif
 	total_energy = 0.0;
 
-	for (sfb = 0;  sfb < end_sfb_l;  sfb++)
+	for (sfb = 0;  sfb < flags->loop_flags.end_sfb_l;  sfb++)
 	{
 		start = scalefac_band_long[sfb];
 		end   = scalefac_band_long[sfb+1];
 
-		expo16_l[sfb] = 0;
+		flags->loop_flags.expo16_l[sfb] = 0;
 
-		xmax_l[sfb] = 0.0;
-		xmax_line_l[sfb] = start;
+		flags->loop_flags.xmax_l[sfb] = 0.0;
+		flags->loop_flags.xmax_line_l[sfb] = start;
 
 		temp = 0.0;
 #if !ORG_HIGHEST_SFB
-		if (sfb < max_used_sfb_l)
+		if (sfb < flags->loop_flags.max_used_sfb_l)
 		{
 #endif
 			for (i = start;  i < end;  i++)
 			{
-				if ((x = fabs(xr_org_l[i])) != 0.0)
+				if ((x = fabs(flags->loop_flags.xr_org_l[i])) != 0.0)
 				{
-					xr34_l[i] = sqrt(x * sqrt(x));
+					flags->loop_flags.xr34_l[i] = sqrt(x * sqrt(x));
 					temp += x*x;
 #	if ORG_QUANTANF_INIT
 					log_sum += log(x);
 #	endif
-					if (x > xmax_l[sfb])
+					if (x > flags->loop_flags.xmax_l[sfb])
 					{
-						xmax_l[sfb] = x;
-						xmax_line_l[sfb] = i;
+						flags->loop_flags.xmax_l[sfb] = x;
+						flags->loop_flags.xmax_line_l[sfb] = i;
 					}
 				}
 				else
-					xr34_l[i] = 0.0;
+					flags->loop_flags.xr34_l[i] = 0.0;
 			}
 #if !ORG_HIGHEST_SFB
 		}
 		else   /* cut off the (highest frequency) entries in the unused scale factor band */
 		{
 			for (i = start;  i < end;  i++)
-				xr34_l[i] = 0.0;
+				flags->loop_flags.xr34_l[i] = 0.0;
 		}
 #endif
-		total_energy += energy_l[sfb] = temp;
+		total_energy += flags->loop_flags.energy_l[sfb] = temp;
 
-		if (sfb < max_used_sfb_l)
-			xmin_l[sfb] = ratio->l[gr][ch][sfb] * temp;
+		if (sfb < flags->loop_flags.max_used_sfb_l)
+			flags->loop_flags.xmin_l[sfb] = ratio->l[flags->loop_flags.gr][flags->loop_flags.ch][sfb] * temp;
 	}
 
-	for (sfb = min_used_sfb_s;  sfb < end_sfb_s;  sfb++)
+	for (sfb = flags->loop_flags.min_used_sfb_s;  sfb < flags->loop_flags.end_sfb_s;  sfb++)
 	{
 		start = scalefac_band_short[sfb];
 		end   = scalefac_band_short[sfb+1];
 
 		for (b = 0;  b < 3;  b++)
 		{
-			expo16_s[sfb][b] = 0;
+			flags->loop_flags.expo16_s[sfb][b] = 0;
 
-			xmax_s[sfb][b] = 0.0;
-			xmax_line_s[sfb][b] = start;
+			flags->loop_flags.xmax_s[sfb][b] = 0.0;
+			flags->loop_flags.xmax_line_s[sfb][b] = start;
 
 			temp = 0.0;
 #if !ORG_HIGHEST_SFB
@@ -629,34 +627,34 @@ void					iteration_loop
 #endif
 				for (i = start;  i < end;  i++)
 				{
-					if ((x = fabs(xr_org_s[i][b])) != 0.0)
+					if ((x = fabs(flags->loop_flags.xr_org_s[i][b])) != 0.0)
 					{
-						xr34_s[i][b] = sqrt(x * sqrt(x));
+						flags->loop_flags.xr34_s[i][b] = sqrt(x * sqrt(x));
 						temp += x*x;
 #if ORG_QUANTANF_INIT
 						log_sum += log(x);
 #endif
-						if (x > xmax_s[sfb][b])
+						if (x > flags->loop_flags.xmax_s[sfb][b])
 						{
-							xmax_s[sfb][b] = x;
-							xmax_line_s[sfb][b] = i;
+							flags->loop_flags.xmax_s[sfb][b] = x;
+							flags->loop_flags.xmax_line_s[sfb][b] = i;
 						}
 					}
 					else
-						xr34_s[i][b] = 0.0;
+						flags->loop_flags.xr34_s[i][b] = 0.0;
 				}
 #if !ORG_HIGHEST_SFB
 			}
 			else   /* cut off the (highest frequency) entries in the unused scale factor band */
 			{
 				for (i = start;  i < end;  i++)
-					xr34_s[i][b] = 0.0;
+					flags->loop_flags.xr34_s[i][b] = 0.0;
 			}
 #endif
-			total_energy += energy_s[sfb][b] = temp;
+			total_energy += flags->loop_flags.energy_s[sfb][b] = temp;
 
 			if (sfb < SFB_SMAX-1)
-				xmin_s[sfb][b] = ratio->s[gr][ch][sfb][b] * temp;
+				flags->loop_flags.xmin_s[sfb][b] = ratio->s[flags->loop_flags.gr][flags->loop_flags.ch][sfb][b] * temp;
 		}
 	}
 
@@ -664,19 +662,19 @@ void					iteration_loop
 /*  ========    calc_scfsi    ========  */
 
 	/* None of the granules contains short blocks */
-	if (!cod_info->window_switching_flag || (cod_info->block_type != SHORT_TYPE))
+	if (!flags->loop_flags.cod_info->window_switching_flag || (flags->loop_flags.cod_info->block_type != SHORT_TYPE))
 	{
-		if (gr == 1)
+		if (flags->loop_flags.gr == 1)
 		{
 			for (scfsi_band = 0;  scfsi_band < 4;  scfsi_band++)
-				side_info->scfsi[ch][scfsi_band] = 0;
+				(flags->loop_flags.side_info)->scfsi[flags->loop_flags.ch][scfsi_band] = 0;
 		}
 	}
 
 
 
 			/* calculation of number of available bit( per granule ) */
-			max_bits = ResvMaxBits (fr_ps, side_info, &pe[gr][ch], mean_bits);
+			max_bits = BladeResvMaxBits (flags, fr_ps, (flags->loop_flags.side_info), &pe[flags->loop_flags.gr][flags->loop_flags.ch], mean_bits);
 
 
 
@@ -703,59 +701,59 @@ void					iteration_loop
 	*/
 	temp -= 70.0;
 
-				cod_info->quantizerStepSize = temp;
+				flags->loop_flags.cod_info->quantizerStepSize = temp;
 
 #else   /* ORG_QUANTANF_INIT */
 
 	double					xmax, the_xmax;
 
-	the_lo_quant = -infinity;   /* "-infinity" */
-	the_hi_quant = -infinity;   /* the real maximum for high_quant is about +4 ! */
+	flags->loop_flags.the_lo_quant = -infinity;   /* "-infinity" */
+	flags->loop_flags.the_hi_quant = -infinity;   /* the real maximum for high_quant is about +4 ! */
 
 	the_xmax = -1.0;
 
-	for (sfb = 0;  sfb < end_sfb_l;  sfb++)
+	for (sfb = 0;  sfb < flags->loop_flags.end_sfb_l;  sfb++)
 	{
-		xmax = xmax_l[sfb];
+		xmax = flags->loop_flags.xmax_l[sfb];
 		if (xmax == 0.0)
 		{
-			lo_quant_l[sfb] = -infinity;
-			hi_quant_l[sfb] = -infinity;
+			flags->loop_flags.lo_quant_l[sfb] = -infinity;
+			flags->loop_flags.hi_quant_l[sfb] = -infinity;
 		}
 		else
 		{
-			lo_quant_l[sfb] = floor (4.0 * (log(xmax)/log_2 - cc)) + 1;
-			hi_quant_l[sfb] = floor (4.0 * (log(xmax)/log_2 - dd)) + 1;
+			flags->loop_flags.lo_quant_l[sfb] = floor (4.0 * (log(xmax)/log_2 - cc)) + 1;
+			flags->loop_flags.hi_quant_l[sfb] = floor (4.0 * (log(xmax)/log_2 - dd)) + 1;
 
 			if (xmax > the_xmax)
 			{
 				the_xmax = xmax;
-				the_lo_quant = lo_quant_l[sfb];
-				the_hi_quant = hi_quant_l[sfb];
+				flags->loop_flags.the_lo_quant = flags->loop_flags.lo_quant_l[sfb];
+				flags->loop_flags.the_hi_quant = flags->loop_flags.hi_quant_l[sfb];
 			}
 		}
 	}
 
-	for (sfb = min_used_sfb_s;  sfb < end_sfb_s;  sfb++)
+	for (sfb = flags->loop_flags.min_used_sfb_s;  sfb < flags->loop_flags.end_sfb_s;  sfb++)
 	{
 		for (b = 0;  b < 3;  b++)
 		{
-			xmax = xmax_s[sfb][b];
+			xmax = flags->loop_flags.xmax_s[sfb][b];
 			if (xmax == 0.0)
 			{
-				lo_quant_s[sfb][b] = -infinity;
-				hi_quant_s[sfb][b] = -infinity;
+				flags->loop_flags.lo_quant_s[sfb][b] = -infinity;
+				flags->loop_flags.hi_quant_s[sfb][b] = -infinity;
 			}
 			else
 			{
-				lo_quant_s[sfb][b] = floor (4.0 * (log(xmax)/log_2 - cc) /* - 8 * cod_info->subblock_gain[b] */) + 1;
-				hi_quant_s[sfb][b] = floor (4.0 * (log(xmax)/log_2 - dd) /* - 8 * cod_info->subblock_gain[b] */) + 1;
+				flags->loop_flags.lo_quant_s[sfb][b] = floor (4.0 * (log(xmax)/log_2 - cc) /* - 8 * cod_info->subblock_gain[b] */) + 1;
+				flags->loop_flags.hi_quant_s[sfb][b] = floor (4.0 * (log(xmax)/log_2 - dd) /* - 8 * cod_info->subblock_gain[b] */) + 1;
 
 				if (xmax > the_xmax)
 				{
 					the_xmax = xmax;
-					the_lo_quant = lo_quant_s[sfb][b];
-					the_hi_quant = hi_quant_s[sfb][b];
+					flags->loop_flags.the_lo_quant = flags->loop_flags.lo_quant_s[sfb][b];
+					flags->loop_flags.the_hi_quant = flags->loop_flags.hi_quant_s[sfb][b];
 				}
 			}
 		}		
@@ -766,25 +764,25 @@ void					iteration_loop
 		Try the power table at its least boundary
 		I«ve never reached this deep before!
 	*/
-	assert (the_lo_quant > -POW216_MAX);
+	assert (flags->loop_flags.the_lo_quant > -POW216_MAX);
 
-	cod_info->quantizerStepSize = the_lo_quant;
+	flags->loop_flags.cod_info->quantizerStepSize = flags->loop_flags.the_lo_quant;
 
 #endif   /* ORG_QUANTANF_INIT */
 
 
 
-				cod_info->part2_3_length = outer_loop (max_bits, fr_ps);
+				flags->loop_flags.cod_info->part2_3_length = outer_loop (flags, max_bits, fr_ps);
 			}
 
-			ResvAdjust (fr_ps, cod_info, side_info, mean_bits);
+			BladeResvAdjust (flags, fr_ps, flags->loop_flags.cod_info, (flags->loop_flags.side_info), mean_bits);
 
-			cod_info->global_gain = my_nint (cod_info->quantizerStepSize + 210.0);
+			flags->loop_flags.cod_info->global_gain = my_nint (flags->loop_flags.cod_info->quantizerStepSize + 210.0);
 /*			assert (cod_info->global_gain < 256); */
 		}	/* for ch */
 	}	/* for gr */
 
-	ResvFrameEnd (fr_ps, side_info, mean_bits);
+	BladeResvFrameEnd (flags, fr_ps, (flags->loop_flags.side_info), mean_bits);
 }
 
 
@@ -802,6 +800,7 @@ void					iteration_loop
 
 static	int				outer_loop
 (
+	encoder_flags_and_data* flags,
 	int						max_bits,
 	frame_params			*fr_ps
 )
@@ -813,7 +812,7 @@ static	int				outer_loop
 
 
 	/* reset the pointers of our changed sfb [(sfb,b)] indices list */
-	mark_idx_l = mark_idx_s = 0;
+	flags->loop_flags.mark_idx_l = flags->loop_flags.mark_idx_s = 0;
 
 
 #if 0
@@ -827,24 +826,24 @@ static	int				outer_loop
 
 	iteration = 1;
 
-	bits = bin_search_StepSize (max_bits, cod_info->quantizerStepSize);  /* speeds things up a bit */
+	bits = bin_search_StepSize (flags, max_bits, flags->loop_flags.cod_info->quantizerStepSize);  /* speeds things up a bit */
 
 	while (1)
 	{
 		for (sfb = 0;  sfb < SFB_LMAX-1;  sfb++)  /* save scaling factors */
-			scalesave_l[sfb] = scalefac_l[sfb];
+			scalesave_l[sfb] = flags->loop_flags.scalefac_l[sfb];
 
 		for (sfb = 0;  sfb < SFB_SMAX-1;  sfb++)
 			for (b = 0;  b < 3;  b++)
-				scalesave_s[sfb][b] = scalefac_s[sfb][b];
+				scalesave_s[sfb][b] = flags->loop_flags.scalefac_s[sfb][b];
 
-		save_preflag      = cod_info->preflag;
-		save_compress     = cod_info->scalefac_compress;
-		save_part2_length = cod_info->part2_length;
+		save_preflag      = flags->loop_flags.cod_info->preflag;
+		save_compress     = flags->loop_flags.cod_info->scalefac_compress;
+		save_part2_length = flags->loop_flags.cod_info->part2_length;
 
-		calc_noise ();  /* distortion calculation */
+		calc_noise (flags);  /* distortion calculation */
 
-		over = amplify (iteration);
+		over = amplify (flags, iteration);
 
 #if ORG_OUTER_LOOP
 /*
@@ -860,11 +859,11 @@ static	int				outer_loop
 	-	Since loop_break() doesn't know that, the outer loop frequently
 		gets terminated to early.
 */
-		if (loop_break ())
+		if (loop_break (flags))
 			break;
 #endif
 
-		huff_bits = max_bits - needed_bits_for_storing_scalefactors (fr_ps);
+		huff_bits = max_bits - needed_bits_for_storing_scalefactors (flags, fr_ps);
 		if (huff_bits < 0)
 			break;   /* not enough space to store the scale factors */
 
@@ -882,29 +881,29 @@ static	int				outer_loop
 			Most of the times, only a few bands will be changed,
 			so why quantize the whole area?
 		*/
-		partial_quantize ();
+		partial_quantize (flags);
 #if ORG_BINARY_SEARCH || ORG_QUANTANF_INIT || CHECK_TJ_OVERFLOW
 		if (tjBitOverflow2)
 			bits = infinity;
 		else
-			bits = count_bits ();
+			bits = count_bits (flags);
 #else
-		bits = count_bits ();
+		bits = count_bits (flags);
 #endif
 
 		while (bits > huff_bits)
 		{
-			cod_info->quantizerStepSize += 1.0;
+			flags->loop_flags.cod_info->quantizerStepSize += 1.0;
 #if ORG_BINARY_SEARCH || ORG_QUANTANF_INIT || CHECK_TJ_OVERFLOW
 			tjBitOverflow2 = FALSE;
-			quantize ();
+			quantize (flags);
 			if (tjBitOverflow2)
 				bits = infinity;
 			else
-				bits = count_bits ();
+				bits = count_bits (flags);
 #else
 			quantize ();
-			bits = count_bits ();
+			bits = count_bits (flags);
 #endif
 		}
 
@@ -915,28 +914,28 @@ static	int				outer_loop
 			'goto', you have to to take the long way home and place the loop
 			break condition in front of the call to calc_noise().
 		*/
-		if (loop_break())
+		if (loop_break(flags))
 			goto take_that_and_party;
 #endif
 	}
 
 
-	cod_info->preflag           = save_preflag;
-	cod_info->scalefac_compress = save_compress;
-	cod_info->part2_length      = save_part2_length;
+	flags->loop_flags.cod_info->preflag           = save_preflag;
+	flags->loop_flags.cod_info->scalefac_compress = save_compress;
+	flags->loop_flags.cod_info->part2_length      = save_part2_length;
 
 	for (sfb = 0;  sfb < SFB_LMAX-1;  sfb++)
-		scalefac_l[sfb] = scalesave_l[sfb];    
+		flags->loop_flags.scalefac_l[sfb] = scalesave_l[sfb];    
 
 	for (sfb = 0;  sfb < SFB_SMAX-1;  sfb++)
 		for (b = 0;  b  < 3;  b++)
-			scalefac_s[sfb][b] = scalesave_s[sfb][b];
+			flags->loop_flags.scalefac_s[sfb][b] = scalesave_s[sfb][b];
 
 take_that_and_party:
-	cod_info->part2_3_length    = cod_info->part2_length + bits;
+	flags->loop_flags.cod_info->part2_3_length    = flags->loop_flags.cod_info->part2_length + bits;
 
 
-	return cod_info->part2_3_length;
+	return flags->loop_flags.cod_info->part2_3_length;
 }
 
 
@@ -955,6 +954,7 @@ take_that_and_party:
 
 static	int				needed_bits_for_storing_scalefactors
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps
 )
 {
@@ -981,20 +981,20 @@ static	int				needed_bits_for_storing_scalefactors
 
 	max_slen1 = max_slen2 = 0;
 
-	if (cod_info->window_switching_flag  &&  (cod_info->block_type == SHORT_TYPE))
+	if (flags->loop_flags.cod_info->window_switching_flag  &&  (flags->loop_flags.cod_info->block_type == SHORT_TYPE))
 	{
-		if (cod_info->mixed_block_flag)
+		if (flags->loop_flags.cod_info->mixed_block_flag)
 		{
 			table = part2_len_m;
 
 			for (sfb = 0;  sfb < 8;  sfb++)
-				if (scalefac_l[sfb] > max_slen1)
-					max_slen1 = scalefac_l[sfb];
+				if (flags->loop_flags.scalefac_l[sfb] > max_slen1)
+					max_slen1 = flags->loop_flags.scalefac_l[sfb];
 
 			for (sfb = 3;  sfb < 6;  sfb++)
 				for (b = 0;  b < 3;  b++)
-					if (scalefac_s[sfb][b] > max_slen1)
-						max_slen1 = scalefac_s[sfb][b];
+					if (flags->loop_flags.scalefac_s[sfb][b] > max_slen1)
+						max_slen1 = flags->loop_flags.scalefac_s[sfb][b];
 		}
 		else
 		{
@@ -1002,70 +1002,70 @@ static	int				needed_bits_for_storing_scalefactors
 
 			for (sfb = 0;  sfb < 6;  sfb++)
 				for (b = 0;  b < 3;  b++)
-					if (scalefac_s[sfb][b] > max_slen1)
-						max_slen1 = scalefac_s[sfb][b];
+					if (flags->loop_flags.scalefac_s[sfb][b] > max_slen1)
+						max_slen1 = flags->loop_flags.scalefac_s[sfb][b];
 		}
 
 		for (sfb = 6;  sfb < 12/*SBMAX_s*/;  sfb++)
 			for (b = 0;  b < 3;  b++)
-				if (scalefac_s[sfb][b] > max_slen2)
-					max_slen2 = scalefac_s[sfb][b];
+				if (flags->loop_flags.scalefac_s[sfb][b] > max_slen2)
+					max_slen2 = flags->loop_flags.scalefac_s[sfb][b];
 	}
 	else
 	{
 		table = part2_len_l;
 
 		for (sfb = 0;  sfb < 11;  sfb++)
-			if (scalefac_l[sfb] > max_slen1)
-				max_slen1 = scalefac_l[sfb];
+			if (flags->loop_flags.scalefac_l[sfb] > max_slen1)
+				max_slen1 = flags->loop_flags.scalefac_l[sfb];
 
 
 #if ORG_SCF_COMPRESS && !ORG_PREEMPHASING
 		/* This was seen in LAME */
-		if (!cod_info->preflag)
+		if (!flags->loop_flags.cod_info->preflag)
 		{
 			for (sfb = 11;  sfb < SBMAX_l;  sfb++)
-				if (scalefac_l[sfb] < (1 + cod_info->scalefac_scale) * blade_pretab[sfb])
+				if (flags->loop_flags.scalefac_l[sfb] < (1 + flags->loop_flags.cod_info->scalefac_scale) * blade_pretab[sfb])
 					break;
 
 			if (sfb == SBMAX_l)
 			{
 				for (sfb = 11;  sfb < SBMAX_l;  sfb++)
-					scalefac_l[sfb] -= (1 + cod_info->scalefac_scale) * blade_pretab[sfb];
-				cod_info->preflag = 1;
+					flags->loop_flags.scalefac_l[sfb] -= (1 + flags->loop_flags.cod_info->scalefac_scale) * blade_pretab[sfb];
+				flags->loop_flags.cod_info->preflag = 1;
 			}
 		}
 #endif
 
 
 		for (sfb = 11;  sfb < 21/*SBMAX_l*/;  sfb++)
-			if (scalefac_l[sfb] > max_slen2)
-				max_slen2 = scalefac_l[sfb];
+			if (flags->loop_flags.scalefac_l[sfb] > max_slen2)
+				max_slen2 = flags->loop_flags.scalefac_l[sfb];
 	}
 
 
-	cod_info->part2_length = infinity;
+	flags->loop_flags.cod_info->part2_length = infinity;
 
 	for (k = 0;  k < 16;  k++)
 	{
 		if (max_slen1 < pow2_slen1[k]  &&  max_slen2 < pow2_slen2[k])
 		{
 #if ORG_SCF_COMPRESS
-			cod_info->scalefac_compress = k;
-			cod_info->part2_length      = table[k];
+			flags->loop_flags.cod_info->scalefac_compress = k;
+			flags->loop_flags.cod_info->part2_length      = table[k];
 			break;
 #else
-			if (cod_info->part2_length > table[k])
+			if (flags->loop_flags.cod_info->part2_length > table[k])
 			{
-				cod_info->scalefac_compress = k;
-				cod_info->part2_length      = table[k];
+				flags->loop_flags.cod_info->scalefac_compress = k;
+				flags->loop_flags.cod_info->part2_length      = table[k];
 			}
 #endif
 		}
 	}
 
 
-	return cod_info->part2_length;
+	return flags->loop_flags.cod_info->part2_length;
 }
 
 
@@ -1079,20 +1079,20 @@ static	int				needed_bits_for_storing_scalefactors
 	calculates the distortion introduced by the qunatization
 	in each scale factor band.
 */
-static	void			calc_noise (void)
+static	void			calc_noise (encoder_flags_and_data* flags)
 {
 	int						i, b, sfb, start, end, off;
 	double					f, sum, temp;
 
 
-	off = -4 * (int)cod_info->quantizerStepSize;
+	off = -4 * (int)flags->loop_flags.cod_info->quantizerStepSize;
 
 
-	for (sfb = 0;  sfb < max_used_sfb_l;  sfb++)
+	for (sfb = 0;  sfb < flags->loop_flags.max_used_sfb_l;  sfb++)
 	{
-		if (ix_l[xmax_line_l[sfb]] == 0)   /* quantized values all zero? */
+		if (flags->loop_flags.ix_l[flags->loop_flags.xmax_line_l[sfb]] == 0)   /* quantized values all zero? */
 		{
-			xfsf_l[sfb] = energy_l[sfb];   /* see calculation of xmin_l */
+			flags->loop_flags.xfsf_l[sfb] = flags->loop_flags.energy_l[sfb];   /* see calculation of flags->loop_flags.xmin_l */
 		}
 		else
 		{
@@ -1101,27 +1101,27 @@ static	void			calc_noise (void)
 
 			sum = 0.0;
 
-			f = pow216[expo16_l[sfb] + off];
+			f = pow216[flags->loop_flags.expo16_l[sfb] + off];
 
 			for (i = start;  i < end;  i++)
 			{
-				temp = fabs(xr_org_l[i]) - noisePowTab[ix_l[i]] / f;
+				temp = fabs(flags->loop_flags.xr_org_l[i]) - noisePowTab[flags->loop_flags.ix_l[i]] / f;
 				sum += temp * temp;
 			}
 
-			xfsf_l[sfb] = sum;
+			flags->loop_flags.xfsf_l[sfb] = sum;
 		}
 	}
 
 	for (b = 0;  b < 3;  b++)
 	{
-		off = -4 * ((int)cod_info->quantizerStepSize + 8 * cod_info->subblock_gain[b]);
+		off = -4 * ((int)flags->loop_flags.cod_info->quantizerStepSize + 8 * flags->loop_flags.cod_info->subblock_gain[b]);
 
-		for (sfb = min_used_sfb_s;  sfb < SFB_SMAX-1;  sfb++)
+		for (sfb = flags->loop_flags.min_used_sfb_s;  sfb < SFB_SMAX-1;  sfb++)
 		{
-			if (ix_s[xmax_line_s[sfb][b]] == 0)   /* quantized values all zero? */
+			if (flags->loop_flags.ix_s[flags->loop_flags.xmax_line_s[sfb][b]] == 0)   /* quantized values all zero? */
 			{
-				xfsf_s[sfb][b] = energy_s[sfb][b];   /* see calculation of xmin_s */
+				flags->loop_flags.xfsf_s[sfb][b] = flags->loop_flags.energy_s[sfb][b];   /* see calculation of xmin_s */
 			}
 			else
 			{
@@ -1130,15 +1130,15 @@ static	void			calc_noise (void)
 
 				sum = 0.0;
 
-				f = pow216[expo16_s[sfb][b] + off];
+				f = pow216[flags->loop_flags.expo16_s[sfb][b] + off];
 
 				for (i = start;  i < end;  i++)
 				{
-	 				temp = fabs(xr_org_s[i][b]) - noisePowTab[ix_s[i][b]] / f;
+	 				temp = fabs(flags->loop_flags.xr_org_s[i][b]) - noisePowTab[flags->loop_flags.ix_s[i][b]] / f;
 					sum += temp * temp;
 				}       
 
-				xfsf_s[sfb][b] = sum;
+				flags->loop_flags.xfsf_s[sfb][b] = sum;
 			}
 		}
 	}
@@ -1156,17 +1156,17 @@ static	void			calc_noise (void)
 	Otherwise it returns one. 
 */
 
-static	int				loop_break (void)
+static	int				loop_break (encoder_flags_and_data* flags)
 {
 	int						sfb, b;
 
-	for (sfb = 0;  sfb < cod_info->sfb_lmax;  sfb++)
-		if (scalefac_l[sfb] == 0)
+	for (sfb = 0;  sfb < flags->loop_flags.cod_info->sfb_lmax;  sfb++)
+		if (flags->loop_flags.scalefac_l[sfb] == 0)
 			return 0;
 
-	for (sfb = min_used_sfb_s;  sfb < 12;  sfb++)
+	for (sfb = flags->loop_flags.min_used_sfb_s;  sfb < 12;  sfb++)
 		for (b = 0;  b < 3;  b++)
-			if (scalefac_s[sfb][b] == 0)
+			if (flags->loop_flags.scalefac_s[sfb][b] == 0)
 				return 0;
 
 	return 1;
@@ -1188,50 +1188,52 @@ static	int				loop_break (void)
 
 static	int				amplify
 (
+	encoder_flags_and_data* flags,
 	int						iteration
 )
 {
-	if (cod_info->window_switching_flag  &&  cod_info->block_type == SHORT_TYPE)
-		return amplify_short ();
+	if (flags->loop_flags.cod_info->window_switching_flag  &&  flags->loop_flags.cod_info->block_type == SHORT_TYPE)
+		return amplify_short (flags);
 	else
-		return amplify_long (iteration);
+		return amplify_long (flags, iteration);
 }
 
 
 
 
 
-static	int				amplify_short (void)
+static	int				amplify_short (encoder_flags_and_data* flags)
 {
+	
 	int						sfb, b, over, expo16_off;
 
-	expo16_off = 16 * (1 + cod_info->scalefac_scale) / 2;
+	expo16_off = 16 * (1 + flags->loop_flags.cod_info->scalefac_scale) / 2;
 	over = 0;
 
 #ifdef	MIXED_BLOCKS
-	for (sfb = 0;  sfb < max_used_sfb_l;  sfb++)
+	for (sfb = 0;  sfb < flags->loop_flags.max_used_sfb_l;  sfb++)
 	{
-		if (xfsf_l[sfb] > xmin_l[sfb])
+		if (flags->loop_flags.xfsf_l[sfb] > flags->loop_flags.xmin_l[sfb])
 		{
-			scalefac_l[sfb]++;
-			expo16_l[sfb] += expo16_off;
+			flags->loop_flags.scalefac_l[sfb]++;
+			flags->loop_flags.expo16_l[sfb] += expo16_off;
 			over++;
-			mark_tab_l[mark_idx_l++] = sfb;
+			flags->loop_flags.mark_tab_l[flags->loop_flags.mark_idx_l++] = sfb;
 		}
 	}
 #endif
 
-	for (sfb = min_used_sfb_s;  sfb < SBMAX_s;  sfb++)
+	for (sfb = flags->loop_flags.min_used_sfb_s;  sfb < SBMAX_s;  sfb++)
 	{
 		for (b = 0;  b < 3;  b++)
 		{
-			if (xfsf_s[sfb][b] > xmin_s[sfb][b])
+			if (flags->loop_flags.xfsf_s[sfb][b] > flags->loop_flags.xmin_s[sfb][b])
 			{
-				scalefac_s[sfb][b]++;
-				expo16_s[sfb][b] += expo16_off;
+				flags->loop_flags.scalefac_s[sfb][b]++;
+				flags->loop_flags.expo16_s[sfb][b] += expo16_off;
 				over++;
-				mark_tab_s[mark_idx_s++] = sfb;
-				mark_tab_s[mark_idx_s++] = b;
+				flags->loop_flags.mark_tab_s[flags->loop_flags.mark_idx_s++] = sfb;
+				flags->loop_flags.mark_tab_s[flags->loop_flags.mark_idx_s++] = b;
 			}
 		}
 	}
@@ -1245,6 +1247,7 @@ static	int				amplify_short (void)
 
 static	int				amplify_long
 (
+	encoder_flags_and_data* flags,
 	int						iteration
 )
 {
@@ -1254,9 +1257,9 @@ static	int				amplify_long
 	int						expo16_off;
 
 
-	stop_at = max_used_sfb_l;
+	stop_at = flags->loop_flags.max_used_sfb_l;
 
-	expo16_off = 16 * (1 + cod_info->scalefac_scale) / 2;
+	expo16_off = 16 * (1 + flags->loop_flags.cod_info->scalefac_scale) / 2;
 
 
 	/*
@@ -1269,21 +1272,21 @@ static	int				amplify_long
 #if !ORG_PREEMPHASING
 	if (iteration == 1)
 #endif
-		if (!cod_info->preflag)
+		if (!flags->loop_flags.cod_info->preflag)
 		{	
-			for (sfb = max_used_sfb_l-4;  sfb < max_used_sfb_l;  sfb++)
-				if (xfsf_l[sfb] <= xmin_l[sfb])
+			for (sfb = flags->loop_flags.max_used_sfb_l-4;  sfb < flags->loop_flags.max_used_sfb_l;  sfb++)
+				if (flags->loop_flags.xfsf_l[sfb] <= flags->loop_flags.xmin_l[sfb])
 					goto no_preemphasing;
 
-			cod_info->preflag = 1;
+			flags->loop_flags.cod_info->preflag = 1;
 
 			stop_at = 11;   /* blade_pretab[sfb] = 0  for  sfb = 0..10 */
 
-			for (sfb = stop_at;  sfb < max_used_sfb_l;  sfb++)
+			for (sfb = stop_at;  sfb < flags->loop_flags.max_used_sfb_l;  sfb++)
 			{
-				expo16_l[sfb] += pre_expo_off[sfb] = expo16_off * blade_pretab[sfb];
+				flags->loop_flags.expo16_l[sfb] += pre_expo_off[sfb] = expo16_off * blade_pretab[sfb];
 
-				mark_tab_l[mark_idx_l++] = sfb;
+				flags->loop_flags.mark_tab_l[flags->loop_flags.mark_idx_l++] = sfb;
 			}
 		}
 
@@ -1293,22 +1296,22 @@ no_preemphasing:
 
 	for (sfb = 0;  sfb < stop_at;  sfb++)
 	{
-		if (xfsf_l[sfb] > xmin_l[sfb])
+		if (flags->loop_flags.xfsf_l[sfb] > flags->loop_flags.xmin_l[sfb])
 		{
 			over++;
-			expo16_l[sfb] += expo16_off;
-			scalefac_l[sfb]++;
+			flags->loop_flags.expo16_l[sfb] += expo16_off;
+			flags->loop_flags.scalefac_l[sfb]++;
 
-			mark_tab_l[mark_idx_l++] = sfb;
+			flags->loop_flags.mark_tab_l[flags->loop_flags.mark_idx_l++] = sfb;
 		}
 	}
-	for (sfb = stop_at;  sfb < max_used_sfb_l;  sfb++)   /* The just preemphased bands have to be treated differently */
+	for (sfb = stop_at;  sfb < flags->loop_flags.max_used_sfb_l;  sfb++)   /* The just preemphased bands have to be treated differently */
 	{
-		if (xfsf_l[sfb] > xmin_l[sfb] * pow216[2*pre_expo_off[sfb]])
+		if (flags->loop_flags.xfsf_l[sfb] > flags->loop_flags.xmin_l[sfb] * pow216[2*pre_expo_off[sfb]])
 		{
 			over++;
-			expo16_l[sfb] += expo16_off;
-			scalefac_l[sfb]++;
+			flags->loop_flags.expo16_l[sfb] += expo16_off;
+			flags->loop_flags.scalefac_l[sfb]++;
 		}
 	}
 
@@ -1327,8 +1330,9 @@ no_preemphasing:
 	Quantization of the vector xr ( -> ix)
 */
 
-static	int INLINE		cutting_crew (FLOAT in)
+static	int INLINE		cutting_crew (encoder_flags_and_data* flags, FLOAT in)
 {
+	
 	int						retVal;
 
 	retVal = (int) (in + 0.4054);
@@ -1343,44 +1347,44 @@ static	int INLINE		cutting_crew (FLOAT in)
 
 
 
-static	void quantize (void)
+static	void quantize (	encoder_flags_and_data* flags)
 {
 	int						sfb, i, b, start, end;
 	double					f, z, y;
 
-	for (sfb = 0;  sfb < end_sfb_l;  sfb++)
+	for (sfb = 0;  sfb < flags->loop_flags.end_sfb_l;  sfb++)
 	{
 		start = scalefac_band_long[sfb];
 		end   = scalefac_band_long[sfb+1];
 
-			        /* (expo16_l[sfb] - 16/4 * quant_step) * 3/4 */
-			f = pow216[(expo16_l[sfb]/4 - (int)cod_info->quantizerStepSize) * 3];
+			        /* (flags->loop_flags.expo16_l[sfb] - 16/4 * quant_step) * 3/4 */
+			f = pow216[(flags->loop_flags.expo16_l[sfb]/4 - (int)flags->loop_flags.cod_info->quantizerStepSize) * 3];
 
 			for (i = start;  i < end;  i += 2)
 			{
-				z = xr34_l[i  ] * f;
-				y = xr34_l[i+1] * f;
-				ix_l[i  ] = cutting_crew (z);
-				ix_l[i+1] = cutting_crew (y);
+				z = flags->loop_flags.xr34_l[i  ] * f;
+				y = flags->loop_flags.xr34_l[i+1] * f;
+				flags->loop_flags.ix_l[i  ] = cutting_crew (flags, z);
+				flags->loop_flags.ix_l[i+1] = cutting_crew (flags, y);
 			}
 	}
 
-	for (sfb = min_used_sfb_s;  sfb < end_sfb_s;  sfb++)
+	for (sfb = flags->loop_flags.min_used_sfb_s;  sfb < flags->loop_flags.end_sfb_s;  sfb++)
 	{
 		start = scalefac_band_short[sfb];
 		end   = scalefac_band_short[sfb+1];
 
 		for (b = 0;  b < 3;  b++)
 		{
-				        /* (expo_s[sfb][b] - 16/4 * (quant_step + 8 * cod_info->subblock_gain[b])) * 3/4 */
-				f = pow216[(expo16_s[sfb][b] / 4 - (int)cod_info->quantizerStepSize - 8 * cod_info->subblock_gain[b]) * 3];
+				        /* (expo_s[sfb][b] - 16/4 * (quant_step + 8 * flags->loop_flags.cod_info->subblock_gain[b])) * 3/4 */
+				f = pow216[(flags->loop_flags.expo16_s[sfb][b] / 4 - (int)flags->loop_flags.cod_info->quantizerStepSize - 8 * flags->loop_flags.cod_info->subblock_gain[b]) * 3];
 
 				for (i = start;  i < end;  i += 2)
 				{
-					z = xr34_s[i  ][b] * f;
-					y = xr34_s[i+1][b] * f;
-					ix_s[i  ][b] = cutting_crew (z);
-					ix_s[i+1][b] = cutting_crew (y);
+					z = flags->loop_flags.xr34_s[i  ][b] * f;
+					y = flags->loop_flags.xr34_s[i+1][b] * f;
+					flags->loop_flags.ix_s[i  ][b] = cutting_crew (flags, z);
+					flags->loop_flags.ix_s[i+1][b] = cutting_crew (flags, y);
 				}
 		}
 	}
@@ -1388,47 +1392,47 @@ static	void quantize (void)
 
 
 
-static	void			partial_quantize (void)
+static	void			partial_quantize (	encoder_flags_and_data* flags)
 {
 	int						sfb, i, b, start, end;
 	double					f, z, y;
 
-	while (mark_idx_l)
+	while (flags->loop_flags.mark_idx_l)
 	{
-		sfb = mark_tab_l[--mark_idx_l];
+		sfb = flags->loop_flags.mark_tab_l[--flags->loop_flags.mark_idx_l];
 
 		start = scalefac_band_long[sfb];
 		end   = scalefac_band_long[sfb+1];
 
-		        /* (expo16_l[sfb] - 16/4 * quant_step) * 3/4 */
-		f = pow216[(expo16_l[sfb]/4 - (int)cod_info->quantizerStepSize) * 3];
+		        /* (flags->loop_flags.expo16_l[sfb] - 16/4 * quant_step) * 3/4 */
+		f = pow216[(flags->loop_flags.expo16_l[sfb]/4 - (int)flags->loop_flags.cod_info->quantizerStepSize) * 3];
 
 		for (i = start;  i < end;  i += 2)
 		{
-			z = xr34_l[i  ] * f;
-			y = xr34_l[i+1] * f;
-			ix_l[i  ] = cutting_crew (z);
-			ix_l[i+1] = cutting_crew (y);
+			z = flags->loop_flags.xr34_l[i  ] * f;
+			y = flags->loop_flags.xr34_l[i+1] * f;
+			flags->loop_flags.ix_l[i  ] = cutting_crew (flags, z);
+			flags->loop_flags.ix_l[i+1] = cutting_crew (flags, y);
 		}
 	}
 
-	while (mark_idx_s)
+	while (flags->loop_flags.mark_idx_s)
 	{
-		b   = mark_tab_s[--mark_idx_s];
-		sfb = mark_tab_s[--mark_idx_s];
+		b   = flags->loop_flags.mark_tab_s[--flags->loop_flags.mark_idx_s];
+		sfb = flags->loop_flags.mark_tab_s[--flags->loop_flags.mark_idx_s];
 
 		start = scalefac_band_short[sfb];
 		end   = scalefac_band_short[sfb+1];
 
-		        /* (expo_16s[sfb][b] - 16/4 * (quant_step + 8 * cod_info->subblock_gain[b])) * 3/4 */
-		f = pow216[(expo16_s[sfb][b] / 4 - (int)cod_info->quantizerStepSize - 8 * cod_info->subblock_gain[b]) * 3];
+		        /* (expo_16s[sfb][b] - 16/4 * (quant_step + 8 * flags->loop_flags.cod_info->subblock_gain[b])) * 3/4 */
+		f = pow216[(flags->loop_flags.expo16_s[sfb][b] / 4 - (int)flags->loop_flags.cod_info->quantizerStepSize - 8 * flags->loop_flags.cod_info->subblock_gain[b]) * 3];
 
 		for (i = start;  i < end;  i += 2)
 		{
-			z = xr34_s[i  ][b] * f;
-			y = xr34_s[i+1][b] * f;
-			ix_s[i  ][b] = cutting_crew (z);
-			ix_s[i+1][b] = cutting_crew (y);
+			z = flags->loop_flags.xr34_s[i  ][b] * f;
+			y = flags->loop_flags.xr34_s[i+1][b] * f;
+			flags->loop_flags.ix_s[i  ][b] = cutting_crew (flags, z);
+			flags->loop_flags.ix_s[i+1][b] = cutting_crew (flags, y);
 		}
 	}
 }
@@ -1488,23 +1492,23 @@ struct
 	Count the number of bits necessary to code the bigvalues region.
 */
 
-static	int				count_bits (void)
+static	int				count_bits (encoder_flags_and_data* flags)
 {
-	cod_info->table_select[0] = 0;
-	cod_info->table_select[1] = 0;
-	cod_info->table_select[2] = 0;
+	flags->loop_flags.cod_info->table_select[0] = 0;
+	flags->loop_flags.cod_info->table_select[1] = 0;
+	flags->loop_flags.cod_info->table_select[2] = 0;
 
-	if (cod_info->window_switching_flag && (cod_info->block_type == SHORT_TYPE))
-		return count_bits_short ();
+	if (flags->loop_flags.cod_info->window_switching_flag && (flags->loop_flags.cod_info->block_type == SHORT_TYPE))
+		return count_bits_short (flags);
 	else
-		return count_bits_long ();
+		return count_bits_long (flags);
 }
 
 
 
 
 
-static	int				count_bits_short (void)
+static	int				count_bits_short (encoder_flags_and_data* flags)
 {
 	unsigned int			bits = 0;
 
@@ -1524,21 +1528,21 @@ static	int				count_bits_short (void)
 
 	max = 0;
 #ifdef MIXED_BLOCKS
-	if (cod_info->mixed_block_flag)
+	if (flags->loop_flags.cod_info->mixed_block_flag)
 	{
 		for (sfb = 0;  sfb < 8;  sfb++)
-			if ((temp = ix_l[xmax_line_l[sfb]]) > max)
+			if ((temp = flags->loop_flags.ix_l[flags->loop_flags.xmax_line_l[sfb]]) > max)
 				max = temp;
-		choose_table_long (0, 36, max, &cod_info->table_select[0], &bits);
+		choose_table_long (flags, 0, 36, max, &flags->loop_flags.cod_info->table_select[0], &bits);
 	}
 	else
 #endif
 	{
 		for (sfb = 0;  sfb < 3;  sfb++)
 			for (b = 0;  b < 3;  b++)
-				if ((temp = ix_s[xmax_line_s[sfb][b]][b]) > max)
+				if ((temp = flags->loop_flags.ix_s[flags->loop_flags.xmax_line_s[sfb][b]][b]) > max)
 					max = temp;
-		choose_table_short (0, 3, max, &cod_info->table_select[0], &bits);
+		choose_table_short (flags, 0, 3, max, &flags->loop_flags.cod_info->table_select[0], &bits);
 	}
 
 
@@ -1549,9 +1553,9 @@ static	int				count_bits_short (void)
 	max = 0;
 	for (sfb = 3;  sfb < SFB_SMAX;  sfb++)
 		for (b = 0;  b < 3;  b++)
-			if ((temp = ix_s[xmax_line_s[sfb][b]][b]) > max)
+			if ((temp = flags->loop_flags.ix_s[flags->loop_flags.xmax_line_s[sfb][b]][b]) > max)
 				max = temp;
-	choose_table_short (3, SFB_SMAX, max, &cod_info->table_select[1], &bits);
+	choose_table_short (flags, 3, SFB_SMAX, max, &flags->loop_flags.cod_info->table_select[1], &bits);
 
 	return bits;
 }
@@ -1560,7 +1564,7 @@ static	int				count_bits_short (void)
 
 
 
-static	int				count_bits_long (void)
+static	int				count_bits_long (encoder_flags_and_data* flags)
 {
 	int						zero_region;
 	int						bigv_region;
@@ -1576,38 +1580,38 @@ static	int				count_bits_long (void)
 
 
 	for (zero_region = 576;  zero_region > 1;  zero_region -= 2)
-		     if (ix_l[zero_region-1])  break;
-		else if (ix_l[zero_region-2])  break;
+		     if (flags->loop_flags.ix_l[zero_region-1])  break;
+		else if (flags->loop_flags.ix_l[zero_region-2])  break;
 
 	for (bigv_region = zero_region;  bigv_region > 3;  bigv_region -= 4)
 	{
-		     if (ix_l[bigv_region-1] > 1)  break;
-		else if (ix_l[bigv_region-2] > 1)  break;
-		else if (ix_l[bigv_region-3] > 1)  break;
-		else if (ix_l[bigv_region-4] > 1)  break;
+		     if (flags->loop_flags.ix_l[bigv_region-1] > 1)  break;
+		else if (flags->loop_flags.ix_l[bigv_region-2] > 1)  break;
+		else if (flags->loop_flags.ix_l[bigv_region-3] > 1)  break;
+		else if (flags->loop_flags.ix_l[bigv_region-4] > 1)  break;
 
 		p = 0;
-		if (ix_l[bigv_region-1])  bits++, p |= 8;
-		if (ix_l[bigv_region-2])  bits++, p |= 4;
-		if (ix_l[bigv_region-3])  bits++, p |= 2;
-		if (ix_l[bigv_region-4])  bits++, p |= 1;
+		if (flags->loop_flags.ix_l[bigv_region-1])  bits++, p |= 8;
+		if (flags->loop_flags.ix_l[bigv_region-2])  bits++, p |= 4;
+		if (flags->loop_flags.ix_l[bigv_region-3])  bits++, p |= 2;
+		if (flags->loop_flags.ix_l[bigv_region-4])  bits++, p |= 1;
 
 		sum0 += blade_ht[32].hlen[p];
 		sum1 += blade_ht[33].hlen[p];
 	}
 
-	cod_info->count1     = (zero_region-bigv_region) / 4;
-	cod_info->big_values =              bigv_region  / 2;
+	flags->loop_flags.cod_info->count1     = (zero_region-bigv_region) / 4;
+	flags->loop_flags.cod_info->big_values =              bigv_region  / 2;
 
 	if (sum0 < sum1)
 	{
 		bits += sum0;
-		cod_info->count1table_select = 0;
+		flags->loop_flags.cod_info->count1table_select = 0;
 	}
 	else
 	{
 		bits += sum1;
-		cod_info->count1table_select = 1;
+		flags->loop_flags.cod_info->count1table_select = 1;
 	}
 
 	if (bigv_region)
@@ -1616,64 +1620,64 @@ static	int				count_bits_long (void)
 		while (scalefac_band_long[sfb_anz] < bigv_region)
 			sfb_anz++;
 
-		if (cod_info->window_switching_flag)   /* START_TYPE, STOP_TYPE */
+		if (flags->loop_flags.cod_info->window_switching_flag)   /* START_TYPE, STOP_TYPE */
 		{
-			index0 = (cod_info->region0_count =  7) + 1;
-			          cod_info->region1_count = 13;
+			index0 = (flags->loop_flags.cod_info->region0_count =  7) + 1;
+			          flags->loop_flags.cod_info->region1_count = 13;
 			index1 = sfb_anz - index0;  if (index0 + index1 < 22)  index1++;
 
-			cod_info->address1 =  36;
-			cod_info->address2 = bigv_region;
-			cod_info->address3 =   0;
+			flags->loop_flags.cod_info->address1 =  36;
+			flags->loop_flags.cod_info->address2 = bigv_region;
+			flags->loop_flags.cod_info->address3 =   0;
 		}
 		else   /* NORM_TYPE */  
 		{
-			index0 = (cod_info->region0_count = subdv_table[sfb_anz].region0_count) + 1;
-			index1 = (cod_info->region1_count = subdv_table[sfb_anz].region1_count) + 1;
+			index0 = (flags->loop_flags.cod_info->region0_count = subdv_table[sfb_anz].region0_count) + 1;
+			index1 = (flags->loop_flags.cod_info->region1_count = subdv_table[sfb_anz].region1_count) + 1;
 
-			cod_info->address1 = scalefac_band_long[index0];
-			cod_info->address2 = scalefac_band_long[index0 + index1];
-			cod_info->address3 = bigv_region;
+			flags->loop_flags.cod_info->address1 = scalefac_band_long[index0];
+			flags->loop_flags.cod_info->address2 = scalefac_band_long[index0 + index1];
+			flags->loop_flags.cod_info->address3 = bigv_region;
 		}
 
-		if (cod_info->address1 > 0)
+		if (flags->loop_flags.cod_info->address1 > 0)
 		{
 			max = 0;
 			for (sfb = 0;  sfb < index0;  sfb++)
-				if ((temp = ix_l[xmax_line_l[sfb]]) > max)
+				if ((temp = flags->loop_flags.ix_l[flags->loop_flags.xmax_line_l[sfb]]) > max)
 					max = temp;
-			choose_table_long (0, cod_info->address1, max, &cod_info->table_select[0], &bits);
+			choose_table_long (flags, 0, flags->loop_flags.cod_info->address1, max, &flags->loop_flags.cod_info->table_select[0], &bits);
 		}
 
-		if (cod_info->address2 > cod_info->address1)
+		if (flags->loop_flags.cod_info->address2 > flags->loop_flags.cod_info->address1)
 		{
 			max = 0;
 			for (sfb = index0;  sfb < index0+index1;  sfb++)
-				if ((temp = ix_l[xmax_line_l[sfb]]) > max)
+				if ((temp = flags->loop_flags.ix_l[flags->loop_flags.xmax_line_l[sfb]]) > max)
 					max = temp;
-			choose_table_long (cod_info->address1, cod_info->address2, max, &cod_info->table_select[1], &bits);
+			choose_table_long (flags, flags->loop_flags.cod_info->address1, flags->loop_flags.cod_info->address2, max, &flags->loop_flags.cod_info->table_select[1], &bits);
 		}
 
-		if (bigv_region > cod_info->address2)
+		if (bigv_region > flags->loop_flags.cod_info->address2)
 		{
 			max = 0;
 			for (sfb = index0+index1;  sfb < sfb_anz-1;  sfb++)
-				if ((temp = ix_l[xmax_line_l[sfb]]) > max)
+				if ((temp = flags->loop_flags.ix_l[flags->loop_flags.xmax_line_l[sfb]]) > max)
 					max = temp;
 			for (i = scalefac_band_long[sfb_anz-1]; i < bigv_region;  i++)
-				if ((temp = ix_l[i]) > max)
+				if ((temp = flags->loop_flags.ix_l[i]) > max)
 					max = temp;
-			choose_table_long (cod_info->address2, bigv_region, max, &cod_info->table_select[2], &bits);
+			choose_table_long (flags, flags->loop_flags.cod_info->address2, bigv_region, max, &flags->loop_flags.cod_info->table_select[2], &bits);
 		}
 	}
 	else
 	{	/* no big_values region */
-		cod_info->region0_count = 0;
-		cod_info->region1_count = 0;
+		flags->loop_flags.cod_info->region0_count = 0;
+		flags->loop_flags.cod_info->region1_count = 0;
 
-		cod_info->address1 = 0;
-		cod_info->address2 = 0;
-		cod_info->address3 = 0;
+		flags->loop_flags.cod_info->address1 = 0;
+		flags->loop_flags.cod_info->address2 = 0;
+		flags->loop_flags.cod_info->address3 = 0;
 	}
 
 
@@ -1705,6 +1709,7 @@ static	int				count_bits_long (void)
 
 static	int				bin_search_StepSize
 (
+	encoder_flags_and_data* flags,
 	int						desired_rate,
 	double					start
 )
@@ -1715,7 +1720,7 @@ static	int				bin_search_StepSize
 #if ORG_BINARY_SEARCH || ORG_QUANTANF_INIT
 	int						bot = 200;
 #else
-	int						bot = the_hi_quant;
+	int						bot = flags->loop_flags.the_hi_quant;
 #endif
 	int						next = start;
 
@@ -1727,14 +1732,14 @@ static	int				bin_search_StepSize
 	{
 		last = next;
 		next = (top + bot) / 2;
-		cod_info->quantizerStepSize = next;
+		flags->loop_flags.cod_info->quantizerStepSize = next;
 
 		tjBitOverflow2 = FALSE;
-		quantize ();
+		quantize (flags);
 		if (tjBitOverflow2)
 			bits = infinity;
 		else
-			bits = count_bits ();
+			bits = count_bits (flags);
 
 		if (bits > desired_rate) 
 			top = next;
@@ -1748,18 +1753,18 @@ static	int				bin_search_StepSize
 	do
 	{
 		next = top + (bot - top) / 2;
-		cod_info->quantizerStepSize = next;
+		flags->loop_flags.cod_info->quantizerStepSize = next;
 
 #if ORG_BINARY_SEARCH || ORG_QUANTANF_INIT || CHECK_TJ_OVERFLOW
 		tjBitOverflow2 = FALSE;
-		quantize ();
+		quantize (flags);
 		if (tjBitOverflow2)
 			bits = infinity;
 		else
-			bits = count_bits ();
+			bits = count_bits (flags);
 #else
-		quantize ();
-		bits = count_bits ();
+		quantize (flags);
+		bits = count_bits (flags);
 #endif
 
 		if (bits > desired_rate) 
@@ -1773,15 +1778,15 @@ static	int				bin_search_StepSize
 
 	if (bits > desired_rate)
 	{
-		cod_info->quantizerStepSize = next+1;
+		flags->loop_flags.cod_info->quantizerStepSize = next+1;
 #if ORG_BINARY_SEARCH || ORG_QUANTANF_INIT || CHECK_TJ_OVERFLOW
 		tjBitOverflow2 = FALSE;
-		quantize ();
+		quantize (flags);
 assert(! tjBitOverflow2);
 #else
-		quantize ();
+		quantize (flags);
 #endif
-		bits = count_bits ();
+		bits = count_bits (flags);
 assert(bits <= desired_rate);
 	}
 
@@ -1806,6 +1811,7 @@ assert(bits <= desired_rate);
 */
 static	void			choose_table_long
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				max,
@@ -1830,18 +1836,18 @@ static	void			choose_table_long
 
 		switch (choice0)
 		{
-			case  1:  single_Huffman (start, end,/* 1 */      table, bit_sum);  break;
-			case  2:  double_Huffman (start, end,  2,  3,     table, bit_sum);  break;
-			case  5:  double_Huffman (start, end,  5,  6,     table, bit_sum);  break;
-			case  7:  triple_Huffman (start, end,  7,  8,  9, table, bit_sum);  break;
-			case 10:  triple_Huffman (start, end, 10, 11, 12, table, bit_sum);  break;
-			case 13:  double_Huffman (start, end, 13, 15,     table, bit_sum);  break;
+			case  1:  single_Huffman (flags, start, end,/* 1 */      table, bit_sum);  break;
+			case  2:  double_Huffman (flags, start, end,  2,  3,     table, bit_sum);  break;
+			case  5:  double_Huffman (flags, start, end,  5,  6,     table, bit_sum);  break;
+			case  7:  triple_Huffman (flags, start, end,  7,  8,  9, table, bit_sum);  break;
+			case 10:  triple_Huffman (flags, start, end, 10, 11, 12, table, bit_sum);  break;
+			case 13:  double_Huffman (flags, start, end, 13, 15,     table, bit_sum);  break;
 		}
 	}
 #if !ORG_HUFFMAN_CODING   /* no part of original BladeEnc */
 	else if (max == 15)
 	{
-		triple_Huffman_2 (start, end,/* 13, 15, 24, */ table, bit_sum);
+		triple_Huffman_2 (flags, start, end,/* 13, 15, 24, */ table, bit_sum);
 	}
 #endif
 	else
@@ -1859,9 +1865,9 @@ assert(choice0 < 24);
 assert(choice1 < 32);
 
 #if ORG_HUFFMAN_CODING
-		double_Huffman_2 (start, end, choice1, choice0, table, bit_sum);
+		double_Huffman_2 (flags, start, end, choice1, choice0, table, bit_sum);
 #else
-		double_Huffman_2 (start, end, choice0, choice1, table, bit_sum);
+		double_Huffman_2 (flags, start, end, choice0, choice1, table, bit_sum);
 #endif
 	}
 }
@@ -1884,6 +1890,7 @@ assert(choice1 < 32);
 
 static	void 			choose_table_short
 (
+	encoder_flags_and_data* flags,
 	unsigned				start_sfb,
 	unsigned				end_sfb,
 	unsigned				max,
@@ -1913,23 +1920,23 @@ static	void 			choose_table_short
 			choice0++;
 
 #if ORG_HUFFMAN_CODING
-			          tiny_single_Huffman (start, end, choice0,    table, bit_sum);
+			          tiny_single_Huffman (flags, start, end, choice0,    table, bit_sum);
 #else
 		switch (choice0)
 		{
-			case  1:  tiny_single_Huffman (start, end,/* 1 */      table, bit_sum);  break;
-			case  2:  tiny_double_Huffman (start, end,  2,  3,     table, bit_sum);  break;
-			case  5:  tiny_double_Huffman (start, end,  5,  6,     table, bit_sum);  break;
-			case  7:  tiny_triple_Huffman (start, end,  7,  8,  9, table, bit_sum);  break;
-			case 10:  tiny_triple_Huffman (start, end, 10, 11, 12, table, bit_sum);  break;
-			case 13:  tiny_double_Huffman (start, end, 13, 15,     table, bit_sum);  break;
+			case  1:  tiny_single_Huffman (flags, start, end,/* 1 */      table, bit_sum);  break;
+			case  2:  tiny_double_Huffman (flags, start, end,  2,  3,     table, bit_sum);  break;
+			case  5:  tiny_double_Huffman (flags, start, end,  5,  6,     table, bit_sum);  break;
+			case  7:  tiny_triple_Huffman (flags, start, end,  7,  8,  9, table, bit_sum);  break;
+			case 10:  tiny_triple_Huffman (flags, start, end, 10, 11, 12, table, bit_sum);  break;
+			case 13:  tiny_double_Huffman (flags, start, end, 13, 15,     table, bit_sum);  break;
 		}
 #endif
 	}
 #if !ORG_HUFFMAN_CODING   /* no part of original BladeEnc */
 	else if (max == 15)
 	{
-		tiny_triple_Huffman_2 (start, end,/* 13, 15, 24, */ table, bit_sum);
+		tiny_triple_Huffman_2 (flags, start, end,/* 13, 15, 24, */ table, bit_sum);
 	}
 #endif
 	else
@@ -1940,7 +1947,7 @@ static	void 			choose_table_short
 
 		choice0 = 15;  while (blade_ht[choice0].linmax < max)  choice0++;
 assert(choice0 < 24);
-		tiny_single_Huffman_2 (start, end, choice0, table, bit_sum);
+		tiny_single_Huffman_2 (flags,start, end, choice0, table, bit_sum);
 
 #else
 
@@ -1948,7 +1955,7 @@ assert(choice0 < 24);
 assert(choice0 < 24);
 		choice1 = 24;  while (blade_ht[choice1].linmax < max)  choice1++;
 assert(choice1 < 32);
-		tiny_double_Huffman_2 (start, end, choice0, choice1, table, bit_sum);
+		tiny_double_Huffman_2 (flags, start, end, choice0, choice1, table, bit_sum);
 
 #endif
 	}
@@ -1970,6 +1977,7 @@ assert(choice1 < 32);
 
 static	void			single_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0, == 1 */
@@ -1988,8 +1996,8 @@ static	void			single_Huffman
 	static	unsigned				ylen = h0->ylen;   /* == 2 */
 #endif
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = signs = 0;
 
@@ -2015,6 +2023,7 @@ static	void			single_Huffman
 #if ORG_HUFFMAN_CODING
 static	void			tiny_single_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,
@@ -2029,8 +2038,8 @@ static	void			tiny_single_Huffman
 
 	unsigned				ylen = h0->ylen;
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = signs = 0;
 
@@ -2054,6 +2063,7 @@ static	void			tiny_single_Huffman
 #else
 static	void tiny_single_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0 == 1 */
@@ -2072,8 +2082,8 @@ static	void tiny_single_Huffman
 	static	unsigned				ylen = h0->ylen;   /* == 2 --- static because of the constant!!! */
 #endif
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = signs = 0;
 
@@ -2101,6 +2111,7 @@ static	void tiny_single_Huffman
 #if ORG_HUFFMAN_CODING
 static	void tiny_single_Huffman_2   /* Escape tables */
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 15... */
@@ -2116,8 +2127,8 @@ static	void tiny_single_Huffman_2   /* Escape tables */
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == 16 --- static because of the constant!!! */
 #endif
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = signs = xbits = 0;
 
@@ -2152,6 +2163,7 @@ static	void tiny_single_Huffman_2   /* Escape tables */
 
 static	void			double_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 2, 5, 13 */
@@ -2168,8 +2180,8 @@ static	void			double_Huffman
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen */
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = signs = 0;
 
@@ -2198,6 +2210,7 @@ static	void			double_Huffman
 
 static	void			tiny_double_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 2, 5, 13 */
@@ -2214,8 +2227,8 @@ static	void			tiny_double_Huffman
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen */
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = signs = 0;
 
@@ -2252,6 +2265,7 @@ static	void			tiny_double_Huffman
 
 static	void			triple_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 7, 10 */
@@ -2270,8 +2284,8 @@ static	void			triple_Huffman
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = bits2 = signs = 0;
 
@@ -2306,6 +2320,7 @@ static	void			triple_Huffman
 
 static	void			tiny_triple_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 7, 10 */
@@ -2324,8 +2339,8 @@ static	void			tiny_triple_Huffman
 
 	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = bits2 = signs = 0;
 
@@ -2372,6 +2387,7 @@ static	void			tiny_triple_Huffman
 
 static	void			triple_Huffman_2
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0,   == 13 */
@@ -2392,8 +2408,8 @@ static	void			triple_Huffman_2
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */   /* == 16 */
 #endif
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = bits2 = signs = 0;
 
@@ -2428,6 +2444,7 @@ static	void			triple_Huffman_2
 
 static	void			tiny_triple_Huffman_2
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0,   == 13 */
@@ -2448,8 +2465,8 @@ static	void			tiny_triple_Huffman_2
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == h2->ylen */   /* == 16 */
 #endif
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = bits2 = signs = 0;
 
@@ -2495,6 +2512,7 @@ static	void			tiny_triple_Huffman_2
 
 static	void			double_Huffman_2   /* Escape tables */
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 16... */
@@ -2515,8 +2533,8 @@ static	void			double_Huffman_2   /* Escape tables */
 	unsigned				linbits0 = h0->linbits;
 	unsigned				linbits1 = h1->linbits;
 
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = signs = xbits = 0;
 
@@ -2547,6 +2565,7 @@ static	void			double_Huffman_2   /* Escape tables */
 
 static	void			tiny_double_Huffman_2   /* Escape tables */
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 16... */
@@ -2564,8 +2583,8 @@ static	void			tiny_double_Huffman_2   /* Escape tables */
 #if 0   /* not needed */
 	static	unsigned				ylen = h0->ylen;   /* == h1->ylen == 16 --- static because of the constant!!! */
 #endif
-	int						*pos = ix_l + start;
-	int						*fin = ix_l + end;
+	int						*pos = flags->loop_flags.ix_l + start;
+	int						*fin = flags->loop_flags.ix_l + end;
 
 	bits0 = bits1 = signs = xbits = 0;
 

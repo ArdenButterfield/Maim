@@ -45,6 +45,16 @@ private:
         makeupSlider
     };
 
+    juce::Slider encoderSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+    
+    juce::AudioProcessorValueTreeState::SliderAttachment encoderAttachment {
+        parameters,
+        "encoder",
+        encoderSlider
+    };
     
     juce::Slider bitrateSlider {
         juce::Slider::RotaryVerticalDrag,

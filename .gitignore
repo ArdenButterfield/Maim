@@ -48,3 +48,4 @@ Maim/lib/blade/bladeenc/bladeenc
 **/.DS_Store
 **/*.asd
 **/*.dSYM
+Maim/lib/blade/test

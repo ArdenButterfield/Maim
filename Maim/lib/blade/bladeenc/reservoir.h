@@ -53,38 +53,42 @@
 
 
 
-void					ResvFrameBegin
+void					BladeResvFrameBegin
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	int						mean_bits,
 	int						frameLength
 );
 
-int						ResvMaxBits
+int						BladeResvMaxBits
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	double					*pe,
 	int						mean_bits
 );
 
-void					ResvAdjust
+void					BladeResvAdjust
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	gr_info					*cod_info,
 	III_side_info_t			*l3_side,
 	int						mean_bits
 );
 
-void					ResvFrameEnd
+void					BladeResvFrameEnd
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	int						mean_bits
 );
 
-void					fixStatic_reservoir (void);
+void					fixStatic_reservoir (encoder_flags_and_data* flags);
 
 
 

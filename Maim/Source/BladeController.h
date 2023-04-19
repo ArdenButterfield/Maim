@@ -9,64 +9,47 @@
 */
 
 #pragma once
-
-#include <vector>
-#include <array>
-#include <memory>
-#include <cstring>
-#include <iostream>
-
 #include <blade.h>
-#include <lame.h>
 
-#include "QueueBuffer.h"
+#include "MP3Controller.h"
 
-class BladeController
+class BladeController : public MP3Controller
 {
 public:
-    BladeController();
-    ~BladeController();
+    BladeController() { bInitialized = false; }
+    ~BladeController() { deInit(); }
+    void addNextInput(float *left_input, float* right_input, const int num_block_samples) override;
+    bool init_encoder() override;
+    void deinit_encoder() override;
+    int validate_bitrate(int bitrate) override;
+    int validate_samplerate(const int samplerate) override;
     
-    void init(const int sampleRate,
-              const int maxSamplesPerBlock,
-              const int bitrate);
-    void deInit();
-    void addNextInput(float *left_input, float* right_input, const int num_block_samples);
-    bool copyOutput(float* left, float* right, const int num_block_samples);
     int samples_in_output_queue();
+    
+    int getBitrate() override;
+    void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) override;
+    void setMDCTbandstepBends(bool invert, int step) override;
+    void setMDCTpostshiftBends(int h_shift, float v_shift) override;
+    void setMDCTwindowincrBends(int window_incr) override;
+    void setMDCTBandReassignmentBends(int* order) override;
+    void setBitrateSquishBends(float squish) override;
+    void setThresholdBias(float bias) override;
+    void setMDCTfeedback(float feedback) override;
+
+    float* getPsychoanalThreshold() override;
+    float* getPsychoanalEnergy() override;
+    int getShortBlockStatus() override;
 
 private:
-    bool bInitialized = false;
     encoder_flags_and_data* blade_encoder = nullptr;
-    hip_global_flags *lame_dec_handler = nullptr;
-    
     std::array<std::unique_ptr<QueueBuffer<float>>, 2> inputBuffer;
-    std::vector<char> mp3Buffer;
-    
-    std::array<short, 20000> decodedLeftChannel = {0};
-    std::array<short, 20000> decodedRightChannel = {0};
-    
-    std::vector<float> readBuf;
-    int maxSamplesPerBlock;
-    std::unique_ptr<QueueBuffer<float>> outputBufferL;
-    std::unique_ptr<QueueBuffer<float>> outputBufferR;
-    
-    int bitrate;
-    
-    int input_buf_size;
-    int mp3_buf_size;
     
     // Values from the LAME documentation
-    const std::array<int, 9> allowed_samplerates = {
-        8000,
-        11025,
-        12000,
-        16000,
-        22050,
-        24000,
-        32000,
-        44100,
-        48000
+    const std::vector<int> allowed_samplerates = {
+        32000, 44100, 48000
     };
 
+    const std::vector<int> allowed_bitrates = {
+        32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320
+    };
 };

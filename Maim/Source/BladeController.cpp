@@ -10,63 +10,8 @@
 
 #include "BladeController.h"
 
-float pcm_convert(short samp) {
-    return samp / (float)std::numeric_limits<short>::max();
-}
-
-BladeController::BladeController()
-{
-    bInitialized = false;
-}
-
-BladeController::~BladeController()
-{
-    deInit();
-}
-
-void BladeController::init(const int sampleRate,
-          const int maxSamplesPerBlock,
-          const int bitrate)
-{
-    input_buf_size = maxSamplesPerBlock;
-    mp3_buf_size = input_buf_size * 1.25 + 7200;
-    mp3Buffer.resize(mp3_buf_size);
-    std::fill(mp3Buffer.begin(), mp3Buffer.end(), 0);
-
-    for (auto& buf: inputBuffer) {
-        buf = std::make_unique<QueueBuffer<float>>(maxSamplesPerBlock + 2304, 0.f);
-    }
-    outputBufferL = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
-    outputBufferR = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
-    
-    lame_dec_handler = hip_decode_init();
-    bInitialized = true;
-    
-    blade_encoder = blade_init(sampleRate, bitrate);
-}
-
-void BladeController::deInit()
-{
-    bInitialized = false;
-    if (blade_encoder) {
-        blade_deinit(blade_encoder);
-        blade_encoder = nullptr;
-    }
-    if (lame_dec_handler) {
-        hip_decode_exit(lame_dec_handler);
-        lame_dec_handler = nullptr;
-    }
-    
-    outputBufferL.reset(nullptr);
-    outputBufferR.reset(nullptr);
-    
-    mp3Buffer.resize(0);
-
-}
-
 void BladeController::addNextInput(float *left_input, float* right_input, const int num_block_samples)
 {
-    std::cout << "adding " << num_block_samples << " samples\n";
     for (int i = 0; i < num_block_samples; ++i) {
         inputBuffer[0]->enqueue(left_input[i]);
         inputBuffer[1]->enqueue(right_input[i]);
@@ -78,11 +23,10 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             left_chunk[i] = inputBuffer[0]->dequeue();
             right_chunk[i] = inputBuffer[1]->dequeue();
         }
-        std::cout << "encoding\n";
         int enc_result = blade_encode_chunk(blade_encoder,
                                             left_chunk,
                                             right_chunk,
-                                            &mp3Buffer[0]);
+                                            (char*)&mp3Buffer[0]);
         int dec_result = hip_decode(lame_dec_handler,
                                     (unsigned char*)&mp3Buffer[0],
                                     enc_result,
@@ -93,7 +37,6 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             std::cout << "Decoding error: " << dec_result << "\n";
             return;
         }
-        std::cout << "got " << dec_result << " out\n";
         float amp;
         for (int i = 0; i < dec_result; ++i) {
             amp = pcm_convert(decodedLeftChannel[i]);
@@ -104,37 +47,114 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             outputBufferR->enqueue(amp);
         }
     }
+
+}
+
+bool BladeController::init_encoder()
+{
+    for (auto& buf: inputBuffer) {
+        buf = std::make_unique<QueueBuffer<float>>(maxSamplesPerBlock + 2304, 0.f);
+    }
+    outputBufferL = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
+    outputBufferR = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
+
+    blade_encoder = blade_init(samplerate, bitrate);
+    return true;
+}
+
+void BladeController::deinit_encoder()
+{
+    if (blade_encoder) {
+        blade_deinit(blade_encoder);
+    }
+    blade_encoder = nullptr;
+}
+
+int BladeController::validate_bitrate(int bitrate)
+{
+    auto test_rate = std::find(allowed_bitrates.begin(),
+                               allowed_bitrates.end(),
+                              bitrate);
+    if (test_rate == allowed_bitrates.end()) {
+        return 96;
+    } else {
+        return bitrate;
+    }
+}
+
+int BladeController::validate_samplerate(const int samplerate)
+{
+    auto test_rate = std::find(allowed_samplerates.begin(),
+                              allowed_samplerates.end(),
+                              samplerate);
+    if (test_rate == allowed_samplerates.end()) {
+        return 44100;
+    } else {
+        return samplerate;
+    }
+}
+
+int BladeController::getBitrate()
+{
+    return bitrate;
+}
+
+void BladeController::setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd)
+{
+    
+}
+
+void BladeController::setMDCTbandstepBends(bool invert, int step)
+{
+    
+}
+
+void BladeController::setMDCTpostshiftBends(int h_shift, float v_shift)
+{
+    
+}
+
+void BladeController::setMDCTwindowincrBends(int window_incr)
+{
+    
+}
+
+void BladeController::setMDCTBandReassignmentBends(int* order)
+{
+    
+}
+
+void BladeController::setBitrateSquishBends(float squish)
+{
+    
+}
+
+void BladeController::setThresholdBias(float bias)
+{
+    
+}
+
+void BladeController::setMDCTfeedback(float feedback)
+{
+    
+}
+
+float* BladeController::getPsychoanalThreshold()
+{
+    return nullptr;
+}
+
+float* BladeController::getPsychoanalEnergy()
+{
+    return nullptr;
+}
+
+int BladeController::getShortBlockStatus()
+{
+    return 0;
 }
 
 int BladeController::samples_in_output_queue()
 {
     return outputBufferL->num_items();
-}
-
-bool BladeController::copyOutput(float* left, float* right, const int num_block_samples)
-{
-    if (outputBufferL->num_items() < num_block_samples) {
-        // std::cout << "Not enough items in queue.\n";
-        return false;
-    }
-    if (left == nullptr) {
-        for (int i = 0; i < num_block_samples; ++i) {
-            outputBufferL->dequeue();
-        }
-    } else {
-        for (int i = 0; i < num_block_samples; ++i) {
-            left[i] = outputBufferL->dequeue();
-        }
-    }
-    
-    if (right == nullptr) {
-        for (int i = 0; i < num_block_samples; ++i) {
-            outputBufferR->dequeue();
-        }
-    } else {
-        for (int i = 0; i < num_block_samples; ++i) {
-            right[i] = outputBufferR->dequeue();
-        }
-    }
-    return true;
 }

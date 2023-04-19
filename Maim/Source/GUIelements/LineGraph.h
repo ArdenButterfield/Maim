@@ -34,6 +34,9 @@ public:
     ~LineGraph() override {}
     
     void loadData(const T * const data) {
+        if (data == nullptr) {
+            return;
+        }
         for (int i = 0; i < numPoints; ++i) {
             yVals[i] = getHeight() - (data[i] - ymin) / (ymax - ymin) * getHeight();
         }

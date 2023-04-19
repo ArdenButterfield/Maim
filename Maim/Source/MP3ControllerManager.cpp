@@ -13,8 +13,10 @@
 MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, juce::AudioProcessorValueTreeState& p) :
     samplerate(s),
     samplesPerBlock(spb),
-    blocksBeforeSwitch(3000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
-    parameters(p)
+    blocksBeforeSwitch(6000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
+    parameters(p),
+    currentEncoder(lame),
+    currentControllerIndex(0)
 
 {
     parametersNeedUpdating = false;
@@ -31,6 +33,7 @@ MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, j
     parameters.addParameterListener("bitratesquish", this);
     parameters.addParameterListener("thresholdbias", this);
     parameters.addParameterListener("mdctfeedback", this);
+    parameters.addParameterListener("encoder", this);
     
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
@@ -38,12 +41,16 @@ MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, j
         parameters.addParameterListener(id.str(), this);
         bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(id.str());
     }
-
     
-    controllers[0].init(samplerate, samplesPerBlock, initialBitrate);
+    lameControllers[0].init(samplerate, samplesPerBlock, initialBitrate);
     
-    currentController = &controllers[0];
-    offController = &controllers[1];
+    if (currentEncoder == lame) {
+        currentController = &(lameControllers[currentControllerIndex]);
+    } else {
+        currentController = &(bladeControllers[currentControllerIndex]);
+    }
+    
+    offController = nullptr;
     
     currentBitrate = initialBitrate;
     wantingToSwitch = false;
@@ -66,6 +73,7 @@ MP3ControllerManager::~MP3ControllerManager()
     parameters.removeParameterListener("bitratesquish", this);
     parameters.removeParameterListener("thresholdbias", this);
     parameters.removeParameterListener("mdctfeedback", this);
+    parameters.removeParameterListener("encoder", this);
     
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
@@ -79,19 +87,33 @@ void MP3ControllerManager::parameterChanged (const juce::String &parameterID, fl
     parametersNeedUpdating = true;
 }
 
-void MP3ControllerManager::changeBitrate(int new_bitrate)
+void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
 {
-//    if (wantingToSwitch && (new_bitrate == offController->getBitrate())) {
-//        return;
-//    }
-//    if (new_bitrate == currentBitrate) {
-//        wantingToSwitch = false;
-//        return;
-//
-//    }
-//    offController->init(samplerate, samplesPerBlock, new_bitrate);
-//    wantingToSwitch = true;
-//    switchCountdown = blocksBeforeSwitch;
+    std::cout << "change\n";
+    if ((bitrate == currentBitrate) && (encoder == currentEncoder)) {
+        wantingToSwitch = false;
+        offController = nullptr;
+        return;
+    }
+    if (wantingToSwitch && (bitrate == desiredBitrate) && (encoder == desiredEncoder)) {
+        return;
+    }
+    desiredBitrate = bitrate;
+    
+    int offIndex = (currentControllerIndex + 1) % 2;
+    
+    if (encoder == lame) {
+        desiredEncoder = lame;
+        offController = &(lameControllers[offIndex]);
+    } else {
+        desiredEncoder = blade;
+        offController = &(bladeControllers[offIndex]);
+    }
+    
+    offController->init(samplerate, samplesPerBlock, desiredBitrate);
+    wantingToSwitch = true;
+    switchCountdown = blocksBeforeSwitch;
+
 }
 
 void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
@@ -107,14 +129,16 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     auto samplesR = buffer.getWritePointer(1);
     
     currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
-    if (switchCountdown > 0) {
-
+    if (wantingToSwitch && (switchCountdown > 0)) {
+        std::cout << "adding input swich countdown\n";
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
         if (offController->copyOutput(nullptr, nullptr, buffer.getNumSamples())) {
             --switchCountdown;
+            std::cout << "countdown\n";
         }
     } else if (wantingToSwitch) {
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
+        std::cout << "adding input\n";
         if (offController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
             auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
                                                        buffer.getNumSamples());
@@ -126,10 +150,12 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             buffer.addFromWithRamp(0, 0, samplesL, buffer.getNumSamples(), 1, 0);
             buffer.addFromWithRamp(1, 0, samplesR, buffer.getNumSamples(), 1, 0);
             
-            auto temp = currentController;
             currentController = offController;
-            offController = temp;
+            currentBitrate = desiredBitrate;
+            currentEncoder = desiredEncoder;
+            offController = nullptr;
             wantingToSwitch = false;
+            std::cout << "switch done\n";
             return;
         }
     }
@@ -137,68 +163,71 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     if (!currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
         memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
         memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());
+        std::cout << "can't copy out\n";
     }
 }
 
 void MP3ControllerManager::updateParameters(bool updateOffController)
 {
-//    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-//    if (bitrate != getBitrate()) {
-//        changeBitrate(bitrate);
-//    }
-//
-//    auto controller = updateOffController ? offController : currentController;
-//
-//    controller->setButterflyBends(
-//        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
-//        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-//        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-//        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
-//    );
-//
-//    controller->setMDCTbandstepBends(
-//        ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
-//        ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
-//    );
-//
-//    controller->setMDCTfeedback(
-//        ((juce::AudioParameterFloat*) parameters.getParameter("mdctfeedback"))->get()
-//    );
-//
-//    controller->setMDCTpostshiftBends(
-//        ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
-//       ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
-//    );
-//    controller->setMDCTwindowincrBends(
-//        ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()
-//    );
-//    controller->setBitrateSquishBends(
-//        ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get()
-//    );
-//
-//     controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get()
-//    );
-//
-//    int bandReassign[32];
-//    int i;
-//    for (i = 0; i < 20; ++i) {
-//        bandReassign[i] = bandReassignmentParameters[i]->get();
-//    }
-//    for (; i < 32; ++i) {
-//        bandReassign[i] = i;
-//    }
-//    controller->setMDCTBandReassignmentBends(bandReassign);
-//
-//
-//    if (wantingToSwitch && !updateOffController) {
-//        updateParameters(true);
-//    }
-//    auto psychoanalState = parameters.state.getChildWithName("psychoanal");
-//    auto indicator = psychoanalState.getProperty("shortblockindicator");
-//    bool shortBlockStatus = controller->getShortBlockStatus();
-//    if (!(indicator.isBool() && ((bool)indicator == shortBlockStatus))) {
-//        psychoanalState.setProperty("shortblockindicator", shortBlockStatus, nullptr);
-//    }
+    Encoder encoder = (Encoder)((juce::AudioParameterChoice*)
+                                parameters.getParameter("encoder"))->getIndex();
+    int bitrate = bitrates[((juce::AudioParameterChoice*)
+                            parameters.getParameter("bitrate"))->getIndex()];
+    changeController(bitrate, encoder);
+
+    for (auto controller : {offController, currentController}) {
+        if (controller == nullptr) {
+            continue;
+        }
+        controller->setButterflyBends(
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
+        );
+
+        controller->setMDCTbandstepBends(
+            ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
+            ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
+        );
+
+        controller->setMDCTfeedback(
+            ((juce::AudioParameterFloat*) parameters.getParameter("mdctfeedback"))->get()
+        );
+
+        controller->setMDCTpostshiftBends(
+            ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
+           ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
+        );
+        controller->setMDCTwindowincrBends(
+            ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()
+        );
+        controller->setBitrateSquishBends(
+            ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get()
+        );
+
+         controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get()
+        );
+
+        int bandReassign[32];
+        int i;
+        for (i = 0; i < 20; ++i) {
+            bandReassign[i] = bandReassignmentParameters[i]->get();
+        }
+        for (; i < 32; ++i) {
+            bandReassign[i] = i;
+        }
+        controller->setMDCTBandReassignmentBends(bandReassign);
+    }
+
+    auto psychoanalState = parameters.state.getChildWithName("psychoanal");
+    auto indicator = psychoanalState.getProperty("shortblockindicator");
+    bool shortBlockStatus = currentController->getShortBlockStatus();
+    if (!(indicator.isBool() && ((bool)indicator == shortBlockStatus))) {
+        psychoanalState.setProperty("shortblockindicator", shortBlockStatus, nullptr);
+    }
+    
+    parametersNeedUpdating = false;
 }
 
 int MP3ControllerManager::getBitrate()
@@ -208,12 +237,12 @@ int MP3ControllerManager::getBitrate()
 
 float* MP3ControllerManager::getPsychoanalEnergy()
 {
-//    return currentController->getPsychoanalEnergy();
+    return currentController->getPsychoanalEnergy();
 }
 
 float* MP3ControllerManager::getPsychoanalThreshold()
 {
-//    return currentController->getPsychoanalThreshold();
+    return currentController->getPsychoanalThreshold();
 }
 
 float rescalePsychoanal(const float a) {
@@ -222,16 +251,19 @@ float rescalePsychoanal(const float a) {
 
 void MP3ControllerManager::timerCallback()
 {
-//    float* energy = getPsychoanalEnergy();
-//    float* threshold = getPsychoanalThreshold();
-//    
-//    juce::var thresholdV, energyV;
-//    for (int i = 0; i < 22; ++i) {
-//        thresholdV.append(rescalePsychoanal(threshold[i]));
-//        energyV.append(rescalePsychoanal(energy[i])); // TEMP test
-//    }
-//
-//    auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
-//    psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
-//    psychoSpectrum.setProperty("energy", energyV, nullptr);
+    float* energy = getPsychoanalEnergy();
+    float* threshold = getPsychoanalThreshold();
+    
+    juce::var thresholdV, energyV;
+    
+    for (int i = 0; i < 22; ++i) {
+        // thresholdV.append(rescalePsychoanal(threshold[i]));
+        // energyV.append(rescalePsychoanal(energy[i])); // TEMP test
+         thresholdV.append(0);
+         energyV.append(0); // TEMP test
+    }
+    
+    auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
+    psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
+    psychoSpectrum.setProperty("energy", energyV, nullptr);
 }

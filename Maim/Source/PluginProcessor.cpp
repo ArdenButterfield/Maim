@@ -53,6 +53,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
             "8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
         10));
     
+    parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID {"encoder", 1}, "Encoder", juce::StringArray {"Blade", "Lame"}, 1));
+    
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"lopass", 1}, "Lowpass filter", 100.f, 20000.f, 18000.f));
     
