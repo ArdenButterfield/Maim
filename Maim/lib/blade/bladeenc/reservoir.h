@@ -53,7 +53,7 @@
 
 
 
-void					ResvFrameBegin
+void					BladeResvFrameBegin
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
@@ -62,7 +62,7 @@ void					ResvFrameBegin
 	int						frameLength
 );
 
-int						ResvMaxBits
+int						BladeResvMaxBits
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
@@ -71,7 +71,7 @@ int						ResvMaxBits
 	int						mean_bits
 );
 
-void					ResvAdjust
+void					BladeResvAdjust
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
@@ -80,7 +80,7 @@ void					ResvAdjust
 	int						mean_bits
 );
 
-void					ResvFrameEnd
+void					BladeResvFrameEnd
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,

@@ -69,7 +69,7 @@ void					fixStatic_reservoir (encoder_flags_and_data* flags)
 	size of the reservoir, and checks to make sure main_data_begin
 	was set properly by the formatter
 */
-void					ResvFrameBegin
+void					BladeResvFrameBegin
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
@@ -119,7 +119,7 @@ void					ResvFrameBegin
 	allowance for the current granule based on reservoir size
 	and perceptual entropy.
 */
-int						ResvMaxBits
+int						BladeResvMaxBits
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
@@ -170,7 +170,7 @@ int						ResvMaxBits
 	Called after a granule's bit allocation. Readjusts the size of
 	the reservoir to reflect the granule's usage.
 */
-void					ResvAdjust
+void					BladeResvAdjust
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
@@ -194,7 +194,7 @@ void					ResvAdjust
 	part2_3_length. The bitstream formatter will detect this and write the
 	appropriate stuffing bits to the bitstream.
 */
-void					ResvFrameEnd
+void					BladeResvFrameEnd
 (
 	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,

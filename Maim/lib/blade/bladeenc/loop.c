@@ -442,7 +442,7 @@ void					iteration_loop
 	scalefac_band_short = &blade_sfBandIndex[info->sampling_frequency].s[0];
 
 
-	ResvFrameBegin (flags, fr_ps, (flags->loop_flags.side_info), mean_bits, bitsPerFrame);
+	BladeResvFrameBegin (flags, fr_ps, (flags->loop_flags.side_info), mean_bits, bitsPerFrame);
 
 	for (flags->loop_flags.gr = 0;  flags->loop_flags.gr < mode_gr; flags->loop_flags.gr++)
 	{
@@ -674,7 +674,7 @@ void					iteration_loop
 
 
 			/* calculation of number of available bit( per granule ) */
-			max_bits = ResvMaxBits (flags, fr_ps, (flags->loop_flags.side_info), &pe[flags->loop_flags.gr][flags->loop_flags.ch], mean_bits);
+			max_bits = BladeResvMaxBits (flags, fr_ps, (flags->loop_flags.side_info), &pe[flags->loop_flags.gr][flags->loop_flags.ch], mean_bits);
 
 
 
@@ -775,14 +775,14 @@ void					iteration_loop
 				flags->loop_flags.cod_info->part2_3_length = outer_loop (flags, max_bits, fr_ps);
 			}
 
-			ResvAdjust (flags, fr_ps, flags->loop_flags.cod_info, (flags->loop_flags.side_info), mean_bits);
+			BladeResvAdjust (flags, fr_ps, flags->loop_flags.cod_info, (flags->loop_flags.side_info), mean_bits);
 
 			flags->loop_flags.cod_info->global_gain = my_nint (flags->loop_flags.cod_info->quantizerStepSize + 210.0);
 /*			assert (cod_info->global_gain < 256); */
 		}	/* for ch */
 	}	/* for gr */
 
-	ResvFrameEnd (flags, fr_ps, (flags->loop_flags.side_info), mean_bits);
+	BladeResvFrameEnd (flags, fr_ps, (flags->loop_flags.side_info), mean_bits);
 }
 
 
