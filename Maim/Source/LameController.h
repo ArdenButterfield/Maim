@@ -23,6 +23,21 @@ public:
     void deinit_encoder() override;
     int validate_bitrate(int bitrate) override;
     int validate_samplerate(const int samplerate) override;
+    
+    int getBitrate() override;
+    void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) override;
+    void setMDCTbandstepBends(bool invert, int step) override;
+    void setMDCTpostshiftBends(int h_shift, float v_shift) override;
+    void setMDCTwindowincrBends(int window_incr) override;
+    void setMDCTBandReassignmentBends(int* order) override;
+    void setBitrateSquishBends(float squish) override;
+    void setThresholdBias(float bias) override;
+    void setMDCTfeedback(float feedback) override;
+
+    float* getPsychoanalThreshold() override;
+    float* getPsychoanalEnergy() override;
+    int getShortBlockStatus() override;
+
 protected:
     lame_global_flags *lame_enc_handler = nullptr;
 

@@ -30,21 +30,22 @@ public:
     virtual void addNextInput(float *left_input, float* right_input, const int num_block_samples) = 0;
     bool copyOutput(float* left, float* right, const int num_block_samples);
     int samples_in_output_queue();
+    virtual int getBitrate() = 0;
+    virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;
+    virtual void setMDCTbandstepBends(bool invert, int step) = 0;
+    virtual void setMDCTpostshiftBends(int h_shift, float v_shift) = 0;
+    virtual void setMDCTwindowincrBends(int window_incr) = 0;
+    virtual void setMDCTBandReassignmentBends(int* order) = 0;
+    virtual void setBitrateSquishBends(float squish) = 0;
+    virtual void setThresholdBias(float bias) = 0;
+    virtual void setMDCTfeedback(float feedback) = 0;
+
+    virtual float* getPsychoanalThreshold() = 0;
+    virtual float* getPsychoanalEnergy() = 0;
+    virtual int getShortBlockStatus() = 0;
+
 protected:
-//    void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd);
-//    void setMDCTbandstepBends(bool invert, int step);
-//    void setMDCTpostshiftBends(int h_shift, float v_shift);
-//    void setMDCTwindowincrBends(int window_incr);
-//    void setMDCTBandReassignmentBends(int* order);
-//    void setBitrateSquishBends(float squish);
-//    void setThresholdBias(float bias);
-//    void setMDCTfeedback(float feedback);
-//
-//    float* getPsychoanalThreshold();
-//    float* getPsychoanalEnergy();
-//    int getShortBlockStatus();
-//
-//    int getBitrate();
+
     float pcm_convert(short samp) {
         return samp / (float)std::numeric_limits<short>::max();
     }

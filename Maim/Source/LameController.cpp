@@ -88,7 +88,6 @@ void LameController::addNextInput(float* left_input,
         outputBufferR->enqueue(amp);
     }
 }
-#if false
 
 int LameController::getBitrate()
 {
@@ -155,4 +154,3 @@ int LameController::getShortBlockStatus()
 {
     return lame_is_short_block(lame_enc_handler);
 }
-#endif
