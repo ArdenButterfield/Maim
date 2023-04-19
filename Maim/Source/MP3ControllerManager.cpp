@@ -31,6 +31,7 @@ MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, j
     parameters.addParameterListener("bitratesquish", this);
     parameters.addParameterListener("thresholdbias", this);
     parameters.addParameterListener("mdctfeedback", this);
+    parameters.addParameterListener("encoder", this);
     
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
@@ -66,6 +67,7 @@ MP3ControllerManager::~MP3ControllerManager()
     parameters.removeParameterListener("bitratesquish", this);
     parameters.removeParameterListener("thresholdbias", this);
     parameters.removeParameterListener("mdctfeedback", this);
+    parameters.removeParameterListener("encoder", this);
     
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;

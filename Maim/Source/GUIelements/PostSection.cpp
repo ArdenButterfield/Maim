@@ -18,13 +18,15 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p)
     addAndMakeVisible(bitrateSlider);
     addAndMakeVisible(driveSlider);
     addAndMakeVisible(makeupSlider);
+    addAndMakeVisible(encoderSlider);
 }
 
 void PostSection::resized()
 {
-    int knobWidth = getWidth() / 4;
+    int knobWidth = getWidth() / 5;
     driveSlider.setBounds(getLocalBounds().withWidth(knobWidth));
     bitrateSlider.setBounds(getLocalBounds().withWidth(knobWidth).withX(knobWidth));
-    postFilterSlider.setBounds(getLocalBounds().withWidth(knobWidth).withX(knobWidth * 2));
-    makeupSlider.setBounds(getLocalBounds().withWidth(knobWidth).withX(knobWidth * 3));
+    encoderSlider.setBounds(getLocalBounds().withWidth(knobWidth).withX(knobWidth * 2));
+    postFilterSlider.setBounds(getLocalBounds().withWidth(knobWidth).withX(knobWidth * 3));
+    makeupSlider.setBounds(getLocalBounds().withWidth(knobWidth).withX(knobWidth * 4));
 }
