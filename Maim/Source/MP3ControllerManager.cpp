@@ -148,9 +148,8 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             buffer.addFromWithRamp(0, 0, samplesL, buffer.getNumSamples(), 1, 0);
             buffer.addFromWithRamp(1, 0, samplesR, buffer.getNumSamples(), 1, 0);
             
-            auto temp = currentController;
             currentController = offController;
-            offController = temp;
+            offController = nullptr;
             wantingToSwitch = false;
             return;
         }
@@ -222,6 +221,8 @@ void MP3ControllerManager::updateParameters(bool updateOffController)
     if (!(indicator.isBool() && ((bool)indicator == shortBlockStatus))) {
         psychoanalState.setProperty("shortblockindicator", shortBlockStatus, nullptr);
     }
+    
+    parametersNeedUpdating = false;
 }
 
 int MP3ControllerManager::getBitrate()
@@ -249,11 +250,14 @@ void MP3ControllerManager::timerCallback()
     float* threshold = getPsychoanalThreshold();
     
     juce::var thresholdV, energyV;
+    
     for (int i = 0; i < 22; ++i) {
-        thresholdV.append(rescalePsychoanal(threshold[i]));
-        energyV.append(rescalePsychoanal(energy[i])); // TEMP test
+        // thresholdV.append(rescalePsychoanal(threshold[i]));
+        // energyV.append(rescalePsychoanal(energy[i])); // TEMP test
+         thresholdV.append(0);
+         energyV.append(0); // TEMP test
     }
-
+    
     auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
     psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
     psychoSpectrum.setProperty("energy", energyV, nullptr);

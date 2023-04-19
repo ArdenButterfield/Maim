@@ -41,25 +41,8 @@ public:
     int getShortBlockStatus() override;
 
 private:
-    bool bInitialized = false;
     encoder_flags_and_data* blade_encoder = nullptr;
-    hip_global_flags *lame_dec_handler = nullptr;
-    
     std::array<std::unique_ptr<QueueBuffer<float>>, 2> inputBuffer;
-    std::vector<char> mp3Buffer;
-    
-    std::array<short, 20000> decodedLeftChannel = {0};
-    std::array<short, 20000> decodedRightChannel = {0};
-    
-    std::vector<float> readBuf;
-    int maxSamplesPerBlock;
-    std::unique_ptr<QueueBuffer<float>> outputBufferL;
-    std::unique_ptr<QueueBuffer<float>> outputBufferR;
-    
-    int bitrate;
-    
-    int input_buf_size;
-    int mp3_buf_size;
     
     // Values from the LAME documentation
     const std::vector<int> allowed_samplerates = {

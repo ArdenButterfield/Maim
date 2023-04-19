@@ -58,13 +58,13 @@ int LameController::validate_samplerate(const int samplerate)
 
 int LameController::validate_bitrate(int bitrate)
 {
-    auto test_rate = std::find(allowed_samplerates.begin(),
-                              allowed_samplerates.end(),
-                              samplerate);
-    if (test_rate == allowed_samplerates.end()) {
+    auto test_rate = std::find(allowed_bitrates.begin(),
+                               allowed_bitrates.end(),
+                              bitrate);
+    if (test_rate == allowed_bitrates.end()) {
         return 96;
     } else {
-        return samplerate;
+        return bitrate;
     }
 }
 

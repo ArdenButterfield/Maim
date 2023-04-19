@@ -28,7 +28,7 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
         int enc_result = blade_encode_chunk(blade_encoder,
                                             left_chunk,
                                             right_chunk,
-                                            &mp3Buffer[0]);
+                                            (char*)&mp3Buffer[0]);
         int dec_result = hip_decode(lame_dec_handler,
                                     (unsigned char*)&mp3Buffer[0],
                                     enc_result,
@@ -62,6 +62,7 @@ bool BladeController::init_encoder()
     outputBufferR = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
 
     blade_encoder = blade_init(samplerate, bitrate);
+    return true;
 }
 
 void BladeController::deinit_encoder()
@@ -74,13 +75,13 @@ void BladeController::deinit_encoder()
 
 int BladeController::validate_bitrate(int bitrate)
 {
-    auto test_rate = std::find(allowed_samplerates.begin(),
-                              allowed_samplerates.end(),
-                              samplerate);
-    if (test_rate == allowed_samplerates.end()) {
+    auto test_rate = std::find(allowed_bitrates.begin(),
+                               allowed_bitrates.end(),
+                              bitrate);
+    if (test_rate == allowed_bitrates.end()) {
         return 96;
     } else {
-        return samplerate;
+        return bitrate;
     }
 }
 
