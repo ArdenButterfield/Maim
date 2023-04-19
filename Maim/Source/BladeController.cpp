@@ -12,7 +12,6 @@
 
 void BladeController::addNextInput(float *left_input, float* right_input, const int num_block_samples)
 {
-    std::cout << "adding " << num_block_samples << " samples\n";
     for (int i = 0; i < num_block_samples; ++i) {
         inputBuffer[0]->enqueue(left_input[i]);
         inputBuffer[1]->enqueue(right_input[i]);
@@ -24,7 +23,6 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             left_chunk[i] = inputBuffer[0]->dequeue();
             right_chunk[i] = inputBuffer[1]->dequeue();
         }
-        std::cout << "encoding\n";
         int enc_result = blade_encode_chunk(blade_encoder,
                                             left_chunk,
                                             right_chunk,
@@ -39,7 +37,6 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             std::cout << "Decoding error: " << dec_result << "\n";
             return;
         }
-        std::cout << "got " << dec_result << " out\n";
         float amp;
         for (int i = 0; i < dec_result; ++i) {
             amp = pcm_convert(decodedLeftChannel[i]);

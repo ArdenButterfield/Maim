@@ -89,6 +89,7 @@ void MP3ControllerManager::parameterChanged (const juce::String &parameterID, fl
 
 void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
 {
+    std::cout << "change\n";
     if ((bitrate == currentBitrate) && (encoder == currentEncoder)) {
         wantingToSwitch = false;
         offController = nullptr;
@@ -98,7 +99,6 @@ void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
         return;
     }
     desiredBitrate = bitrate;
-
     
     int offIndex = (currentControllerIndex + 1) % 2;
     
@@ -129,11 +129,12 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     auto samplesR = buffer.getWritePointer(1);
     
     currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
-    if (switchCountdown > 0) {
+    if (wantingToSwitch && (switchCountdown > 0)) {
 
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
         if (offController->copyOutput(nullptr, nullptr, buffer.getNumSamples())) {
             --switchCountdown;
+            std::cout << "countdown\n";
         }
     } else if (wantingToSwitch) {
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
@@ -149,8 +150,11 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             buffer.addFromWithRamp(1, 0, samplesR, buffer.getNumSamples(), 1, 0);
             
             currentController = offController;
+            currentBitrate = desiredBitrate;
+            currentEncoder = desiredEncoder;
             offController = nullptr;
             wantingToSwitch = false;
+            std::cout << "switch done\n";
             return;
         }
     }
@@ -169,55 +173,54 @@ void MP3ControllerManager::updateParameters(bool updateOffController)
                             parameters.getParameter("bitrate"))->getIndex()];
     changeController(bitrate, encoder);
 
-    auto controller = updateOffController ? offController : currentController;
+    for (auto controller : {offController, currentController}) {
+        if (controller == nullptr) {
+            continue;
+        }
+        controller->setButterflyBends(
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
+        );
 
-    controller->setButterflyBends(
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-        ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
-    );
+        controller->setMDCTbandstepBends(
+            ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
+            ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
+        );
 
-    controller->setMDCTbandstepBends(
-        ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
-        ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
-    );
+        controller->setMDCTfeedback(
+            ((juce::AudioParameterFloat*) parameters.getParameter("mdctfeedback"))->get()
+        );
 
-    controller->setMDCTfeedback(
-        ((juce::AudioParameterFloat*) parameters.getParameter("mdctfeedback"))->get()
-    );
+        controller->setMDCTpostshiftBends(
+            ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
+           ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
+        );
+        controller->setMDCTwindowincrBends(
+            ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()
+        );
+        controller->setBitrateSquishBends(
+            ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get()
+        );
 
-    controller->setMDCTpostshiftBends(
-        ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
-       ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
-    );
-    controller->setMDCTwindowincrBends(
-        ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()
-    );
-    controller->setBitrateSquishBends(
-        ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get()
-    );
+         controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get()
+        );
 
-     controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get()
-    );
-
-    int bandReassign[32];
-    int i;
-    for (i = 0; i < 20; ++i) {
-        bandReassign[i] = bandReassignmentParameters[i]->get();
+        int bandReassign[32];
+        int i;
+        for (i = 0; i < 20; ++i) {
+            bandReassign[i] = bandReassignmentParameters[i]->get();
+        }
+        for (; i < 32; ++i) {
+            bandReassign[i] = i;
+        }
+        controller->setMDCTBandReassignmentBends(bandReassign);
     }
-    for (; i < 32; ++i) {
-        bandReassign[i] = i;
-    }
-    controller->setMDCTBandReassignmentBends(bandReassign);
 
-
-    if (wantingToSwitch && !updateOffController) {
-        updateParameters(true);
-    }
     auto psychoanalState = parameters.state.getChildWithName("psychoanal");
     auto indicator = psychoanalState.getProperty("shortblockindicator");
-    bool shortBlockStatus = controller->getShortBlockStatus();
+    bool shortBlockStatus = currentController->getShortBlockStatus();
     if (!(indicator.isBool() && ((bool)indicator == shortBlockStatus))) {
         psychoanalState.setProperty("shortblockindicator", shortBlockStatus, nullptr);
     }
