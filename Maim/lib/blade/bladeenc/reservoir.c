@@ -46,17 +46,17 @@
 	Described in C.1.5.4.2.2 of the IS
 */
 
-static	int				ResvSize = 0;   /* in bits */
-static	int				ResvMax  = 0;   /* in bits */
+// static	int				ResvSize = 0;   /* in bits */
+// static	int				ResvMax  = 0;   /* in bits */
 
 
 
 
 
-void					fixStatic_reservoir (void)
+void					fixStatic_reservoir (encoder_flags_and_data* flags)
 {
-	ResvSize = 0;
-	ResvMax  = 0;
+	flags->ResvSize = 0;
+	flags->ResvMax  = 0;
 }
 
 
@@ -71,6 +71,7 @@ void					fixStatic_reservoir (void)
 */
 void					ResvFrameBegin
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	int						mean_bits,
@@ -99,13 +100,13 @@ void					ResvFrameBegin
 
 	/*
 		determine maximum size of reservoir:
-		ResvMax + frameLength <= 7680;
+		flags->ResvMax + frameLength <= 7680;
 
 		limit max size to resvLimit bits because
 		main_data_begin cannot indicate a
 		larger value
 	*/
-	ResvMax = MIN(MAX (0, 7680-frameLength), resvLimit);
+	flags->ResvMax = MIN(MAX (0, 7680-frameLength), resvLimit);
 }
 
 
@@ -120,6 +121,7 @@ void					ResvFrameBegin
 */
 int						ResvMaxBits
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	double					*pe,
@@ -133,20 +135,20 @@ int						ResvMaxBits
 
 	max_bits = mean_bits;
 
-	if (ResvMax != 0)
+	if (flags->ResvMax != 0)
 	{
 		more_bits = (int) (*pe * 3.1 - mean_bits);
 
 		if (more_bits > 100)
 		{
-			int		frac = (ResvSize * 6) / 10;
+			int		frac = (flags->ResvSize * 6) / 10;
 
 			add_bits = MIN(frac, more_bits);
 		}
 		else
 			add_bits = 0;
 
-		over_bits = ResvSize - ((ResvMax * 8) / 10) - add_bits;
+		over_bits = flags->ResvSize - ((flags->ResvMax * 8) / 10) - add_bits;
  		if (over_bits > 0)
 			add_bits += over_bits;
 
@@ -170,13 +172,14 @@ int						ResvMaxBits
 */
 void					ResvAdjust
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	gr_info					*cod_info,
 	III_side_info_t			*l3_side,
 	int						mean_bits
 )
 {
-	ResvSize += (mean_bits / fr_ps->stereo) - cod_info->part2_3_length;
+	flags->ResvSize += (mean_bits / fr_ps->stereo) - cod_info->part2_3_length;
 }
 
 
@@ -193,6 +196,7 @@ void					ResvAdjust
 */
 void					ResvFrameEnd
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	int						mean_bits
@@ -211,21 +215,21 @@ void					ResvFrameEnd
 
 	/* just in case mean_bits is odd, this is necessary... */
 	if ((stereo == 2)  &&  (mean_bits & 1))
-		ResvSize ++;
+		flags->ResvSize ++;
 
 	stuffingBits = ancillary_pad;
 	
-	if ((over_bits = ResvSize - ResvMax) > 0)
+	if ((over_bits = flags->ResvSize - flags->ResvMax) > 0)
 	{
 		stuffingBits += over_bits;
-		ResvSize     -= over_bits;
+		flags->ResvSize     -= over_bits;
 	}
 
 	/* we must be byte aligned */
-	if ((over_bits = ResvSize % 8) != 0)
+	if ((over_bits = flags->ResvSize % 8) != 0)
 	{
 		stuffingBits += over_bits;
-		ResvSize     -= over_bits;
+		flags->ResvSize     -= over_bits;
 	}
 
 	if (stuffingBits)

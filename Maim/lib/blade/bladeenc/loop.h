@@ -59,11 +59,6 @@
 
 
 
-/*	#define	SBLIMIT			32 */
-#define	CBLIMIT			21
-
-#define	SFB_LMAX		22
-#define	SFB_SMAX		13
 
 
 
@@ -91,6 +86,7 @@ extern	struct scalefac_struct		blade_sfBandIndex[];  /* Table B.8 -- in loop.c *
 
 void					iteration_loop
 (
+	encoder_flags_and_data* flags,
 	double					pe[][2],
 	double					xr_org[2][2][576],
 	III_psy_ratio			*ratio,
@@ -107,9 +103,9 @@ void					iteration_loop
 
 int						my_nint (double in);
 
-void					fixStatic_loop (void);
+void					fixStatic_loop (encoder_flags_and_data* flags);
 
-void					genNoisePowTab (void);
+void					genNoisePowTab (encoder_flags_and_data* flags);
 
 
 

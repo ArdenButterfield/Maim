@@ -54,6 +54,7 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 	/* Read psIn */
 
 	flags->PartHoldersInitialized = 0;
+	flags->loop_flags.xr34_s = (double (*)[3]) flags->loop_flags.xr34_l;
 
 	switch (psIn->frequency)
 	{
@@ -97,10 +98,10 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 	fInit_huffman_read_flag = 0;
 */
 
-	fixStatic_loop();
+	fixStatic_loop(flags);
 
 	flags->l3_side.main_data_begin = 0;
-	fixStatic_reservoir();
+	fixStatic_reservoir(flags);
 
 
 /*___________________________________*/
@@ -141,7 +142,7 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 /*    if (flags->frac_SpF == 0)
     	flags->info.padding = 0;
 */
-	genNoisePowTab();
+	genNoisePowTab(flags);
 
 /*________________________*/
 
@@ -303,6 +304,7 @@ unsigned int			codecEncodeChunk
 
 	iteration_loop
 	(
+		flags,
 		pe,
 		xr,
 		&ratio,
@@ -375,7 +377,7 @@ unsigned int			codecFlush (encoder_flags_and_data* flags, char *pDest)
 	flags->slot_lag  = -flags->frac_SpF;
 
 	flags->l3_side.main_data_begin = 0;
-	fixStatic_reservoir ();
+	fixStatic_reservoir (flags);
 
 	return flags->pEncodedOutput - pDest;
 }

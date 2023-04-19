@@ -1,1 +1,1 @@
-gcc main.c -I./include -L./bladeenc/ -lblade -o test
+gcc main.c -I./bladeenc/ -L./bladeenc/ -lblade -o test

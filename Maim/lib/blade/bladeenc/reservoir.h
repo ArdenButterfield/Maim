@@ -55,6 +55,7 @@
 
 void					ResvFrameBegin
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	int						mean_bits,
@@ -63,6 +64,7 @@ void					ResvFrameBegin
 
 int						ResvMaxBits
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	double					*pe,
@@ -71,6 +73,7 @@ int						ResvMaxBits
 
 void					ResvAdjust
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	gr_info					*cod_info,
 	III_side_info_t			*l3_side,
@@ -79,12 +82,13 @@ void					ResvAdjust
 
 void					ResvFrameEnd
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps,
 	III_side_info_t			*l3_side,
 	int						mean_bits
 );
 
-void					fixStatic_reservoir (void);
+void					fixStatic_reservoir (encoder_flags_and_data* flags);
 
 
 

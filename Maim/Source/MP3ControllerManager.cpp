@@ -14,7 +14,9 @@ MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, j
     samplerate(s),
     samplesPerBlock(spb),
     blocksBeforeSwitch(3000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
-    parameters(p)
+    parameters(p),
+    currentEncoder(lame),
+    currentControllerIndex(0)
 
 {
     parametersNeedUpdating = false;
@@ -39,12 +41,16 @@ MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, j
         parameters.addParameterListener(id.str(), this);
         bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(id.str());
     }
-
     
-    controllers[0].init(samplerate, samplesPerBlock, initialBitrate);
+    lameControllers[0].init(samplerate, samplesPerBlock, initialBitrate);
     
-    currentController = &controllers[0];
-    offController = &controllers[1];
+    if (currentEncoder == lame) {
+        currentController = &(lameControllers[currentControllerIndex]);
+    } else {
+        currentController = &(bladeControllers[currentControllerIndex]);
+    }
+    
+    offController = nullptr;
     
     currentBitrate = initialBitrate;
     wantingToSwitch = false;
@@ -81,19 +87,33 @@ void MP3ControllerManager::parameterChanged (const juce::String &parameterID, fl
     parametersNeedUpdating = true;
 }
 
-void MP3ControllerManager::changeBitrate(int new_bitrate)
+void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
 {
-    if (wantingToSwitch && (new_bitrate == offController->getBitrate())) {
-        return;
-    }
-    if (new_bitrate == currentBitrate) {
+    if ((bitrate == currentBitrate) && (encoder == currentEncoder)) {
         wantingToSwitch = false;
+        offController = nullptr;
         return;
-
     }
-    offController->init(samplerate, samplesPerBlock, new_bitrate);
+    if (wantingToSwitch && (bitrate == desiredBitrate) && (encoder == desiredEncoder)) {
+        return;
+    }
+    desiredBitrate = bitrate;
+
+    
+    int offIndex = (currentControllerIndex + 1) % 2;
+    
+    if (encoder == lame) {
+        desiredEncoder = lame;
+        offController = &(lameControllers[offIndex]);
+    } else {
+        desiredEncoder = blade;
+        offController = &(bladeControllers[offIndex]);
+    }
+    
+    offController->init(samplerate, samplesPerBlock, desiredBitrate);
     wantingToSwitch = true;
     switchCountdown = blocksBeforeSwitch;
+
 }
 
 void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
@@ -144,10 +164,11 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
 
 void MP3ControllerManager::updateParameters(bool updateOffController)
 {
-    int bitrate = bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    if (bitrate != getBitrate()) {
-        changeBitrate(bitrate);
-    }
+    Encoder encoder = (Encoder)((juce::AudioParameterChoice*)
+                                parameters.getParameter("encoder"))->getIndex();
+    int bitrate = bitrates[((juce::AudioParameterChoice*)
+                            parameters.getParameter("bitrate"))->getIndex()];
+    changeController(bitrate, encoder);
 
     auto controller = updateOffController ? offController : currentController;
 

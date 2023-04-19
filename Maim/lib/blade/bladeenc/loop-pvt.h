@@ -37,32 +37,36 @@
 
 static	int				outer_loop
 (
+	encoder_flags_and_data* flags,
 	int						max_bits,
 	frame_params			*fr_ps
 );
 
 static	int				needed_bits_for_storing_scalefactors
 (
+	encoder_flags_and_data* flags,
 	frame_params			*fr_ps
 );
 
-static	void			calc_noise (void);
+static	void			calc_noise (encoder_flags_and_data* flags);
 
-static	int				loop_break (void);
+static	int				loop_break (encoder_flags_and_data* flags);
 
 static	int				amplify
 (
+	encoder_flags_and_data* flags,
 	int						iteration
 );
 
-static	int INLINE		cutting_crew (FLOAT in);
+static	int INLINE		cutting_crew (encoder_flags_and_data* flags, FLOAT in);
 
-static	void			quantize (void);
+static	void			quantize (encoder_flags_and_data* flags);
 
-static	void			partial_quantize (void);
+static	void			partial_quantize (encoder_flags_and_data* flags);
 
 static	int				bin_search_StepSize
 (
+	encoder_flags_and_data* flags,
 	int						desired_rate,
 	double					start
 );
@@ -73,14 +77,15 @@ static	int				bin_search_StepSize
 
 
 
-static	int				count_bits (void);
+static	int				count_bits (encoder_flags_and_data* flags);
 
-static	int				count_bits_short (void);
+static	int				count_bits_short (encoder_flags_and_data* flags);
 
-static	int				count_bits_long (void);
+static	int				count_bits_long (encoder_flags_and_data* flags);
 
 static	void			choose_table_long
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				max,
@@ -90,6 +95,7 @@ static	void			choose_table_long
 
 static	void			choose_table_short
 (
+	encoder_flags_and_data* flags,
 	unsigned				start_sfb,
 	unsigned				end_sfb,
 	unsigned				max,
@@ -105,6 +111,7 @@ static	void			choose_table_short
 
 static	void			single_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0, == 1 */
@@ -114,6 +121,7 @@ static	void			single_Huffman
 
 static	void			double_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 2, 5, 13 */
@@ -124,6 +132,7 @@ static	void			double_Huffman
 
 static	void			triple_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 7, 10 */
@@ -135,6 +144,7 @@ static	void			triple_Huffman
 
 static	void			triple_Huffman_2
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0,   == 13 */
@@ -146,6 +156,7 @@ static	void			triple_Huffman_2
 
 static	void			double_Huffman_2   /* Escape tables */
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 16... */
@@ -162,6 +173,7 @@ static	void			double_Huffman_2   /* Escape tables */
 
 static	void			tiny_single_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 #if ORG_HUFFMAN_CODING
@@ -175,6 +187,7 @@ static	void			tiny_single_Huffman
 
 static	void			tiny_double_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 2, 5, 13 */
@@ -185,6 +198,7 @@ static	void			tiny_double_Huffman
 
 static	void			tiny_triple_Huffman
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 7, 10 */
@@ -196,6 +210,7 @@ static	void			tiny_triple_Huffman
 
 static	void			tiny_triple_Huffman_2
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 /*	unsigned				table0,   == 13 */
@@ -207,6 +222,7 @@ static	void			tiny_triple_Huffman_2
 
 static	void			tiny_double_Huffman_2   /* Escape tables */
 (
+	encoder_flags_and_data* flags,
 	unsigned				start,
 	unsigned				end,
 	unsigned				table0,   /* 16... */

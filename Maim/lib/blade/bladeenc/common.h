@@ -155,6 +155,14 @@ extern "C" {
 
 #define		RING_BUFFER				1 // from l3psy.c
 
+// loop.c 
+/*	#define	SBLIMIT			32 */
+#define	CBLIMIT			21
+
+#define	SFB_LMAX		22
+#define	SFB_SMAX		13
+
+
 /***********************************************************************
 *
 *  Global Type Definitions
@@ -382,8 +390,83 @@ typedef		struct HeaderDef
 			}						Header;
 
 
+typedef struct loop_flags_and_data_struct {
+		int						gr;   /* the current granule */
+	int						ch;   /* the current channel */
+
+
+
+	III_side_info_t			*side_info;   /* the current side information */
+	gr_info					*cod_info;    /* the current coding information */
+
+
+
+	double			   *xr_org_l;             /* the initial magnitudes of the spectral values */
+	double				  xr34_l[576];        /* the magnitudes powered by 3/4 */
+	int					   *ix_l;             /* quantized values */
+
+	double				energy_l[SFB_LMAX];
+	double				  xmin_l[SFB_LMAX];   /* the allowed distortion of the scalefactor band */
+	double				  xfsf_l[SFB_LMAX];   /* the current distortion of the scalefactor band */
+	int					expo16_l[SFB_LMAX];   /* sixteen times the scale factor band exponent */
+	int				 *scalefac_l;             /* the current scale factors */
+	int			   *scalefac_0_l;             /* scale factors for first granule */
+
+	double			  (*xr_org_s)[3];         /* some short block versions */
+	double				(*xr34_s)[3];// = (double (*)[3]) xr34_l;
+	int					  (*ix_s)[3];
+
+	double				energy_s[SFB_SMAX][3];
+	double				  xmin_s[SFB_SMAX][3];
+	double				  xfsf_s[SFB_SMAX][3];
+	int					expo16_s[SFB_SMAX][3];
+	int				(*scalefac_s)[3];
+
+
+
+	int						max_used_sfb_l;
+	int						min_used_sfb_s;
+
+	int						end_sfb_l;
+	int						end_sfb_s;
+
+
+
+	double				    xmax_l[SFB_LMAX];		/* The initial (absolute) maximum magnitude */
+	int				   xmax_line_l[SFB_LMAX];		/* of the long bands and their line indices */
+
+	double				    xmax_s[SFB_SMAX][3];	/* Guess ... */
+	int				   xmax_line_s[SFB_SMAX][3];
+
+
+
+	int						mark_idx_l;				/* speed up - partial quantizing */
+	int						mark_tab_l[SFB_LMAX];	/* changed sfb-s                 */ 
+
+	int						mark_idx_s;
+	int						mark_tab_s[SFB_SMAX*3*2];	/* changed (sfb,b)-s         */
+
+	int						lo_quant_l [SFB_LMAX];
+	int						hi_quant_l [SBMAX_l];
+
+	int						lo_quant_s [SFB_SMAX][3];
+	int						hi_quant_s [SFB_SMAX][3];
+
+	int						the_lo_quant;
+	int						the_hi_quant;
+
+
+} loop_flags_and_data;
+
 typedef struct encoder_flags_and_data_struct {
 	CodecInitIn codec_data;
+
+	// reservoir
+	int				ResvSize;// = 0;   /* in bits */
+	int				ResvMax;//  = 0;   /* in bits */
+
+	loop_flags_and_data 	loop_flags;
+
 	// codec
 	L3SBS					l3_sb_sample;
 

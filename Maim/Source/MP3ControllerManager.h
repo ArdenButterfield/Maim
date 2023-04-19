@@ -19,6 +19,11 @@
 
 #define NUM_REASSIGNMENT_BANDS 20
 
+enum Encoder {
+    blade = 0,
+    lame = 1
+};
+
 class MP3ControllerManager : public juce::AudioProcessorValueTreeState::Listener,
 public juce::Timer
 {
@@ -29,10 +34,8 @@ public:
                           juce::AudioProcessorValueTreeState& parameters);
     ~MP3ControllerManager();
 
-    void changeBitrate(int newBitrate);
     void processBlock(juce::AudioBuffer<float>& buffer);
     
-    void updateParameters(bool updateOffController=false);
     int getBitrate();
     
     float* getPsychoanalEnergy();
@@ -64,18 +67,29 @@ private:
     
     std::atomic<bool> parametersNeedUpdating;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
-    
+    void updateParameters(bool updateOffController=false);
+    void changeController(int bitrate, Encoder encoder);
     bool wantingToSwitch;
+    
     int currentBitrate;
+    int desiredBitrate;
+    Encoder currentEncoder;
+    Encoder desiredEncoder;
+    
+    int currentControllerIndex;
+    
     const int samplerate;
     const int samplesPerBlock;
     
     const int blocksBeforeSwitch;
     int switchCountdown;
     
-    std::array<LameController, 2> controllers;
-    LameController* currentController;
-    LameController* offController;
+    
+    
+    std::array<LameController, 2> lameControllers;
+    std::array<BladeController, 2> bladeControllers;
+    MP3Controller* currentController;
+    MP3Controller* offController;
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;

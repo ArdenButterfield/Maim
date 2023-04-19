@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "QueueBuffer.h"
 #include "MP3Controller.h"
 
 class LameController : public MP3Controller
