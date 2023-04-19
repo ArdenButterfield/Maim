@@ -34,10 +34,10 @@ void BladeController::init(const int sampleRate,
     std::fill(mp3Buffer.begin(), mp3Buffer.end(), 0);
 
     for (auto& buf: inputBuffer) {
-        buf = std::make_unique<QueueBuffer<float>>(maxSamplesPerBlock + 1152, 0.f);
+        buf = std::make_unique<QueueBuffer<float>>(maxSamplesPerBlock + 2304, 0.f);
     }
-    outputBufferL = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
-    outputBufferR = std::make_unique<QueueBuffer<float>>(1152 + maxSamplesPerBlock, 0.f);
+    outputBufferL = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
+    outputBufferR = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
     
     lame_dec_handler = hip_decode_init();
     bInitialized = true;
@@ -66,6 +66,7 @@ void BladeController::deInit()
 
 void BladeController::addNextInput(float *left_input, float* right_input, const int num_block_samples)
 {
+    std::cout << "adding " << num_block_samples << " samples\n";
     for (int i = 0; i < num_block_samples; ++i) {
         inputBuffer[0]->enqueue(left_input[i]);
         inputBuffer[1]->enqueue(right_input[i]);
@@ -77,6 +78,7 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             left_chunk[i] = inputBuffer[0]->dequeue();
             right_chunk[i] = inputBuffer[1]->dequeue();
         }
+        std::cout << "encoding\n";
         int enc_result = blade_encode_chunk(blade_encoder,
                                             left_chunk,
                                             right_chunk,
@@ -91,7 +93,7 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             std::cout << "Decoding error: " << dec_result << "\n";
             return;
         }
-        
+        std::cout << "got " << dec_result << " out\n";
         float amp;
         for (int i = 0; i < dec_result; ++i) {
             amp = pcm_convert(decodedLeftChannel[i]);
