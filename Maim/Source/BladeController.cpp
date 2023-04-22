@@ -111,7 +111,14 @@ void BladeController::setMDCTbandstepBends(bool invert, int step)
 
 void BladeController::setMDCTpostshiftBends(int h_shift, float v_shift)
 {
-    blade_set_mdct_post_shift_bends(blade_encoder, h_shift, h_shift);
+    float actual_v_shift;
+    if (v_shift > 0) {
+        actual_v_shift = v_shift / 100.f;
+    } else {
+        actual_v_shift = v_shift / 2.f;
+    }
+
+    blade_set_mdct_post_shift_bends(blade_encoder, h_shift, actual_v_shift);
 }
 
 void BladeController::setMDCTwindowincrBends(int window_incr)
@@ -136,7 +143,7 @@ void BladeController::setThresholdBias(float bias)
 
 void BladeController::setMDCTfeedback(float feedback)
 {
-    
+    blade_set_mdct_feedback_bends(blade_encoder, feedback);
 }
 
 float* BladeController::getPsychoanalThreshold()

@@ -89,6 +89,8 @@ void blade_set_mdct_post_shift_bends(encoder_flags_and_data* flags, int h_shift,
 
 void blade_set_mdct_window_increment_bends(encoder_flags_and_data* flags, int window_inc)
 {
+    flags->bends.mdct_window_increment = window_inc;
+    flags->bends.mdct_samp_increment = 0;
 
 }
 
@@ -101,7 +103,7 @@ void blade_set_mdct_band_reassignment_bends(encoder_flags_and_data* flags, int* 
 
 void blade_set_mdct_feedback_bends(encoder_flags_and_data* flags, float feedback)
 {
-
+	flags->bends.mdct_feedback = feedback;
 }
 
 void blade_set_bitrate_squish_bends(encoder_flags_and_data* flags, float squish)

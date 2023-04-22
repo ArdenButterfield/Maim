@@ -281,7 +281,7 @@ unsigned int			codecEncodeChunk
     float v;
     if (h_shift < 0) {
         for (gr = 0; gr < 2; gr++) {
-            for (ch = 0; ch < flags->stereo; ch++) {
+            for (ch = 0; ch < 2; ch++) {
                 for (int i = 0; i < 576; ++i) {
                     v = xr[gr][ch][(i+576-h_shift)%576];
                     xr[gr][ch][i] = apply_v_shift(v, v_shift);
@@ -290,7 +290,7 @@ unsigned int			codecEncodeChunk
         }
     } else {
         for (gr = 0; gr < 2; gr++) {
-            for (ch = 0; ch < flags->stereo; ch++) {
+            for (ch = 0; ch < 2; ch++) {
                 for (int i = 576-1; i >= 0; --i) {
                     v = xr[gr][ch][(i+576-h_shift)%576];
                     xr[gr][ch][i] = apply_v_shift(v, v_shift);
@@ -298,6 +298,25 @@ unsigned int			codecEncodeChunk
             }
         }
     }
+
+    float wet = flags->bends.mdct_feedback;
+    float dry = 1 - wet;
+    float m;
+    for (int gr = 0; gr < 2; ++gr) {
+        for (int ch = 0; ch < 2; ++ch) {
+            for (int s = 0; s < 576; ++s) {
+            	m = fabsf(xr[gr][ch][s]);
+                flags->bends.feedback_data[gr][ch][s] = 
+                    dry * m + 
+                    wet * flags->bends.feedback_data[gr][ch][s];
+
+                xr[gr][ch][s] = (xr[gr][ch][s] > 0) ? 
+                	flags->bends.feedback_data[gr][ch][s] : 
+                	-flags->bends.feedback_data[gr][ch][s];
+            }
+        }
+    }
+
 
 	flags->pEncodedOutput = pDest;
 	flags->outputBit = 8;

@@ -486,13 +486,17 @@ lame_encode_mp3_frame(       /* Output */
 
     float wet = gfc->bendFlagsAndData->mdct_feedback;
     float dry = 1 - wet;
+    float m;
     for (int gr = 0; gr < 2; ++gr) {
         for (int ch = 0; ch < 2; ++ch) {
             for (int s = 0; s < 576; ++s) {
+                m = fabsf(gfc->l3_side.tt[gr][ch].xr[s]);
                 gfc->bendFlagsAndData->feedback_data[gr][ch][s] = 
-                    dry * gfc->l3_side.tt[gr][ch].xr[s] + 
+                    dry * m + 
                     wet * gfc->bendFlagsAndData->feedback_data[gr][ch][s];
-                gfc->l3_side.tt[gr][ch].xr[s] = gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+                gfc->l3_side.tt[gr][ch].xr[s] = (gfc->l3_side.tt[gr][ch].xr[s] > 0) ?
+                    gfc->bendFlagsAndData->feedback_data[gr][ch][s] :
+                    -gfc->bendFlagsAndData->feedback_data[gr][ch][s];
             }
         }
     }
