@@ -185,7 +185,7 @@ updateStats(lame_internal_flags * const gfc)
 }
 
 
-float apply_v_shift(float v, float v_shift) 
+static float apply_v_shift(float v, float v_shift) 
 {
     float v_mag, v_sign;
     v_mag = fabsf(v);

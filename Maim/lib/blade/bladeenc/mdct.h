@@ -69,6 +69,7 @@ extern	int				gr_idx[3];
 
 void					mdct_sub
 (
+	encoder_flags_and_data* flags,
 	L3SBS					*sb_sample,
 	double					(*mdct_freq)[2][576],
 	int						stereo,

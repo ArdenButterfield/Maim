@@ -2,6 +2,7 @@
 #include "codec.h"
 
 #include <stdlib.h>
+#include <math.h>
 
 encoder_flags_and_data* blade_init(int samplerate, int bitrate)
 {
@@ -50,6 +51,10 @@ void blade_deinit(encoder_flags_and_data* flags)
 
 void blade_set_butterfly_bends(encoder_flags_and_data* flags, float buinbu, float buinbd, float bdinbu, float bdinbd)
 {
+	flags->bends.butterfly_bubu = buinbu;
+	flags->bends.butterfly_bubd = buinbd;
+	flags->bends.butterfly_bdbu = bdinbu;
+	flags->bends.butterfly_bdbd = bdinbd;
 
 }
 
@@ -86,17 +91,25 @@ void blade_set_bitrate_squish_bends(encoder_flags_and_data* flags, float squish)
 
 void blade_set_threshold_bias_bends(encoder_flags_and_data* flags, float bias)
 {
+	float b;
+    for (int i = 0; i < 22; ++i) {
+        b = pow(10.f, (-bias) * (i - 11.f) / 1.f);
 
+        if (bias < 0) {
+            b *= pow(1000000.f, -bias);
+        }
+        flags->bends.threshold_bias[i] = b;
+    }	
 }
 
 float* blade_get_psychoanal_energy(encoder_flags_and_data* flags)
 {
-	return NULL;
+	return flags->bends.psychoanal_energy;
 }
 
 float* blade_get_psychoanal_threshold(encoder_flags_and_data* flags)
 {
-	return NULL;
+	return flags->bends.psychoanal_threshold;
 }
 
 int blade_is_short_block(encoder_flags_and_data* flags)
@@ -108,6 +121,11 @@ void blade_clear_bends(encoder_flags_and_data* flags)
 {
 	flags->bends.mdct_post_v_shift = 0;
 	flags->bends.mdct_post_h_shift = 0;
+
+	for (int i = 0; i < 22; ++i) {
+		flags->bends.psychoanal_threshold[i] = 0;
+		flags->bends.psychoanal_energy[i] = 0;
+	}
 }
 
 

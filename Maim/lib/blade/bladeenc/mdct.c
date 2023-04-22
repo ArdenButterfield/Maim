@@ -83,6 +83,7 @@ int	fInit_mdct_sub;
 
 void mdct_sub
 (
+	encoder_flags_and_data* flags,
 	L3SBS					(*sb_sample),
 	double					(*mdct_freq)[2][576],
 	int						stereo,
@@ -166,8 +167,9 @@ void mdct_sub
 #if 1	/* This is faster because the calculation can be done more sequential */
 						bu = (mdct_enc[band  ][17-k] + mdct_enc[band+1][   k] * c[k]) * cs[k];
 						bd = (mdct_enc[band+1][   k] - mdct_enc[band  ][17-k] * c[k]) * cs[k];
-						mdct_enc[band  ][17-k] = bu;
-						mdct_enc[band+1][   k] = bd;
+						
+						mdct_enc[band  ][17-k] = flags->bends.butterfly_bubu * bu + flags->bends.butterfly_bdbu * bd;
+						mdct_enc[band+1][   k] = flags->bends.butterfly_bubd * bu + flags->bends.butterfly_bdbd * bd;
 #else
 						bu = mdct_enc[band  ][17-k] * cs[k] + mdct_enc[band+1][   k] * ca[k];
 						bd = mdct_enc[band+1][   k] * cs[k] - mdct_enc[band  ][17-k] * ca[k];

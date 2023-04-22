@@ -89,7 +89,6 @@ void MP3ControllerManager::parameterChanged (const juce::String &parameterID, fl
 
 void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
 {
-    std::cout << "change\n";
     if ((bitrate == currentBitrate) && (encoder == currentEncoder)) {
         wantingToSwitch = false;
         offController = nullptr;
@@ -130,15 +129,12 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     
     currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
     if (wantingToSwitch && (switchCountdown > 0)) {
-        std::cout << "adding input swich countdown\n";
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
         if (offController->copyOutput(nullptr, nullptr, buffer.getNumSamples())) {
             --switchCountdown;
-            std::cout << "countdown\n";
         }
     } else if (wantingToSwitch) {
         offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
-        std::cout << "adding input\n";
         if (offController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
             auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
                                                        buffer.getNumSamples());
@@ -155,7 +151,6 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             currentEncoder = desiredEncoder;
             offController = nullptr;
             wantingToSwitch = false;
-            std::cout << "switch done\n";
             return;
         }
     }
@@ -163,7 +158,6 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     if (!currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
         memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
         memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());
-        std::cout << "can't copy out\n";
     }
 }
 
@@ -257,10 +251,9 @@ void MP3ControllerManager::timerCallback()
     juce::var thresholdV, energyV;
     
     for (int i = 0; i < 22; ++i) {
-        // thresholdV.append(rescalePsychoanal(threshold[i]));
-        // energyV.append(rescalePsychoanal(energy[i])); // TEMP test
-         thresholdV.append(0);
-         energyV.append(0); // TEMP test
+        thresholdV.append(rescalePsychoanal(threshold[i]));
+        energyV.append(rescalePsychoanal(energy[i]));
+
     }
     
     auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");

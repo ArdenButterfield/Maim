@@ -162,7 +162,7 @@ CodecInitOut			*codecInit (encoder_flags_and_data* flags, CodecInitIn *psIn)
 
 
 /*____ codecEncodeChunk() _____________________________________________________*/
-float apply_v_shift(float v, float v_shift) 
+static float apply_v_shift(float v, float v_shift) 
 {
     float v_mag, v_sign;
     v_mag = fabsf(v);
@@ -274,7 +274,7 @@ unsigned int			codecEncodeChunk
 
 /* apply mdct to the polyphase outputs */
 
-	mdct_sub (&flags->l3_sb_sample, xr, flags->stereo, &flags->l3_side, 2);
+	mdct_sub (flags, &flags->l3_sb_sample, xr, flags->stereo, &flags->l3_side, 2);
 
     int h_shift = flags->bends.mdct_post_h_shift;
     float v_shift = flags->bends.mdct_post_v_shift;

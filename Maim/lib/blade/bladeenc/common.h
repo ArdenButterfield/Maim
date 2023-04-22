@@ -478,7 +478,7 @@ typedef struct blade_bend_flags_struct {
 
     int mdct_band_reassignments[32];
 
-    float psychoanal_energy[22]; // SBMAX_l in encoder.h 
+    float psychoanal_energy[22];
     float psychoanal_threshold[22];
     // we're only plotting the long block bands, for now.
 

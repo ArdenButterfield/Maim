@@ -101,7 +101,7 @@ int BladeController::getBitrate()
 
 void BladeController::setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd)
 {
-    
+    blade_set_butterfly_bends(blade_encoder, buinbu, buinbd, bdinbu, bdinbd);
 }
 
 void BladeController::setMDCTbandstepBends(bool invert, int step)
@@ -111,7 +111,7 @@ void BladeController::setMDCTbandstepBends(bool invert, int step)
 
 void BladeController::setMDCTpostshiftBends(int h_shift, float v_shift)
 {
-    
+    blade_set_mdct_post_shift_bends(blade_encoder, h_shift, h_shift);
 }
 
 void BladeController::setMDCTwindowincrBends(int window_incr)
@@ -131,7 +131,7 @@ void BladeController::setBitrateSquishBends(float squish)
 
 void BladeController::setThresholdBias(float bias)
 {
-    
+    blade_set_threshold_bias_bends(blade_encoder, bias);
 }
 
 void BladeController::setMDCTfeedback(float feedback)
@@ -141,12 +141,12 @@ void BladeController::setMDCTfeedback(float feedback)
 
 float* BladeController::getPsychoanalThreshold()
 {
-    return nullptr;
+    return blade_get_psychoanal_threshold(blade_encoder);
 }
 
 float* BladeController::getPsychoanalEnergy()
 {
-    return nullptr;
+    return blade_get_psychoanal_energy(blade_encoder);
 }
 
 int BladeController::getShortBlockStatus()

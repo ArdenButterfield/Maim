@@ -548,6 +548,7 @@ void					psycho_anal
 			for (b = bu+1;  b < bo;  b++)
 				en += eb[b];
 
+			flags->bends.psychoanal_energy[sfb] = en;
 			if (en != 0.0)
 			{
 				double	thm = flags->w1_l[sfb] * thr[bu] + flags->w2_l[sfb] * thr[bo];
@@ -555,10 +556,15 @@ void					psycho_anal
 				for (b = bu+1;  b < bo;  b++)
 					thm += thr[b];
 
+				thm *= flags->bends.threshold_bias[sfb];
+				flags->bends.psychoanal_threshold[sfb] = thm;
+
 				flags->ratio[ch][sfb] = thm / en;
 			}
-			else
+			else {
 				flags->ratio[ch][sfb] = 0.0;
+				flags->bends.psychoanal_threshold[sfb] = 0;
+			}
 		}
 	}
 	else
