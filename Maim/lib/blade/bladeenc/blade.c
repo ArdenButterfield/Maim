@@ -94,7 +94,9 @@ void blade_set_mdct_window_increment_bends(encoder_flags_and_data* flags, int wi
 
 void blade_set_mdct_band_reassignment_bends(encoder_flags_and_data* flags, int* band_reassignments)
 {
-
+    for (int i = 0; i < 32; ++i) {
+        flags->bends.mdct_band_reassignments[i] = band_reassignments[i];
+    }
 }
 
 void blade_set_mdct_feedback_bends(encoder_flags_and_data* flags, float feedback)

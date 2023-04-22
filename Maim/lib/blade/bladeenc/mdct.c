@@ -146,8 +146,8 @@ void mdct_sub
 #if MDCT_CHANGE_LEVEL < 5
 				for (k = 0;  k < 18;  k++)
 				{
-					mdct_in[k]    = (*sb_sample)[ch][pre_gr][k][band];
-					mdct_in[k+18] = (*sb_sample)[ch][cur_gr][k][band];
+					mdct_in[k]    = (*sb_sample)[ch][pre_gr][k][flags->bends.mdct_band_reassignments[band]];
+					mdct_in[k+18] = (*sb_sample)[ch][cur_gr][k][flags->bends.mdct_band_reassignments[band]];
 				}
 				if (cod_info->mixed_block_flag  &&  (band < 2))
 					block_type = NORM_TYPE;   /* AND WHEN WILL THE BLOCK_TYPE BE SWITCHED BACK? */
@@ -155,7 +155,7 @@ void mdct_sub
 			                /* &mdct_enc[gr][ch][band][0] */
 				mdct (mdct_in, mdct_enc/*[gr][ch]*/[band], block_type);
 #else
-				mdct ((*sb_sample)[ch][pre_gr], (*sb_sample)[ch][cur_gr], band, mdct_enc[band], block_type);
+				mdct ((*sb_sample)[ch][pre_gr], (*sb_sample)[ch][cur_gr], flags->bends.mdct_band_reassignments[band], mdct_enc[band], block_type);
 #endif
 			}
 

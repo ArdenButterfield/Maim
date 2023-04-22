@@ -121,7 +121,7 @@ void BladeController::setMDCTwindowincrBends(int window_incr)
 
 void BladeController::setMDCTBandReassignmentBends(int* order)
 {
-    
+    blade_set_mdct_band_reassignment_bends(blade_encoder, order);
 }
 
 void BladeController::setBitrateSquishBends(float squish)
