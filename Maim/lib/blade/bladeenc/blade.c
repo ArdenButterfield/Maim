@@ -31,12 +31,30 @@ int blade_get_chunk_size(encoder_flags_and_data* flags)
 	return 1152;
 }
 
+static short convert_sample(float s)
+{
+	// digital clip
+	if (s <= -1) {
+		return -32768;
+	}
+	if (s >= 1) {
+		return 32767;
+	}
+	return (short)(s * (1 << 15));
+#if 0
+
+	// triangle rollover
+	s = fabsf(fmodf(s - 1.f, 4.f)-2.f)-1;
+	return (short)(s * (1 << 15));
+#endif
+}
+
 int blade_encode_chunk(encoder_flags_and_data* flags, float* left, float* right, char* output)
 {
 	short readBuffer[2304];
 	for (int i = 0; i < 1152; ++i) {
-		readBuffer[i * 2] = (short)(left[i] * (1 << 15));
-		readBuffer[i * 2 + 1] = (short)(right[i] * (1 << 15));
+		readBuffer[i * 2] = convert_sample(left[i]);
+		readBuffer[i * 2 + 1] = convert_sample(right[i]);
 	}
 	return codecEncodeChunk (flags, 2304, readBuffer, output);
 }
@@ -114,18 +132,44 @@ float* blade_get_psychoanal_threshold(encoder_flags_and_data* flags)
 
 int blade_is_short_block(encoder_flags_and_data* flags)
 {
-	return 0;
+	return flags->bends.in_short_block;
 }
 
 void blade_clear_bends(encoder_flags_and_data* flags)
 {
-	flags->bends.mdct_post_v_shift = 0;
-	flags->bends.mdct_post_h_shift = 0;
+	flags->bends.butterfly_bubu = 1;
+    flags->bends.butterfly_bubd = 0;
+    flags->bends.butterfly_bdbu = 0;
+    flags->bends.butterfly_bdbd = 1;
 
-	for (int i = 0; i < 22; ++i) {
-		flags->bends.psychoanal_threshold[i] = 0;
-		flags->bends.psychoanal_energy[i] = 0;
-	}
+    flags->bends.mdct_invert = 0;
+    flags->bends.mdct_band_step = 18;
+
+    flags->bends.mdct_post_h_shift = 0;
+    flags->bends.mdct_post_v_shift = 0.f;
+
+    flags->bends.mdct_window_increment = 64;
+    flags->bends.mdct_samp_increment = 64;
+
+    flags->bends.bitrate_squish = 1;
+
+    flags->bends.mdct_feedback = 0;
+    flags->bends.prev_block_long = 0;
+
+    for (int i = 0; i < 32; ++i) {
+        flags->bends.mdct_band_reassignments[i] = i;
+    }
+
+    for (int i = 0; i < 22; ++i) {
+        flags->bends.psychoanal_energy[i] = 0;
+        flags->bends.psychoanal_threshold[i] = 0;
+    }
+
+    for (int i = 0; i < 22; ++i) {
+        flags->bends.threshold_bias[i] = 1;
+    }
+
+    memset(flags->bends.feedback_data, 0, 2 * 2 * 576 * sizeof(float));
 }
 
 

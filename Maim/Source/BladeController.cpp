@@ -151,7 +151,7 @@ float* BladeController::getPsychoanalEnergy()
 
 int BladeController::getShortBlockStatus()
 {
-    return 0;
+    return blade_is_short_block(blade_encoder);
 }
 
 int BladeController::samples_in_output_queue()

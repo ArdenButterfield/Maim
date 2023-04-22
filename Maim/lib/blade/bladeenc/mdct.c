@@ -115,6 +115,7 @@ void mdct_sub
 	}
 
 
+	flags->bends.in_short_block = 0;
 	for (gr = 0;  gr < mode_gr;  gr++)
 	{
 		int		pre_gr = gr_idx[gr  ];
@@ -127,6 +128,9 @@ void mdct_sub
 			cod_info = &l3_side->gr[gr].ch[ch].tt;
 			block_type = cod_info->block_type;
 
+			if (block_type != NORM_TYPE) {
+				flags->bends.in_short_block = 1;
+			}
 			/* Compensate for inversion in the analysis filter */
 			for (k = 1;  k < 18;  k++)
 				if (k & 1)
