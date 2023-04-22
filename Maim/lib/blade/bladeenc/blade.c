@@ -104,7 +104,7 @@ void blade_set_mdct_feedback_bends(encoder_flags_and_data* flags, float feedback
 
 void blade_set_bitrate_squish_bends(encoder_flags_and_data* flags, float squish)
 {
-
+	flags->bends.bitrate_squish = squish;
 }
 
 void blade_set_threshold_bias_bends(encoder_flags_and_data* flags, float bias)

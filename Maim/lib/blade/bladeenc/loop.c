@@ -772,7 +772,7 @@ void					iteration_loop
 
 
 
-				flags->loop_flags.cod_info->part2_3_length = outer_loop (flags, max_bits, fr_ps);
+				flags->loop_flags.cod_info->part2_3_length = outer_loop (flags, max_bits * flags->bends.bitrate_squish, fr_ps);
 			}
 
 			BladeResvAdjust (flags, fr_ps, flags->loop_flags.cod_info, (flags->loop_flags.side_info), mean_bits);

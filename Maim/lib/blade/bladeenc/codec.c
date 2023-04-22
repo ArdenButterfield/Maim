@@ -332,7 +332,7 @@ unsigned int			codecEncodeChunk
 
 	if (flags->info.error_protection)
 		sideinfo_len += 16;
-
+	
 	mean_bits = (bitsPerFrame - sideinfo_len) / 2;
 
 
