@@ -77,6 +77,29 @@ MaimAudioProcessor::MaimAudioProcessor()
 {
     oldPreGain = 1;
     oldPostGain = 1;
+    
+    addPsychoanalStateToParameters();
+    
+    parameters.addParameterListener("lopass", this);
+    parameters.addParameterListener("drive", this);
+    parameters.addParameterListener("makeupgain", this);
+}
+
+MaimAudioProcessor::~MaimAudioProcessor()
+{
+    parameters.removeParameterListener("lopass", this);
+    parameters.removeParameterListener("drive", this);
+    parameters.removeParameterListener("makeupgain", this);
+
+}
+
+void MaimAudioProcessor::addPsychoanalStateToParameters()
+{
+    auto psychoanalState = parameters.copyState().getChildWithName("psychoanal");
+    if (psychoanalState.isValid()) {
+        return;
+    }
+
     juce::var threshold, energy;
     for (int i = 0; i < 22; ++i) {
         threshold.append((float)i / 22.f);
@@ -90,18 +113,6 @@ MaimAudioProcessor::MaimAudioProcessor()
             juce::NamedValueSet::NamedValue("shortblockindicator", juce::var(false))
         }),
         nullptr);
-    
-    parameters.addParameterListener("lopass", this);
-    parameters.addParameterListener("drive", this);
-    parameters.addParameterListener("makeupgain", this);
-}
-
-MaimAudioProcessor::~MaimAudioProcessor()
-{
-    parameters.removeParameterListener("lopass", this);
-    parameters.removeParameterListener("drive", this);
-    parameters.removeParameterListener("makeupgain", this);
-
 }
 
 //==============================================================================
@@ -276,7 +287,7 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 //==============================================================================
 bool MaimAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
@@ -287,22 +298,29 @@ juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
 //==============================================================================
 void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    /*
+    
     auto state = parameters.copyState();
+    auto psychoanalState = state.getChildWithName("psychoanal");
+    if (psychoanalState.isValid()) {
+        state.removeChild(psychoanalState, nullptr);
+    }
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
-     */
+    addPsychoanalStateToParameters();
+    
 }
 
 void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    /*
+    
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
-    if (xmlState.get() != nullptr)
-        if (xmlState->hasTagName (parameters.state.getType()))
+    if (xmlState.get() != nullptr) {
+        if (xmlState->hasTagName (parameters.state.getType())) {
             parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
-     */
+            addPsychoanalStateToParameters();
+        }
+    }
 }
 
 //==============================================================================

@@ -67,6 +67,7 @@ public:
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     
 private:
+    void addPsychoanalStateToParameters();
     float preGain;
     float postGain;
     
