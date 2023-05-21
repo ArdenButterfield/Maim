@@ -99,7 +99,7 @@ SNDFILE = NO
 !	ENDIF
 
 OFF = win32
-MACHINE = /machine:I386
+MACHINE = /machine:X64
 LIB_OPTS = /nologo $(MACHINE) 
 
 !	MESSAGE ----------------------------------------------------------------------
