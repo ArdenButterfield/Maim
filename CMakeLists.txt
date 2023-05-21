@@ -125,10 +125,6 @@ set_target_properties("${PROJECT_NAME}" PROPERTIES FOLDER "")
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFiles})
 
 
-# Required for Linux happiness:
-# See https://forum.juce.com/t/loading-pytorch-model-using-binarydata/39997/2
-set_target_properties(Assets PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
-
 # Clean up folder organization on Xcode.
 # It tucks the Plugin varieties into a "Targets" folder and generate an Xcode Scheme manually
 # Xcode scheme generation is turned off globally to limit noise from other targets
@@ -149,7 +145,6 @@ foreach(target ${FORMATS} "All")
             XCODE_GENERATE_SCHEME ON)
     endif()
 endforeach()
-set_target_properties(Assets PROPERTIES FOLDER "Targets")
 
 
 target_compile_definitions("${PROJECT_NAME}"
@@ -163,7 +158,6 @@ target_compile_definitions("${PROJECT_NAME}"
 # link_directories(./Source/lib/lame/libmp3lame/.libs/)
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
-    Assets
     "${LAMELIBRARYPATH}"
     PUBLIC
     juce::juce_audio_basics
