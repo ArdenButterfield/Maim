@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <JuceHeader.h>
-
 #include "StageWindow.h"
 #include "PsychoanalGraph.h"
 

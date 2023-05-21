@@ -9,5 +9,3 @@
 */
 
 #pragma once
-
-#include <juceHeader.h>

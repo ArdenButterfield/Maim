@@ -9,6 +9,8 @@
 */
 
 #pragma once
+
+#include <limits>
 #include <vector>
 #include <array>
 #include <memory>

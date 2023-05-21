@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include <JuceHeader.h>
 #include "DragBox.h"
 
 float rescaleRange(const float v,
