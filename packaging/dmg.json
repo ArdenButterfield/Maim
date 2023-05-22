@@ -1,5 +1,5 @@
 {
-  "title": "Fish",
+  "title": "Maim",
   "icon": "pamplejuce.icns",
   "background": "background.jpg",
   "window": {
@@ -14,9 +14,9 @@
   },
   "format": "UDZO",
   "contents": [
-    { "x": 250, "y": 245, "type": "file", "path": "dmg/Fish.component" },
+    { "x": 250, "y": 245, "type": "file", "path": "dmg/Maim.component" },
     { "x": 480, "y": 245, "type": "file", "path": "dmg/Your Mac's Component Folder" },
-    { "x": 250, "y": 405, "type": "file", "path": "dmg/Fish.vst3" },
+    { "x": 250, "y": 405, "type": "file", "path": "dmg/Maim.vst3" },
     { "x": 480, "y": 405, "type": "file", "path": "dmg/Your Mac's VST3 Folder" }
   ]
 }
