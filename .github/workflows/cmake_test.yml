@@ -1,4 +1,4 @@
-name: Fish
+name: Maim
 
 on:
   workflow_dispatch: # lets you run a build from the UI
