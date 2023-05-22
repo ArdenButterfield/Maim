@@ -52,3 +52,9 @@ Maim/lib/blade/bladeenc/bladeenc
 **/*.asd
 **/*.dSYM
 Maim/lib/blade/test
+
+# lame stuff
+/Source/lib/lame/**/Makefile
+/Source/lib/lame/**/*.Po
+/Source/lib/lame/**/*.Plo
+

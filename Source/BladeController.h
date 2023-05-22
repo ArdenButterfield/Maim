@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include <blade.h>
+#include "lib/blade/bladeenc/blade.h"
 
 #include "MP3Controller.h"
 

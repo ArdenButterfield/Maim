@@ -65,7 +65,7 @@
 #endif
 
 /* system has 80 bit floats */
-#define HAVE_IEEE854_FLOAT80 1
+/* #undef HAVE_IEEE854_FLOAT80 */
 
 /* add ieee854_float80_t type */
 /* #undef HAVE_IEEE854_FLOAT80_T */
@@ -106,7 +106,7 @@
 #define HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the <linux/soundcard.h> header file. */
-/* #undef HAVE_LINUX_SOUNDCARD_H */
+#define HAVE_LINUX_SOUNDCARD_H 1
 
 /* Define to 1 if the type `long double' works and has more range or precision
    than `double'. */
@@ -147,7 +147,7 @@
 #define HAVE_STRTOL 1
 
 /* Define to 1 if you have the <sys/soundcard.h> header file. */
-/* #undef HAVE_SYS_SOUNDCARD_H */
+#define HAVE_SYS_SOUNDCARD_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
@@ -159,10 +159,10 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* have termcap */
-#define HAVE_TERMCAP 1
+/* #undef HAVE_TERMCAP */
 
 /* Define to 1 if you have the <termcap.h> header file. */
-#define HAVE_TERMCAP_H 1
+/* #undef HAVE_TERMCAP_H */
 
 /* add uint16_t type */
 #define HAVE_UINT16_T 1

@@ -70,6 +70,35 @@ target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 
 # Manually list all .h and .cpp files for the plugin
 set(SourceFiles
+    Source/lib/blade/bladeenc/formatbitstream2.h
+    Source/lib/blade/bladeenc/l3side.h
+    Source/lib/blade/bladeenc/mdct.c
+    Source/lib/blade/bladeenc/l3psy.c
+    Source/lib/blade/bladeenc/l3bitstream.h
+    Source/lib/blade/bladeenc/system.h
+    Source/lib/blade/bladeenc/l3psy.h
+    Source/lib/blade/bladeenc/codec.h
+    Source/lib/blade/bladeenc/loop.h
+    Source/lib/blade/bladeenc/blade.h
+    Source/lib/blade/bladeenc/formatbitstream2.c
+    Source/lib/blade/bladeenc/reservoir.c
+    Source/lib/blade/bladeenc/run.sh
+    Source/lib/blade/bladeenc/l3bitstream-pvt.h
+    Source/lib/blade/bladeenc/encode.c
+    Source/lib/blade/bladeenc/common.c
+    Source/lib/blade/bladeenc/loop.c
+    Source/lib/blade/bladeenc/common.h
+    Source/lib/blade/bladeenc/tables.h
+    Source/lib/blade/bladeenc/blade.c
+    Source/lib/blade/bladeenc/reservoir.h
+    Source/lib/blade/bladeenc/mdct.h
+    Source/lib/blade/bladeenc/tables.c
+    Source/lib/blade/bladeenc/huffman.h
+    Source/lib/blade/bladeenc/loop-pvt.h
+    Source/lib/blade/bladeenc/subs.c
+    Source/lib/blade/bladeenc/codec.c
+    Source/lib/blade/bladeenc/l3bitstream.c
+    Source/lib/blade/bladeenc/encoder.h
     Source/GUIelements/ArrayAssigner.cpp
     Source/GUIelements/guiUtil.h
     Source/GUIelements/MainArea.cpp
@@ -159,7 +188,6 @@ target_compile_definitions("${PROJECT_NAME}"
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
     "${LAMELIBRARYPATH}"
-    PUBLIC
     juce::juce_audio_basics
     juce::juce_audio_devices
     juce::juce_audio_formats
