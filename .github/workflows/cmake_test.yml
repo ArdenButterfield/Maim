@@ -136,7 +136,7 @@ jobs:
       run: |
         cp configMS.h config.h
         # nmake clean -f Makefile.MSVC
-        nmake dll -f Makefile.MSVC comp=msvc asm=no
+        nmake libmp3lame-static.lib -f Makefile.MSVC comp=msvc asm=no
     - name: Build LAME (linux)
       if: ${{ matrix.name == 'Linux' }}
       shell: bash
