@@ -44,7 +44,7 @@ public:
     }
     
     T dequeue() {
-        // If the queue is empty, we return a blank. (For Fish, this is 0.0)
+        // If the queue is empty, we return a blank. (For this plugin, this is 0.0)
         if (read_pos == write_pos) {
             return null_option;
         }

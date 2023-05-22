@@ -1,5 +1,5 @@
 #define Version Trim(FileRead(FileOpen("..\VERSION")))
-#define PluginName "Fish"
+#define PluginName "Maim"
 #define Publisher "Wildergarden"
 #define Year GetDateTimeString("yyyy","","")
 
