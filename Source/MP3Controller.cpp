@@ -14,7 +14,7 @@ bool MP3Controller::init(const int sampleRate,
                          const int maxsampsperblock,
                          const int br)
 {
-    samplerate = sampleRate;
+    samplerate = validate_samplerate(sampleRate);
     bitrate = validate_bitrate(br);
     maxSamplesPerBlock = maxsampsperblock;
     
