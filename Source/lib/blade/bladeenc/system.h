@@ -148,7 +148,7 @@
 #	ifdef BYTE_ORDER
 #		define			BYTEORDER				BYTE_ORDER
 #	else
-#		include <config.h>
+// #		include <config.h>
 #		if WORDS_BIGENDIAN
 #			define 		BYTEORDER 				BIG_ENDIAN
 #		else
