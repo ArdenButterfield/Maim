@@ -126,39 +126,48 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     }
     auto samplesL = buffer.getWritePointer(0);
     auto samplesR = buffer.getWritePointer(1);
-    
-    currentController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
-    if (wantingToSwitch && (switchCountdown > 0)) {
-        offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
-        if (offController->copyOutput(nullptr, nullptr, buffer.getNumSamples())) {
-            --switchCountdown;
+
+    for (int start = 0; start < buffer.getNumSamples(); start += samplesPerBlock) {
+        int length = std::min(buffer.getNumSamples() - start, samplesPerBlock);
+
+        currentController->addNextInput(samplesL, samplesR, length);
+        if (wantingToSwitch && (switchCountdown > 0)) {
+            offController->addNextInput(samplesL, samplesR, length);
+            if (offController->copyOutput(nullptr, nullptr, length)) {
+                --switchCountdown;
+            }
+        } else if (wantingToSwitch) {
+            offController->addNextInput(samplesL, samplesR, length);
+            if (offController->copyOutput(samplesL, samplesR, length)) {
+                auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
+                    length);
+                samplesL = tempBuffer.getWritePointer(0);
+                samplesR = tempBuffer.getWritePointer(1);
+                currentController->copyOutput(samplesL, samplesR, length);
+
+                buffer.applyGainRamp(0, length, 0, 1);
+                buffer.addFromWithRamp(0, 0, samplesL, length, 1, 0);
+                buffer.addFromWithRamp(1, 0, samplesR, length, 1, 0);
+
+                currentController = offController;
+                currentBitrate = desiredBitrate;
+                currentEncoder = desiredEncoder;
+                offController = nullptr;
+                wantingToSwitch = false;
+                continue;
+            }
         }
-    } else if (wantingToSwitch) {
-        offController->addNextInput(samplesL, samplesR, buffer.getNumSamples());
-        if (offController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
-            auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
-                                                       buffer.getNumSamples());
-            samplesL = tempBuffer.getWritePointer(0);
-            samplesR = tempBuffer.getWritePointer(1);
-            currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples());
-            
-            buffer.applyGainRamp(0, buffer.getNumSamples(), 0, 1);
-            buffer.addFromWithRamp(0, 0, samplesL, buffer.getNumSamples(), 1, 0);
-            buffer.addFromWithRamp(1, 0, samplesR, buffer.getNumSamples(), 1, 0);
-            
-            currentController = offController;
-            currentBitrate = desiredBitrate;
-            currentEncoder = desiredEncoder;
-            offController = nullptr;
-            wantingToSwitch = false;
-            return;
+
+        if (!currentController->copyOutput(samplesL, samplesR, length)) {
+            memset(samplesL, 0, sizeof(float) * length);
+            memset(samplesR, 0, sizeof(float) * length);
         }
+
+        samplesL += samplesPerBlock;
+        samplesR += samplesPerBlock;
     }
-    
-    if (!currentController->copyOutput(samplesL, samplesR, buffer.getNumSamples())) {
-        memset(samplesL, 0, sizeof(float) * buffer.getNumSamples());
-        memset(samplesR, 0, sizeof(float) * buffer.getNumSamples());
-    }
+
+
 }
 
 void MP3ControllerManager::updateParameters(bool updateOffController)

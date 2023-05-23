@@ -251,6 +251,7 @@ void MaimAudioProcessor::updateParameters()
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
+
     if (parametersNeedUpdating) {
         updateParameters();
     }
@@ -267,8 +268,10 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     } else {
         buffer.applyGain(preGain);
     }
-        
-    mp3ControllerManager->processBlock(buffer);
+    if (buffer.getNumSamples() <= estimatedSamplesPerBlock) {
+        mp3ControllerManager->processBlock(buffer);
+    }
+
     
     if (buffer.getNumChannels() == 2) {
         auto samplesL = buffer.getWritePointer(0);

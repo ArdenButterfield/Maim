@@ -565,7 +565,9 @@ void					psycho_anal
 				flags->ratio[ch][sfb] = 0.0;
 				flags->bends.psychoanal_threshold[sfb] = 0;
 			}
+            printf("%f ", flags->bends.psychoanal_threshold[sfb]);
 		}
+        printf("\n");
 	}
 	else
 	{

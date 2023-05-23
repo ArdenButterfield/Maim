@@ -160,9 +160,6 @@
 #endif   /* NEW_L3PARM_TABLES */
 
 
-
-
-
 extern		double					enwindow[512];
 extern		char					aHuffcode[1498][36];
 

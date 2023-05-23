@@ -486,6 +486,8 @@ typedef struct blade_bend_flags_struct {
     float threshold_bias[22];
     // Likewise, we are currently only biasing the long blocks.
 
+    float freq_gate;
+
     float mdct_feedback;
     int prev_block_long;
 

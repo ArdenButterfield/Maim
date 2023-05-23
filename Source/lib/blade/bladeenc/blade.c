@@ -172,6 +172,7 @@ void blade_clear_bends(encoder_flags_and_data* flags)
     for (int i = 0; i < 22; ++i) {
         flags->bends.threshold_bias[i] = 1;
     }
+    flags->bends.freq_gate = 0;
 
     memset(flags->bends.feedback_data, 0, 2 * 2 * 576 * sizeof(float));
 }
