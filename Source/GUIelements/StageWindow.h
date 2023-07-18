@@ -21,6 +21,7 @@ class StageWindow  : public juce::Component
 {
 public:
     StageWindow(juce::AudioProcessorValueTreeState& p) : parameters(p) {}
+//    virtual ~StageWindow();
 
 
     const juce::Font main_font = juce::Font(MaimLookAndFeel().main_font);

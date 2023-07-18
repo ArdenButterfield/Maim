@@ -19,7 +19,7 @@
 #include "QuantizeSection.h"
 #include "DecodeSection.h"
 #include "PostSection.h"
-
+#include "TitlePanel.h"
 //==============================================================================
 /*
 */
@@ -38,6 +38,7 @@ private:
     QuantizeSection quantizeSection;
     DecodeSection decodeSection;
     PostSection postSection;
+    TitlePanel titlePanel;
     
     juce::AudioProcessorValueTreeState& parameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainArea)
