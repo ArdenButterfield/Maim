@@ -140,9 +140,9 @@ set(SourceFiles
     Source/PluginProcessor.h
     Source/BladeController.cpp
     Source/MP3Controller.h
-    Source/MaimLookAndFeel.h
-    Source/MaimLookAndFeel.cpp
-    )
+    Source/GUIelements/MaimLookAndFeel.h
+    Source/GUIelements/MaimLookAndFeel.cpp
+)
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
         Source/lib/lame/include)
