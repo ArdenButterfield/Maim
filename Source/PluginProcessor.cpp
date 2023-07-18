@@ -58,7 +58,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"lopass", 1}, "Lowpass filter", 100.f, 20000.f, 18000.f));
-    
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"mix", 1}, "Mix", 0.f, 100.f, 100.f));
+
     return {parameters.begin(), parameters.end()};
 }
 
@@ -83,6 +86,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("lopass", this);
     parameters.addParameterListener("drive", this);
     parameters.addParameterListener("makeupgain", this);
+    parameters.addParameterListener("mix", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -90,7 +94,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("lopass", this);
     parameters.removeParameterListener("drive", this);
     parameters.removeParameterListener("makeupgain", this);
-
+    parameters.removeParameterListener("mix", this);
 }
 
 void MaimAudioProcessor::addPsychoanalStateToParameters()

@@ -20,10 +20,12 @@ MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
     // editor's size to whatever you need it to be.
     setSize (900, 700);
     addAndMakeVisible(mainArea);
+    setLookAndFeel(&maimLookAndFeel);
 }
 
 MaimAudioProcessorEditor::~MaimAudioProcessorEditor()
 {
+    setLookAndFeel(nullptr);
 }
 
 //==============================================================================

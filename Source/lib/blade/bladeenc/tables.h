@@ -104,6 +104,7 @@
 
 
 	extern		l3_parm_block			l3_parm[3];
+    extern      int                     gibbon[3][22];
 
 
 #else   /* NEW_L3PARM_TABLES */

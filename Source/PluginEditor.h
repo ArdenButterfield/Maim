@@ -14,6 +14,7 @@
 #include "PluginProcessor.h"
 #include "GUIelements/MainArea.h"
 #include "GUIelements/DragBox.h"
+#include "MaimLookAndFeel.h"
 
 //==============================================================================
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
@@ -39,6 +40,7 @@ private:
     MainArea mainArea;
     DragBox dragBox;
 
+    MaimLookAndFeel maimLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessorEditor)
 };

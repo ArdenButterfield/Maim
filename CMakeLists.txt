@@ -140,6 +140,8 @@ set(SourceFiles
     Source/PluginProcessor.h
     Source/BladeController.cpp
     Source/MP3Controller.h
+    Source/MaimLookAndFeel.h
+    Source/MaimLookAndFeel.cpp
     )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
@@ -152,6 +154,17 @@ set_target_properties("${PROJECT_NAME}" PROPERTIES FOLDER "")
 
 # The Xcode source tree should uhhh, still look like the source tree, yo
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFiles})
+
+# Setup our binary data as a target
+juce_add_binary_data(fonts SOURCES
+        fonts/Gontserrat-Regular.ttf
+        fonts/bedstead/bedstead-boldsemicondensed.otf
+        fonts/bedstead/bedstead-semicondensed.otf
+        fonts/bedstead/bedstead-boldextended.otf)
+
+# Required for Linux happiness:
+# See https://forum.juce.com/t/loading-pytorch-model-using-binarydata/39997/2
+set_target_properties(fonts PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 
 # Clean up folder organization on Xcode.
@@ -174,6 +187,7 @@ foreach(target ${FORMATS} "All")
             XCODE_GENERATE_SCHEME ON)
     endif()
 endforeach()
+set_target_properties(fonts PROPERTIES FOLDER "Targets")
 
 
 target_compile_definitions("${PROJECT_NAME}"
@@ -183,6 +197,9 @@ target_compile_definitions("${PROJECT_NAME}"
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
+target_link_libraries("${PROJECT_NAME}"
+        PUBLIC
+        fonts)
 
 # link_directories(./Source/lib/lame/libmp3lame/.libs/)
 target_link_libraries("${PROJECT_NAME}"
