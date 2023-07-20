@@ -11,8 +11,6 @@
 #include "juce_graphics/juce_graphics.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 
-#define PI 3.14159265359
-
 // BEDSTEAD FONT
 // https://www.1001fonts.com/bedstead-font.html
 // Bedtead by Ben Harris.
@@ -71,5 +69,6 @@ public:
     const juce::Typeface::Ptr tooltip_font;
 
 private:
+    const float pi = 3.14159265359;
 };
 #endif //MAIM_MAIMLOOKANDFEEL_H

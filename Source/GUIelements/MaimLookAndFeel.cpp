@@ -75,8 +75,8 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
             centery - radius,
             radius * 2,
             radius * 2,
-            PI * (shadow_tilt + 1),
-            PI * (shadow_tilt + 2));
+            pi * (shadow_tilt + 1),
+            pi * (shadow_tilt + 2));
         highlight.closeSubPath();
 
         g.setColour(fill);
@@ -88,8 +88,8 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
             centery - radius,
             radius * 2,
             radius * 2,
-            PI * shadow_tilt - penumbra_rad,
-            PI * (shadow_tilt + 1) + penumbra_rad);
+            pi * shadow_tilt - penumbra_rad,
+            pi * (shadow_tilt + 1) + penumbra_rad);
         penumbra.closeSubPath();
 
         g.setColour(BEVEL_LIGHT);
@@ -101,8 +101,8 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
             centery - radius,
             radius * 2,
             radius * 2,
-            PI * shadow_tilt + penumbra_rad,
-            PI * (shadow_tilt + 1) - penumbra_rad);
+            pi * shadow_tilt + penumbra_rad,
+            pi * (shadow_tilt + 1) - penumbra_rad);
         shadow.closeSubPath();
 
         g.setColour(BEVEL_DARK);

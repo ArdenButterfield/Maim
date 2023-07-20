@@ -22,8 +22,14 @@ class PostSection  : public StageWindow
 {
 public:
     PostSection(juce::AudioProcessorValueTreeState& p);
+    void paint (juce::Graphics& g);
     void resized() override;
 private:
+    juce::Rectangle<int> driveSection;
+    juce::Rectangle<int> bitrateSection;
+    juce::Rectangle<int> filterSection;
+    juce::Rectangle<int> makeupSection;
+
     juce::Slider driveSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
@@ -66,6 +72,17 @@ private:
         parameters,
         "bitrate",
         bitrateSlider
+    };
+
+    juce::Slider squishSlider {
+        juce::Slider::RotaryVerticalDrag,
+        juce::Slider::TextBoxBelow
+    };
+
+    juce::AudioProcessorValueTreeState::SliderAttachment squishAttachment {
+        parameters,
+        "bitratesqish",
+        squishSlider
     };
     
     juce::Slider postFilterSlider {
