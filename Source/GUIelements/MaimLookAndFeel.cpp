@@ -230,14 +230,21 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
 }
 
 void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
-    if (shouldDrawButtonAsDown) {
-        g.setColour(BEVEL_LIGHT);
+    juce::Colour fillColour;
+    juce::String buttonDisplayName;
+    if (button.getToggleState()) {
+        fillColour = BEVEL_DARK;
+        buttonDisplayName = button.getName().fromLastOccurrenceOf("|", false, false);
     } else {
-        g.setColour(BEVEL_WHITE);
+        fillColour = BEVEL_LIGHT;
+        buttonDisplayName = button.getName().upToFirstOccurrenceOf("|", false, false);
     }
-    g.fillRect(button.getBounds());
+    g.setColour(fillColour);
+    g.fillRect(button.getLocalBounds());
     g.setColour(BEVEL_BLACK);
-    g.drawRect(button.getBounds());
+    g.drawRect(button.getLocalBounds());
+    g.setFont(tooltip_font);
+    g.drawText(buttonDisplayName, button.getLocalBounds(), juce::Justification::centred, false);
 }
 
 #if false
