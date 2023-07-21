@@ -14,6 +14,7 @@
 #include <juce_graphics/juce_graphics.h>
 
 #include "StageWindow.h"
+#include "NamedRotarySlider.h"
 
 //==============================================================================
 /*
@@ -30,70 +31,12 @@ private:
     juce::Rectangle<int> filterSection;
     juce::Rectangle<int> makeupSection;
 
-    juce::Slider driveSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    juce::AudioProcessorValueTreeState::SliderAttachment driveAttachment {
-        parameters,
-        "drive",
-        driveSlider
-    };
-    
-    juce::Slider makeupSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    juce::AudioProcessorValueTreeState::SliderAttachment makeupAttachment {
-        parameters,
-        "makeupgain",
-        makeupSlider
-    };
+    NamedRotarySlider driveSlider;
+    NamedRotarySlider encoderSlider;
+    NamedRotarySlider bitrateSlider;
+    // NamedRotarySlider squishSlider;
+    NamedRotarySlider postFilterSlider;
+    NamedRotarySlider makeupSlider;
 
-    juce::Slider encoderSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    juce::AudioProcessorValueTreeState::SliderAttachment encoderAttachment {
-        parameters,
-        "encoder",
-        encoderSlider
-    };
-    
-    juce::Slider bitrateSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    juce::AudioProcessorValueTreeState::SliderAttachment bitrateAttachment {
-        parameters,
-        "bitrate",
-        bitrateSlider
-    };
-
-    juce::Slider squishSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-
-    juce::AudioProcessorValueTreeState::SliderAttachment squishAttachment {
-        parameters,
-        "bitratesqish",
-        squishSlider
-    };
-    
-    juce::Slider postFilterSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    juce::AudioProcessorValueTreeState::SliderAttachment postFilterAttatchment {
-        parameters,
-        "lopass",
-        postFilterSlider
-    };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PostSection)
 };

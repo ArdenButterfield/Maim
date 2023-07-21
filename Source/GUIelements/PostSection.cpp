@@ -12,12 +12,18 @@
 
 //==============================================================================
 
-PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p) {
-    addAndMakeVisible(postFilterSlider);
-    addAndMakeVisible(bitrateSlider);
+PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p),
+                                                                   driveSlider(p, "drive", "Drive"),
+                                                                   encoderSlider(p, "encoder", "Encoder"),
+                                                                   bitrateSlider(p, "bitrate", "Bitrate"),
+                                                                   postFilterSlider(p, "lopass", "Filter"),
+                                                                   makeupSlider(p, "makeupgain", "Makeup gain")
+{
     addAndMakeVisible(driveSlider);
-    addAndMakeVisible(makeupSlider);
     addAndMakeVisible(encoderSlider);
+    addAndMakeVisible(bitrateSlider);
+    addAndMakeVisible(postFilterSlider);
+    addAndMakeVisible(makeupSlider);
 }
 
 void PostSection::paint (juce::Graphics& g)
@@ -26,7 +32,6 @@ void PostSection::paint (juce::Graphics& g)
     g.setColour(MaimLookAndFeel().BEVEL_DARK);
     for (const auto& section : { driveSection, bitrateSection, filterSection }) {
         g.drawVerticalLine(section.getRight(), section.getY() + 10,section.getBottom() - 10);
-
     }
 }
 
@@ -46,7 +51,6 @@ void PostSection::resized()
 
     makeupSection = usable_bounds.withTrimmedLeft(used_space);
 
-    int knobWidth = getWidth() / 5;
     driveSlider.setBounds(driveSection);
     bitrateSlider.setBounds(bitrateSection.withWidth(bitrateSection.getWidth() / 2));
     encoderSlider.setBounds(bitrateSection.withTrimmedLeft(bitrateSection.getWidth() / 2));

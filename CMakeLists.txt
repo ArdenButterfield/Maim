@@ -144,6 +144,8 @@ set(SourceFiles
     Source/GUIelements/TitlePanel.cpp
     Source/GUIelements/MaimLookAndFeel.h
     Source/GUIelements/MaimLookAndFeel.cpp
+    Source/GUIelements/NamedRotarySlider.cpp
+    Source/GUIelements/NamedRotarySlider.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
