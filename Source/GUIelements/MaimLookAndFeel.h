@@ -45,6 +45,8 @@ public:
         const juce::Slider::SliderStyle style,
         juce::Slider& s
         ) override;
+
+    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 #if 0
     void drawComboBox (juce::Graphics& g,
                        int width,

@@ -229,6 +229,17 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
 
 }
 
+void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
+    if (shouldDrawButtonAsDown) {
+        g.setColour(BEVEL_LIGHT);
+    } else {
+        g.setColour(BEVEL_WHITE);
+    }
+    g.fillRect(button.getBounds());
+    g.setColour(BEVEL_BLACK);
+    g.drawRect(button.getBounds());
+}
+
 #if false
 void MaimLookAndFeel::drawComboBox (juce::Graphics& g,
                                     int width,

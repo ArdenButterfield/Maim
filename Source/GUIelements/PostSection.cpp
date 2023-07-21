@@ -14,14 +14,14 @@
 
 PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p),
                                                                    driveSlider(p, "drive", "Drive"),
-                                                                   encoderSlider(p, "encoder", "Encoder"),
+                                                                   encoderAttachment(p, "encoder", encoderButton),
                                                                    bitrateSlider(p, "bitrate", "Bitrate"),
                                                                    hiSlider(p, "hicut", "High"),
                                                                    loSlider(p, "locut", "Low"),
                                                                    makeupSlider(p, "makeupgain", "Makeup gain")
 {
     addAndMakeVisible(driveSlider);
-    addAndMakeVisible(encoderSlider);
+    addAndMakeVisible(encoderButton);
     addAndMakeVisible(bitrateSlider);
     addAndMakeVisible(hiSlider);
     addAndMakeVisible(loSlider);
@@ -60,7 +60,7 @@ void PostSection::resized()
 
     driveSlider.setBounds(driveSection);
     bitrateSlider.setBounds(bitrateSection.withWidth(bitrateSection.getWidth() / 2));
-    encoderSlider.setBounds(bitrateSection.withTrimmedLeft(bitrateSection.getWidth() / 2));
+    encoderButton.setBounds(bitrateSection.withTrimmedLeft(bitrateSection.getWidth() / 2));
     hiSlider.setBounds(filterSection.withTrimmedLeft(filterSection.getWidth() / 2));
     loSlider.setBounds(filterSection.withWidth(filterSection.getWidth() / 2));
     makeupSlider.setBounds(makeupSection);
