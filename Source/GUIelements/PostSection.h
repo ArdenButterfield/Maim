@@ -35,8 +35,11 @@ private:
     NamedRotarySlider encoderSlider;
     NamedRotarySlider bitrateSlider;
     // NamedRotarySlider squishSlider;
-    NamedRotarySlider postFilterSlider;
+    NamedRotarySlider loSlider;
+    NamedRotarySlider hiSlider;
     NamedRotarySlider makeupSlider;
+
+    const juce::Font eqFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PostSection)
 };

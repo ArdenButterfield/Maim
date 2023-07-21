@@ -18,6 +18,7 @@ void NamedRotarySlider::resized()
     nameHeight = std::max(getHeight() / 4, getHeight() - getWidth());
     slider.setBounds(getLocalBounds().withTrimmedBottom(nameHeight));
 }
+
 void NamedRotarySlider::paint(juce::Graphics &g)
 {
     g.setFont(nameFont);

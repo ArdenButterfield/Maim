@@ -83,7 +83,8 @@ private:
     
     std::unique_ptr<MP3ControllerManager> mp3ControllerManager;
         
-    std::array<juce::IIRFilter, 2> postFilter;
+    std::array<juce::IIRFilter, 2> postFilterLo;
+    std::array<juce::IIRFilter, 2> postFilterHi;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessor)

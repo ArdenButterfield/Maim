@@ -57,7 +57,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID {"encoder", 1}, "Encoder", juce::StringArray {"Blade", "Lame"}, 1));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"lopass", 1}, "Lowpass filter", 100.f, 20000.f, 18000.f));
+        juce::ParameterID {"hicut", 1}, "High cut", 100.f, 20000.f, 18000.f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"locut", 1}, "Low cut", 0.f, 10000.f, 0.f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"mix", 1}, "Mix", 0.f, 100.f, 100.f));
@@ -83,7 +86,8 @@ MaimAudioProcessor::MaimAudioProcessor()
     
     addPsychoanalStateToParameters();
     
-    parameters.addParameterListener("lopass", this);
+    parameters.addParameterListener("hicut", this);
+    parameters.addParameterListener("locut", this);
     parameters.addParameterListener("drive", this);
     parameters.addParameterListener("makeupgain", this);
     parameters.addParameterListener("mix", this);
@@ -91,7 +95,8 @@ MaimAudioProcessor::MaimAudioProcessor()
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
-    parameters.removeParameterListener("lopass", this);
+    parameters.removeParameterListener("hicut", this);
+    parameters.removeParameterListener("locut", this);
     parameters.removeParameterListener("drive", this);
     parameters.removeParameterListener("makeupgain", this);
     parameters.removeParameterListener("mix", this);
@@ -235,10 +240,13 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
-    for (auto &f: postFilter) {
-        f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("lopass"))->get()));
+    for (auto &f: postFilterLo) {
+        f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("hicut"))->get()));
     }
-    
+    for (auto &f: postFilterHi) {
+        f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, ((juce::AudioParameterFloat*)parameters.getParameter("locut"))->get()));
+    }
+
     auto driveDB = ((juce::AudioParameterFloat*)parameters.getParameter("drive"))->get();
     auto makeupDB = ((juce::AudioParameterFloat*)parameters.getParameter("makeupgain"))->get();
     
@@ -276,13 +284,12 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         mp3ControllerManager->processBlock(buffer);
     }
 
-    
-    if (buffer.getNumChannels() == 2) {
-        auto samplesL = buffer.getWritePointer(0);
-        auto samplesR = buffer.getWritePointer(1);
-        postFilter[0].processSamples(samplesL, buffer.getNumSamples());
-        postFilter[1].processSamples(samplesR, buffer.getNumSamples());
+    for (int i = 0; i < std::min(2, buffer.getNumSamples()); ++i) {
+        auto samples = buffer.getWritePointer(i);
+        postFilterHi[i].processSamples(samples, buffer.getNumSamples());
+        postFilterLo[i].processSamples(samples, buffer.getNumSamples());
     }
+
     if (oldPostGain != postGain) {
         buffer.applyGainRamp(0, buffer.getNumSamples(), oldPostGain, postGain);
         oldPostGain = postGain;
