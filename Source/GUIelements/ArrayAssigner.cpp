@@ -11,10 +11,13 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_graphics/juce_graphics.h>
 
+#include <cmath>
+
 #include "ArrayAssigner.h"
 
 //==============================================================================
 ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int s) :
+    StageWindow(p),
     resetButton("reset"),
     randomButton("random"),
     upButton("up", 0.75, juce::Colours::yellow),
@@ -103,7 +106,7 @@ void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool st
     float x, y;
     x = mousePosition.getX();
     y = mousePosition.getY();
-    if (!activeArea.contains(x, y)) {
+    if (!activeArea.contains((int)x,(int)y)) {
         if (strictBounds) {
             return;
         } else {
@@ -138,20 +141,30 @@ float ArrayAssigner::getValScreenY(const int rawVal)
 int ArrayAssigner::getValIndex(const float screenY)
 {
     float v = 1 - ((screenY - activeArea.getY()) / activeArea.getHeight());
-    return (int) round(v * (steps - 1));
+    return (int) std::round(v * (steps - 1));
 }
 
 void ArrayAssigner::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::black);
-    g.setColour(juce::Colours::darkgrey);
-    g.fillRect(activeArea);
+    StageWindow::paint(g);
+    g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
+    g.fillRect(activeAreaBorder);
+    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+    g.drawRect(activeAreaBorder, 2);
     float singleLineWidth = (float)activeArea.getWidth() / itemVals.size();
-    g.setColour(juce::Colours::white);
+    g.setColour(MaimLookAndFeel().PANEL_BACKGROUND_COLOR);
+    for (int row = 0; row < steps; ++row) {
+        g.drawHorizontalLine(getValScreenY(row), activeArea.getX(), activeArea.getRight());
+    }
+    for (int col = 0; col < itemVals.size() + 1; ++col) {
+        g.drawVerticalLine(activeArea.getX() + singleLineWidth * col, activeArea.getY(), activeArea.getBottom());
+    }
+    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
     for (int i = 0; i < itemVals.size(); ++i) {
-        g.drawHorizontalLine(getValScreenY(itemVals[i]),
-                             activeArea.getX() + singleLineWidth * i,
-                             activeArea.getX() + singleLineWidth * (i + 1));
+        int left = activeArea.getX() + singleLineWidth * i;
+        int right = activeArea.getX() + singleLineWidth * (i + 1);
+        int y = getValScreenY(itemVals[i]);
+        g.fillRect(left, y - 1, right - left, 2);
     }
     needsRepainting = false;
 }
@@ -165,9 +178,12 @@ void ArrayAssigner::resized()
     randomButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth, 0));
     upButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth * 2, 0));
     downButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth * 3, 0));
-    activeArea = mainRect.withTrimmedTop(40);
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+    activeAreaBorder = mainRect.withTrimmedTop(40);
+    activeArea = activeAreaBorder
+                     .withTrimmedTop(10)
+                     .withTrimmedLeft(10)
+                     .withTrimmedRight(10)
+                     .withTrimmedBottom(10);
 }
 
 void ArrayAssigner::parameterChanged (const juce::String &parameterID, float newValue)

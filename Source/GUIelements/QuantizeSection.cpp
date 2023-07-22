@@ -12,17 +12,13 @@
 
 //==============================================================================
 QuantizeSection::QuantizeSection(juce::AudioProcessorValueTreeState& p)
-: StageWindow(p), arrayAssigner(p, 20, 20)
+: StageWindow(p)
 {
-    addAndMakeVisible(arrayAssigner);
-    addAndMakeVisible(squishSlider);
     addAndMakeVisible(MDCTfeedbackSlider);
 }
 
 void QuantizeSection::resized()
 {
-    squishSlider.setBounds(getLocalBounds().withTrimmedLeft(200).withTrimmedTop(100));
     MDCTfeedbackSlider.setBounds(getLocalBounds().withTrimmedLeft(200).withHeight(100));
-    arrayAssigner.setBounds(getLocalBounds().withWidth(200));
 
 }

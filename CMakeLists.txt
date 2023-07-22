@@ -112,14 +112,12 @@ set(SourceFiles
     Source/GUIelements/MDCTSection.cpp
     Source/GUIelements/QuantizeSection.cpp
     Source/GUIelements/DragBox.cpp
-    Source/GUIelements/DecodeSection.h
     Source/GUIelements/MDCTSection.h
     Source/GUIelements/MainArea.h
     Source/GUIelements/IndicatorLight.cpp
     Source/GUIelements/ArrayAssigner.h
     Source/GUIelements/IndicatorLight.h
     Source/GUIelements/PsychoanalGraph.h
-    Source/GUIelements/DecodeSection.cpp
     Source/GUIelements/QuantizeSection.h
     Source/GUIelements/DragBox.h
     Source/GUIelements/PsychoacousticSection.cpp

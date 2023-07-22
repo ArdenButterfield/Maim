@@ -26,18 +26,6 @@ public:
     void resized() override;
 
 private:
-    ArrayAssigner arrayAssigner;
-    
-    juce::Slider squishSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    juce::AudioProcessorValueTreeState::SliderAttachment squishAttachment {
-        parameters,
-        "bitratesquish",
-        squishSlider
-    };
-
     juce::Slider MDCTfeedbackSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow

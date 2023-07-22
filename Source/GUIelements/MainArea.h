@@ -17,9 +17,9 @@
 #include "PsychoacousticSection.h"
 #include "MDCTSection.h"
 #include "QuantizeSection.h"
-#include "DecodeSection.h"
 #include "PostSection.h"
 #include "TitlePanel.h"
+#include "ArrayAssigner.h"
 //==============================================================================
 /*
 */
@@ -36,10 +36,10 @@ private:
     PsychoacousticSection psychoacousticSection;
     MDCTSection mdctSection;
     QuantizeSection quantizeSection;
-    DecodeSection decodeSection;
     PostSection postSection;
     TitlePanel titlePanel;
-    
+    ArrayAssigner arrayAssigner;
+
     juce::AudioProcessorValueTreeState& parameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainArea)
 };

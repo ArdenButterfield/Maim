@@ -15,7 +15,7 @@ MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
     psychoacousticSection(p),
     mdctSection(p),
     quantizeSection(p),
-    decodeSection(p),
+    arrayAssigner(p, 20, 20),
     postSection(p),
     titlePanel (p),
     parameters(p)
@@ -24,7 +24,7 @@ MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
     addAndMakeVisible(psychoacousticSection);
     addAndMakeVisible(mdctSection);
     addAndMakeVisible(quantizeSection);
-    addAndMakeVisible(decodeSection);
+    addAndMakeVisible(arrayAssigner);
     addAndMakeVisible(postSection);
     addAndMakeVisible(titlePanel);
 }
@@ -86,7 +86,7 @@ void MainArea::resized()
     psychoacousticSection.setBounds(psychoacousticBounds);
     mdctSection.setBounds(mdctBounds);
     quantizeSection.setBounds(quantizeBounds);
-    decodeSection.setBounds(decodeBounds);
+    arrayAssigner.setBounds(decodeBounds);
     postSection.setBounds(postSectionBounds);
 
     titlePanel.setBounds(0,0,200,100);

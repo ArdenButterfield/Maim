@@ -35,12 +35,12 @@ private:
     juce::ToggleButton encoderButton {"Blade|Lame"};
     const juce::AudioProcessorValueTreeState::ButtonAttachment encoderAttachment;
     NamedRotarySlider bitrateSlider;
-    // NamedRotarySlider squishSlider;
+    NamedRotarySlider squishSlider;
     NamedRotarySlider loSlider;
     NamedRotarySlider hiSlider;
     NamedRotarySlider makeupSlider;
 
-    const juce::Font eqFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PostSection)
 };

@@ -16,11 +16,13 @@
 #include <vector>
 #include <cmath>
 
+#include "StageWindow.h"
+
 //==============================================================================
 /*
 */
 class ArrayAssigner  :
-        public juce::Component,
+        public StageWindow,
         public juce::Timer,
         public juce::AudioProcessorValueTreeState::Listener,
         public juce::Button::Listener
@@ -56,7 +58,8 @@ private:
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     void buildItemValsFromParams();
     void timerCallback() override;
-    
+
+    juce::Rectangle<int> activeAreaBorder;
     juce::Rectangle<int> activeArea;
     juce::AudioProcessorValueTreeState& pTree;
     std::vector<juce::AudioParameterInt*> parameters;

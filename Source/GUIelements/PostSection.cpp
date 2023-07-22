@@ -16,6 +16,7 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p)
                                                                    driveSlider(p, "drive", "Drive"),
                                                                    encoderAttachment(p, "encoder", encoderButton),
                                                                    bitrateSlider(p, "bitrate", "Bitrate"),
+                                                                   squishSlider(p, "bitratesquish", "Squish"),
                                                                    hiSlider(p, "hicut", "High"),
                                                                    loSlider(p, "locut", "Low"),
                                                                    makeupSlider(p, "makeupgain", "Makeup gain")
@@ -23,6 +24,7 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p)
     addAndMakeVisible(driveSlider);
     addAndMakeVisible(encoderButton);
     addAndMakeVisible(bitrateSlider);
+    addAndMakeVisible(squishSlider);
     addAndMakeVisible(hiSlider);
     addAndMakeVisible(loSlider);
     addAndMakeVisible(makeupSlider);
@@ -37,9 +39,9 @@ void PostSection::paint (juce::Graphics& g)
     }
 
     g.setColour(MaimLookAndFeel().BEVEL_BLACK);
-    g.setFont(eqFont);
+    g.setFont(sectionNameFont);
     g.drawText("EQ", filterSection.withTrimmedTop(filterSection.getHeight() - 30), juce::Justification::centredTop, true);
-
+    g.drawText("Codec", bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 30), juce::Justification::centredTop, true);
 }
 
 void PostSection::resized()
@@ -59,8 +61,13 @@ void PostSection::resized()
     makeupSection = usable_bounds.withTrimmedLeft(used_space);
 
     driveSlider.setBounds(driveSection);
-    bitrateSlider.setBounds(bitrateSection.withWidth(bitrateSection.getWidth() / 2));
-    encoderButton.setBounds(bitrateSection.withTrimmedLeft(bitrateSection.getWidth() / 2));
+
+    auto top = bitrateSection.withTrimmedBottom(60);
+    auto bottom = bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 60);
+    bitrateSlider.setBounds(top.withWidth(top.getWidth() / 2));
+    squishSlider.setBounds(top.withTrimmedLeft(top.getWidth() / 2));
+    encoderButton.setBounds(bottom.withTrimmedBottom(30).withSizeKeepingCentre(80, 30));
+
     hiSlider.setBounds(filterSection.withTrimmedLeft(filterSection.getWidth() / 2));
     loSlider.setBounds(filterSection.withWidth(filterSection.getWidth() / 2));
     makeupSlider.setBounds(makeupSection);
