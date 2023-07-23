@@ -52,6 +52,7 @@ void MainArea::resized()
 {
     int margin = 10;
     int postSectionHeight = 150;
+    int titleHeight = 100;
     
     auto activeArea = getLocalBounds()
         .withTrimmedTop(margin)
@@ -73,6 +74,8 @@ void MainArea::resized()
     
     auto psychoacousticBounds = bigFourLeftColumn
         .withTrimmedBottom(bigFourElementHeight + margin);
+    auto titleBounds = psychoacousticBounds.withHeight(titleHeight);
+    psychoacousticBounds = psychoacousticBounds.withTrimmedTop(titleHeight + margin);
     auto mdctBounds = bigFourRightColumn
         .withTrimmedBottom(bigFourElementHeight + margin);
     auto quantizeBounds = bigFourLeftColumn
@@ -89,5 +92,5 @@ void MainArea::resized()
     arrayAssigner.setBounds(decodeBounds);
     postSection.setBounds(postSectionBounds);
 
-    titlePanel.setBounds(0,0,200,100);
+    titlePanel.setBounds(titleBounds);
 }

@@ -9,12 +9,13 @@
 */
 
 #include "PsychoanalGraph.h"
+#include "MaimLookAndFeel.h"
 
 //==============================================================================
 PsychoanalGraph::PsychoanalGraph(juce::AudioProcessorValueTreeState& p):
     parameters(p),
-    threshold(0, 1, 22, juce::Colours::magenta),
-    energy(0, 1, 22, juce::Colours::yellow)
+    threshold(0, 1, 22, MaimLookAndFeel().BEVEL_DARK),
+    energy(0, 1, 22, MaimLookAndFeel().SPLASH_COLOR_DARK)
 {
     parameters.state.addListener(this);
     
@@ -64,7 +65,7 @@ void PsychoanalGraph::paint (juce::Graphics& g)
        drawing code..
     */
 
-    g.fillAll (juce::Colours::brown);   // clear the background
+    g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);   // clear the background
 
 }
 

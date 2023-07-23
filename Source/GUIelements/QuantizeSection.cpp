@@ -14,10 +14,10 @@
 QuantizeSection::QuantizeSection(juce::AudioProcessorValueTreeState& p)
 : StageWindow(p), mdctGraph(p)
 {
+    addAndMakeVisible(mdctGraph);
     addAndMakeVisible(mdctPostPitchShiftSlider);
     addAndMakeVisible(mdctPostAmpShiftSlider);
     addAndMakeVisible(MDCTfeedbackSlider);
-    addAndMakeVisible(mdctGraph);
 
     float alpha = 0.3f;
     mdctPostAmpShiftSlider.setAlpha(alpha);

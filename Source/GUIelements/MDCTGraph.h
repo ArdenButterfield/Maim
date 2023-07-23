@@ -13,9 +13,10 @@
 #include "BlockyLineGraph.h"
 
 class MDCTGraph  : public juce::Component, public juce::ValueTree::Listener
+
 {
 public:
-    MDCTGraph(juce::AudioProcessorValueTreeState& p);
+    explicit MDCTGraph(juce::AudioProcessorValueTreeState& p);
     ~MDCTGraph() override;
 
     void paint (juce::Graphics&) override;

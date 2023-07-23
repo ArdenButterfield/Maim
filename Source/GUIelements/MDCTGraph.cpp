@@ -11,6 +11,12 @@ MDCTGraph::MDCTGraph(juce::AudioProcessorValueTreeState& p):
                                                                            postLine(0, 1, numSamples, MaimLookAndFeel().SPLASH_COLOR_DARK, 3)
 {
     parameters.state.addListener(this);
+/*
+    parameters.addParameterListener("mdctfeedback", this);
+    parameters.addParameterListener("mdctposthshift", this);
+    parameters.addParameterListener("mdctpostvshift", this);
+*/
+
 
     addAndMakeVisible(preLine);
     addAndMakeVisible(postLine);
@@ -19,6 +25,11 @@ MDCTGraph::MDCTGraph(juce::AudioProcessorValueTreeState& p):
 MDCTGraph::~MDCTGraph()
 {
     parameters.state.removeListener(this);
+/*
+    parameters.removeParameterListener("mdctfeedback", this);
+    parameters.removeParameterListener("mdctposthshift", this);
+    parameters.removeParameterListener("mdctpostvshift", this);
+*/
 }
 
 void MDCTGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,

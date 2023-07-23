@@ -42,7 +42,14 @@ void PsychoacousticSection::valueTreePropertyChanged(juce::ValueTree &treeWhoseP
 
 void PsychoacousticSection::resized()
 {
-    biasSlider.setBounds(getLocalBounds().withWidth(100));
-    psychoanalGraph.setBounds(getLocalBounds().withTrimmedLeft(100));
-    shortFrameIndicator.setBounds(10, 10, 20, 20);
+    auto inner_bounds = getLocalBounds().withTrimmedTop(10)
+                            .withTrimmedLeft(10)
+                            .withTrimmedRight(10)
+                            .withTrimmedBottom(10);
+    biasSlider.setBounds(inner_bounds.withWidth(100));
+    auto graphBounds = inner_bounds
+                           .withTrimmedLeft(110);
+    psychoanalGraph.setBounds(graphBounds);
+    shortFrameIndicator.setBounds(graphBounds.getRight() - 15, graphBounds.getY() + 5, 10, 10);
 }
+

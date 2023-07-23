@@ -115,7 +115,7 @@ void BladeController::setMDCTpostshiftBends(int h_shift, float v_shift)
     if (v_shift > 0) {
         actual_v_shift = v_shift / 100.f;
     } else {
-        actual_v_shift = v_shift / 2.f;
+        actual_v_shift = v_shift / 20.f;
     }
 
     blade_set_mdct_post_shift_bends(blade_encoder, h_shift, actual_v_shift);
