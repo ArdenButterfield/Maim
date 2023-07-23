@@ -15,6 +15,7 @@
 
 #include "StageWindow.h"
 #include "ArrayAssigner.h"
+#include "MDCTGraph.h"
 
 //==============================================================================
 /*
@@ -35,6 +36,8 @@ private:
         "mdctfeedback",
         MDCTfeedbackSlider
     };
+
+    MDCTGraph mdctGraph;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QuantizeSection)
 };

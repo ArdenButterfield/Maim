@@ -39,7 +39,6 @@ PsychoanalGraph::~PsychoanalGraph()
 void PsychoanalGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
                                                const juce::Identifier &property)
 {
-    float data[22];
     if (property == juce::Identifier("energy")) {
         juce::Array<juce::var>* e = treeWhosePropertyHasChanged[property].getArray();
         for (int i = 0; i < 22; ++i) {
