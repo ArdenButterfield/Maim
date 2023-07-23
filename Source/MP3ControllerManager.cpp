@@ -266,12 +266,12 @@ float rescalePsychoanal(const float a) {
 
 float rescaleMDCT(const float a) {
     // mdct is 0 to 1(+), rescale to 0 to 1 but log scale
-    if (a < (pow(10.f, -15.f))) {
+    if (a < (pow(10.f, -10.f))) {
         return 0;
     } else if (a > 1) {
         return 1;
     } else {
-        return log10(a) / 15 + 1;
+        return log10(a) / 10 + 1;
     }
 }
 

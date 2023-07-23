@@ -7,8 +7,8 @@
 
 MDCTGraph::MDCTGraph(juce::AudioProcessorValueTreeState& p):
                                                                            parameters(p),
-                                                                           preLine(0, 1, numSamples, juce::Colours::magenta, 3),
-                                                                           postLine(0, 1, numSamples, juce::Colours::yellow, 3)
+                                                                           preLine(0, 1, numSamples, MaimLookAndFeel().CONTRAST_COLOR_LIGHT, 3),
+                                                                           postLine(0, 1, numSamples, MaimLookAndFeel().SPLASH_COLOR_DARK, 3)
 {
     parameters.state.addListener(this);
 

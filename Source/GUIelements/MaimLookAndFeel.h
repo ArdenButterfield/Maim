@@ -65,6 +65,10 @@ public:
     const juce::Colour BEVEL_LIGHT = juce::Colour(0xffdfdfdf);
     const juce::Colour BEVEL_DARK = juce::Colour(0xff808080);
     const juce::Colour BEVEL_BLACK = juce::Colour(0xff0a0a0a);
+    const juce::Colour SPLASH_COLOR_DARK = juce::Colours::darkblue;
+    const juce::Colour SPLASH_COLOR_LIGHT = juce::Colours::lightblue;
+    const juce::Colour CONTRAST_COLOR_DARK = juce::Colours::darkorange;
+    const juce::Colour CONTRAST_COLOR_LIGHT = juce::Colours::orange;
 
     const juce::Typeface::Ptr main_font;
     const juce::Typeface::Ptr bold_font;
