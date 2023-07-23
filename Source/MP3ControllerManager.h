@@ -42,6 +42,8 @@ public:
     
     float* getPsychoanalEnergy();
     float* getPsychoanalThreshold();
+    float* getMDCTpreBend();
+    float* getMDCTpostBend();
     
     static constexpr std::array<int, 17> bitrates {
         8,

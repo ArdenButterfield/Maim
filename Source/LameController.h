@@ -35,6 +35,9 @@ public:
 
     float* getPsychoanalThreshold() override;
     float* getPsychoanalEnergy() override;
+    float* getMDCTpreBend() override;
+    float* getMDCTpostBend() override;
+
     int getShortBlockStatus() override;
 
 protected:

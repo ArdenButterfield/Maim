@@ -276,6 +276,23 @@ unsigned int			codecEncodeChunk
 
 	mdct_sub (flags, &flags->l3_sb_sample, xr, flags->stereo, &flags->l3_side, 2);
 
+    float* pre_bend = flags->bends.mdct_pre_bend;
+    float* post_bend = flags->bends.mdct_post_bend;
+    for (int i = 0; i < 576; ++i) {
+        pre_bend[i] = 0;
+    }
+    for (gr = 0; gr < 2; gr++) {
+        for (ch = 0; ch < 2; ch++) {
+            for (int i = 0; i < 576; ++i) {
+                pre_bend[i] += xr[gr][ch][i];
+            }
+        }
+    }
+    for (int i = 0; i < 576; ++i) {
+        pre_bend[i] /= 4;
+    }
+
+
     int h_shift = flags->bends.mdct_post_h_shift;
     float v_shift = flags->bends.mdct_post_v_shift;
     float v;
@@ -316,6 +333,21 @@ unsigned int			codecEncodeChunk
             }
         }
     }
+
+    for (int i = 0; i < 576; ++i) {
+        post_bend[i] = 0;
+    }
+    for (gr = 0; gr < 2; gr++) {
+        for (ch = 0; ch < 2; ch++) {
+            for (int i = 0; i < 576; ++i) {
+                post_bend[i] += xr[gr][ch][i];
+            }
+        }
+    }
+    for (int i = 0; i < 576; ++i) {
+        post_bend[i] /= 4;
+    }
+
 
 
 	flags->pEncodedOutput = pDest;

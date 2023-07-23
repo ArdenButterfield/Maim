@@ -102,6 +102,29 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("mix", this);
 }
 
+void MaimAudioProcessor::addMdctSamplesToParameters()
+{
+    auto mdctSampes = parameters.copyState().getChildWithName("mdct");
+    if (mdctSampes.isValid()) {
+        return;
+    }
+
+    juce::var pre, post;
+    for (int i = 0; i < 576; ++i) {
+        pre.append(0.f);
+        post.append(0.f);
+    }
+
+    parameters.state.appendChild(juce::ValueTree(
+                                      "mdct",
+                                      {
+                                          juce::NamedValueSet::NamedValue("pre", pre),
+                                          juce::NamedValueSet::NamedValue("post", post),
+                                      }),
+        nullptr);
+
+}
+
 void MaimAudioProcessor::addPsychoanalStateToParameters()
 {
     auto psychoanalState = parameters.copyState().getChildWithName("psychoanal");
@@ -109,11 +132,13 @@ void MaimAudioProcessor::addPsychoanalStateToParameters()
         return;
     }
 
+
     juce::var threshold, energy;
     for (int i = 0; i < 22; ++i) {
-        threshold.append((float)i / 22.f);
-        energy.append((float)i / 22.f); // TEMP test
+        threshold.append(0.f);
+        energy.append(0.f);
     }
+
     parameters.state.appendChild(juce::ValueTree(
         "psychoanal",
         {
@@ -318,13 +343,16 @@ void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     
     auto state = parameters.copyState();
-    auto psychoanalState = state.getChildWithName("psychoanal");
-    if (psychoanalState.isValid()) {
-        state.removeChild(psychoanalState, nullptr);
+    for (const juce::String parameterName : {"psychoanal", "mdct"}) {
+        auto s = state.getChildWithName(parameterName);
+        if (s.isValid()) {
+            state.removeChild(s, nullptr);
+        }
     }
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
     addPsychoanalStateToParameters();
+    addMdctSamplesToParameters();
     
 }
 
@@ -337,6 +365,7 @@ void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         if (xmlState->hasTagName (parameters.state.getType())) {
             parameters.replaceState (juce::ValueTree::fromXml (*xmlState));
             addPsychoanalStateToParameters();
+            addMdctSamplesToParameters();
         }
     }
 }

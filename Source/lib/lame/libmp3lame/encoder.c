@@ -463,7 +463,22 @@ lame_encode_mp3_frame(       /* Output */
     // shift x: robot voice
     int h_shift = gfc->bendFlagsAndData->mdct_post_h_shift;
     float v_shift = gfc->bendFlagsAndData->mdct_post_v_shift;
+    float* pre_bend = gfc->bendFlagsAndData->mdct_pre_bend;
+    float* post_bend = gfc->bendFlagsAndData->mdct_post_bend;
     float v;
+    for (int i = 0; i < 576; ++i) {
+        pre_bend[i] = 0;
+    }
+    for (gr = 0; gr < cfg->mode_gr; gr++) {
+        for (ch = 0; ch < cfg->channels_out; ch++) {
+            for (int i = 0; i < 576; ++i) {
+                pre_bend[i] += gfc->l3_side.tt[gr][ch].xr[i];
+            }
+        }
+    }
+    for (int i = 0; i < 576; ++i) {
+        pre_bend[i] /= 4;
+    }
     if (h_shift < 0) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
             for (ch = 0; ch < cfg->channels_out; ch++) {
@@ -499,6 +514,20 @@ lame_encode_mp3_frame(       /* Output */
                     -gfc->bendFlagsAndData->feedback_data[gr][ch][s];
             }
         }
+    }
+
+    for (int i = 0; i < 576; ++i) {
+        post_bend[i] = 0;
+    }
+    for (gr = 0; gr < cfg->mode_gr; gr++) {
+        for (ch = 0; ch < cfg->channels_out; ch++) {
+            for (int i = 0; i < 576; ++i) {
+                post_bend[i] += gfc->l3_side.tt[gr][ch].xr[i];
+            }
+        }
+    }
+    for (int i = 0; i < 576; ++i) {
+        post_bend[i] /= 4;
     }
 
     // Result: some small numbers, between -1ish and 1, mostly very small magnitude, and then

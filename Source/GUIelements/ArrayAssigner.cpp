@@ -117,7 +117,7 @@ void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool st
         }
     }
     int i = (x - activeArea.getX()) * itemVals.size() / activeArea.getWidth();
-    setValue(i, getValIndex(y));
+    setValue(i, getValIndex((y)));
     
     repaint();
 }

@@ -68,6 +68,7 @@ public:
     
 private:
     void addPsychoanalStateToParameters();
+    void addMdctSamplesToParameters();
     float preGain;
     float postGain;
     

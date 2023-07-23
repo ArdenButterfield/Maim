@@ -44,6 +44,8 @@ public:
     
     virtual float* getPsychoanalThreshold() = 0;
     virtual float* getPsychoanalEnergy() = 0;
+    virtual float* getMDCTpreBend() = 0;
+    virtual float* getMDCTpostBend() = 0;
     virtual int getShortBlockStatus() = 0;
     
 protected:

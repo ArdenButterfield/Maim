@@ -139,6 +139,16 @@ float* lame_get_psychoanal_threshold(lame_global_flags* gfp)
     return gfp->bendFlagsAndData->psychoanal_threshold;
 }
 
+float* lame_get_mdct_pre_bend(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->mdct_pre_bend;
+}
+
+float* lame_get_mdct_post_bend(lame_global_flags* gfp)
+{
+    return gfp->bendFlagsAndData->mdct_post_bend;
+}
+
 
 int lame_is_short_block(lame_global_flags* gfp)
 {

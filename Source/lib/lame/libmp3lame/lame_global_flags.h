@@ -49,6 +49,8 @@ typedef struct bend_flags_and_data {
     float psychoanal_threshold[22];
     // we're only plotting the long block bands, for now.
 
+    float mdct_pre_bend[576];
+    float mdct_post_bend[576];
 
     float threshold_bias[22];
     // Likewise, we are currently only biasing the long blocks.

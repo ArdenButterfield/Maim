@@ -155,6 +155,13 @@ float* BladeController::getPsychoanalEnergy()
 {
     return blade_get_psychoanal_energy(blade_encoder);
 }
+float* BladeController::getMDCTpreBend() {
+    return blade_get_mdct_pre_bend(blade_encoder);
+}
+float* BladeController::getMDCTpostBend() {
+    return blade_get_mdct_post_bend(blade_encoder);
+}
+
 
 int BladeController::getShortBlockStatus()
 {

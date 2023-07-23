@@ -134,6 +134,17 @@ float* blade_get_psychoanal_threshold(encoder_flags_and_data* flags)
 	return flags->bends.psychoanal_threshold;
 }
 
+float* blade_get_mdct_pre_bend(encoder_flags_and_data* flags)
+{
+    return flags->bends.mdct_pre_bend;
+}
+
+float* blade_get_mdct_post_bend(encoder_flags_and_data* flags)
+{
+    return flags->bends.mdct_post_bend;
+}
+
+
 int blade_is_short_block(encoder_flags_and_data* flags)
 {
 	return flags->bends.in_short_block;
@@ -168,6 +179,8 @@ void blade_clear_bends(encoder_flags_and_data* flags)
         flags->bends.psychoanal_energy[i] = 0;
         flags->bends.psychoanal_threshold[i] = 0;
     }
+    memset(flags->bends.mdct_pre_bend, 0, 576 * sizeof(float));
+    memset(flags->bends.mdct_post_bend, 0, 576 * sizeof(float));
 
     for (int i = 0; i < 22; ++i) {
         flags->bends.threshold_bias[i] = 1;

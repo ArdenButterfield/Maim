@@ -229,6 +229,8 @@ void MP3ControllerManager::updateParameters(bool updateOffController)
     if (!(indicator.isBool() && ((bool)indicator == shortBlockStatus))) {
         psychoanalState.setProperty("shortblockindicator", shortBlockStatus, nullptr);
     }
+
+
     
     parametersNeedUpdating = false;
 }
@@ -248,8 +250,29 @@ float* MP3ControllerManager::getPsychoanalThreshold()
     return currentController->getPsychoanalThreshold();
 }
 
+float* MP3ControllerManager::getMDCTpreBend()
+{
+    return currentController->getMDCTpreBend();
+}
+
+float* MP3ControllerManager::getMDCTpostBend()
+{
+    return currentController->getMDCTpostBend();
+}
+
 float rescalePsychoanal(const float a) {
     return log10(a > 1 ? a : 1) / 14;
+}
+
+float rescaleMDCT(const float a) {
+    // mdct is 0 to 1(+), rescale to 0 to 1 but log scale
+    if (a < (pow(10.f, -15.f))) {
+        return 0;
+    } else if (a > 1) {
+        return 1;
+    } else {
+        return log10(a) / 15 + 1;
+    }
 }
 
 void MP3ControllerManager::timerCallback()
@@ -262,10 +285,22 @@ void MP3ControllerManager::timerCallback()
     for (int i = 0; i < 22; ++i) {
         thresholdV.append(rescalePsychoanal(threshold[i]));
         energyV.append(rescalePsychoanal(energy[i]));
-
     }
     
     auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
     psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
     psychoSpectrum.setProperty("energy", energyV, nullptr);
+
+    float* preBend = getMDCTpreBend();
+    float* postBend = getMDCTpostBend();
+
+    juce::var preBendV, postBendV;
+
+    for (int i = 0; i < 576; ++i) {
+        preBendV.append(rescaleMDCT(preBend[i]));
+        postBendV.append(rescaleMDCT(postBend[i]));
+    }
+    auto mdctSamples = parameters.state.getChildWithName("mdct");
+    mdctSamples.setProperty("pre", preBendV, nullptr);
+    mdctSamples.setProperty("post",postBendV, nullptr);
 }

@@ -22,6 +22,8 @@ void blade_set_threshold_bias_bends(encoder_flags_and_data* flags, float bias);
 
 float* blade_get_psychoanal_energy(encoder_flags_and_data* flags);
 float* blade_get_psychoanal_threshold(encoder_flags_and_data* flags);
+float* blade_get_mdct_pre_bend(encoder_flags_and_data* flags);
+float* blade_get_mdct_post_bend(encoder_flags_and_data* flags);
 int blade_is_short_block(encoder_flags_and_data* flags);
 
 void blade_clear_bends(encoder_flags_and_data* flags);
