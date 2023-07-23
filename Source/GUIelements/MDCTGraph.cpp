@@ -42,14 +42,7 @@ void MDCTGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasCh
 
 void MDCTGraph::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
-    g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);   // clear the background
+    g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);
 
 }
 

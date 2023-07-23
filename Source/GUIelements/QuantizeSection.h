@@ -16,6 +16,7 @@
 #include "StageWindow.h"
 #include "ArrayAssigner.h"
 #include "MDCTGraph.h"
+#include "DemureSlider.h"
 
 //==============================================================================
 /*
@@ -24,10 +25,12 @@ class QuantizeSection  : public StageWindow
 {
 public:
     QuantizeSection(juce::AudioProcessorValueTreeState& p);
+    void mouseEnter(const juce::MouseEvent& e) override;
+    void mouseExit(const juce::MouseEvent& e) override;
     void resized() override;
 
 private:
-    juce::Slider MDCTfeedbackSlider {
+    DemureSlider MDCTfeedbackSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
     };
@@ -36,6 +39,28 @@ private:
         "mdctfeedback",
         MDCTfeedbackSlider
     };
+    DemureSlider mdctPostPitchShiftSlider {
+        juce::Slider::LinearHorizontal,
+        juce::Slider::TextBoxAbove
+    };
+
+
+    juce::AudioProcessorValueTreeState::SliderAttachment mdctPostPitchShiftAttachment {
+        parameters,
+        "mdctposthshift",
+        mdctPostPitchShiftSlider
+    };
+
+    DemureSlider mdctPostAmpShiftSlider {
+        juce::Slider::LinearVertical,
+        juce::Slider::TextBoxRight
+    };
+    juce::AudioProcessorValueTreeState::SliderAttachment mdctPostAmpShiftAttachment {
+        parameters,
+        "mdctpostvshift",
+        mdctPostAmpShiftSlider
+    };
+
 
     MDCTGraph mdctGraph;
 

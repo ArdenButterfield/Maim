@@ -148,6 +148,8 @@ set(SourceFiles
     Source/GUIelements/MDCTGraph.h
         Source/GUIelements/BlockyLineGraph.cpp
         Source/GUIelements/BlockyLineGraph.h
+        Source/GUIelements/DemureSlider.cpp
+        Source/GUIelements/DemureSlider.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
