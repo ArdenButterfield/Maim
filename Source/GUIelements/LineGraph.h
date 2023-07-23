@@ -29,6 +29,7 @@ public:
     {
         xVals.resize(numPoints);
         yVals.resize(numPoints);
+        std::fill (yVals.begin(), yVals.end(), ymin);
         
         CalculateXValues();
     }
@@ -40,7 +41,9 @@ public:
             return;
         }
         for (int i = 0; i < numPoints; ++i) {
-            yVals[i] = getHeight() - (data[i] - ymin) / (ymax - ymin) * getHeight();
+            if ((ymin <= data[i]) && (data[i] <= ymax)) {
+                yVals[i] = getHeight() - (data[i] - ymin) / (ymax - ymin) * getHeight();
+            }
         }
         triggerAsyncUpdate();
     }
@@ -64,11 +67,12 @@ public:
         g.setColour(lineColour);
         g.strokePath(p, juce::PathStrokeType(2.f));
     }
+
     void resized() override {
         CalculateXValues();
     }
 
-private:
+protected:
     const int numPoints;
     float ymin;
     float ymax;

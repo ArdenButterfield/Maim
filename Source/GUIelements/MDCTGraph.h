@@ -10,7 +10,7 @@
 
 #include <array>
 
-#include "LineGraph.h"
+#include "BlockyLineGraph.h"
 
 class MDCTGraph  : public juce::Component, public juce::ValueTree::Listener
 {
@@ -29,8 +29,8 @@ private:
     std::array<float, numSamples> preSamples;
     std::array<float, numSamples> postSamples;
 
-    LineGraph<float> preLine;
-    LineGraph<float> postLine;
+    BlockyLineGraph preLine;
+    BlockyLineGraph postLine;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MDCTGraph)
 };

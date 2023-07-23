@@ -146,6 +146,8 @@ set(SourceFiles
     Source/GUIelements/NamedRotarySlider.cpp
     Source/GUIelements/MDCTGraph.cpp
     Source/GUIelements/MDCTGraph.h
+        Source/GUIelements/BlockyLineGraph.cpp
+        Source/GUIelements/BlockyLineGraph.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
