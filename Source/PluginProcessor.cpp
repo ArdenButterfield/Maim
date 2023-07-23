@@ -266,14 +266,14 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 void MaimAudioProcessor::updateParameters()
 {
     auto hicut = ((juce::AudioParameterFloat*)parameters.getParameter("hicut"))->get();
-    auto locut = ((juce::AudioParameterFloat*)parameters.getParameter("hicut"))->get();
-    hicut = std::max(0.f, std::min(hicut, (float)sampleRate / 2));
-    locut = std::max(0.f, std::min(locut, (float)sampleRate / 2));
+    auto locut = ((juce::AudioParameterFloat*)parameters.getParameter("locut"))->get();
+    hicut = std::max(1.f, std::min(hicut, (float)sampleRate / 2 - 1));
+    locut = std::max(1.f, std::min(locut, (float)sampleRate / 2 - 1));
     for (auto &f: postFilterLo) {
         f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, hicut));
     }
     for (auto &f: postFilterHi) {
-        f.setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, locut));
+        f.setCoefficients(juce::IIRCoefficients::makeHighPass(sampleRate, locut));
     }
 
     auto driveDB = ((juce::AudioParameterFloat*)parameters.getParameter("drive"))->get();
