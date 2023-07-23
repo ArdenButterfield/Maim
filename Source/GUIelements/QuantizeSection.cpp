@@ -14,12 +14,12 @@
 QuantizeSection::QuantizeSection(juce::AudioProcessorValueTreeState& p)
 : StageWindow(p), mdctGraph(p)
 {
-    addAndMakeVisible(MDCTfeedbackSlider);
+    // addAndMakeVisible(MDCTfeedbackSlider);
     addAndMakeVisible(mdctGraph);
 }
 
 void QuantizeSection::resized()
 {
     MDCTfeedbackSlider.setBounds(getLocalBounds().withTrimmedLeft(200).withHeight(100));
-    mdctGraph.setBounds(getLocalBounds());
+    mdctGraph.setBounds(getLocalBounds().withTrimmedTop(20).withTrimmedLeft(10).withTrimmedBottom(10).withTrimmedRight(10));
 }

@@ -17,7 +17,7 @@ void BlockyLineGraph::paint (juce::Graphics& g)
     int valIndex = 0;
     for (int x = 0; x < getWidth(); x += pixelSize) {
         yPixels.resize(0);
-        for (; xVals[valIndex] < x + pixelSize; ++valIndex) {
+        for (; (valIndex < numPoints) && (xVals[valIndex] < x + pixelSize); ++valIndex) {
             // if (yVals[valIndex] == getHeight()) { continue }
             int yPixel = (int)yVals[valIndex];
             yPixel -= yPixel % pixelSize;
@@ -27,8 +27,11 @@ void BlockyLineGraph::paint (juce::Graphics& g)
 //                yPixels.push_back(yPixel);
 //            }
         }
-        for (int y = *std::min_element(yPixels.begin(), yPixels.end()); y <= *std::max_element(yPixels.begin(), yPixels.end()); ++y) {
-            g.fillRect(x, y, pixelSize, pixelSize);
+        if (yPixels.size() > 0) {
+            for (int y = *std::min_element(yPixels.begin(), yPixels.end()); y <= *std::max_element(yPixels.begin(), yPixels.end()); ++y) {
+                g.fillRect(x, y, pixelSize, pixelSize);
+            }
+
         }
     }
 }

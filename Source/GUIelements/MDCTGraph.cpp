@@ -3,6 +3,7 @@
 //
 
 #include "MDCTGraph.h"
+#include "MaimLookAndFeel.h"
 
 MDCTGraph::MDCTGraph(juce::AudioProcessorValueTreeState& p):
                                                                            parameters(p),
@@ -48,7 +49,7 @@ void MDCTGraph::paint (juce::Graphics& g)
        drawing code..
     */
 
-    g.fillAll (juce::Colours::brown);   // clear the background
+    g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);   // clear the background
 
 }
 
