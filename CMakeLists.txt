@@ -146,10 +146,12 @@ set(SourceFiles
     Source/GUIelements/NamedRotarySlider.cpp
     Source/GUIelements/MDCTGraph.cpp
     Source/GUIelements/MDCTGraph.h
-        Source/GUIelements/BlockyLineGraph.cpp
-        Source/GUIelements/BlockyLineGraph.h
-        Source/GUIelements/DemureSlider.cpp
-        Source/GUIelements/DemureSlider.h
+    Source/GUIelements/BlockyLineGraph.cpp
+    Source/GUIelements/BlockyLineGraph.h
+    Source/GUIelements/DemureSlider.cpp
+    Source/GUIelements/DemureSlider.h
+    Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
+    Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE

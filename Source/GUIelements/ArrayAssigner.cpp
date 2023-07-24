@@ -18,10 +18,10 @@
 //==============================================================================
 ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int s) :
     StageWindow(p),
-    resetButton("reset"),
-    randomButton("random"),
-    upButton("up", 0.75, juce::Colours::yellow),
-    downButton("down", 0.25, juce::Colours::yellow),
+    resetButton("reset", RESET),
+    randomButton("random", RANDOM),
+    upButton("up", SHIFT_UP),
+    downButton("down", SHIFT_DOWN),
     pTree(p)
 {
     addAndMakeVisible(resetButton);

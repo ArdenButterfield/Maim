@@ -18,6 +18,8 @@
 
 #include "StageWindow.h"
 
+#include "ArrayAssignerButtons/ArrayAssignerButton.h"
+
 //==============================================================================
 /*
 */
@@ -40,10 +42,10 @@ public:
     void resized() override;
 
 private:
-    juce::TextButton resetButton;
-    juce::TextButton randomButton;
-    juce::ArrowButton upButton;
-    juce::ArrowButton downButton;
+    ArrayAssignerButton resetButton;
+    ArrayAssignerButton randomButton;
+    ArrayAssignerButton upButton;
+    ArrayAssignerButton downButton;
     
     juce::Random random;
     
