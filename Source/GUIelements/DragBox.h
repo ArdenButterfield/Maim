@@ -47,7 +47,8 @@ private:
     juce::Point<int> thumb;
     const int thumbDrawRadius = 10;
     const int thumbSensitivityRadius = 10;
-    
+
+    juce::Rectangle<int> box;
     juce::Rectangle<int> activeZone;
     
     const float gridStep = 2.0f;

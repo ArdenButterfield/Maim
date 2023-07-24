@@ -19,7 +19,7 @@ PsychoacousticSection::PsychoacousticSection(juce::AudioProcessorValueTreeState&
 
     addAndMakeVisible(biasSlider);
     addAndMakeVisible(psychoanalGraph);
-    addAndMakeVisible(shortFrameIndicator);
+    // addAndMakeVisible(shortFrameIndicator);
 
 }
 

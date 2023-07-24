@@ -9,6 +9,7 @@
 */
 
 #include "DragBox.h"
+#include "MaimLookAndFeel.h"
 
 float rescaleRange(const float v,
                    const float oldMin,
@@ -61,12 +62,12 @@ void DragBox::calculateGridLines(const float minVal,
 
 void DragBox::drawGridlines(juce::Graphics& g)
 {
-    g.setColour(juce::Colours::lightgrey);
+    g.setColour(MaimLookAndFeel().BEVEL_DARK);
     for (const auto x: verticalGridlines) {
-        g.drawVerticalLine(x, 0, getHeight());
+        g.drawVerticalLine(x, box.getY(), box.getBottom());
     }
     for (const auto y: horizontalGridlines) {
-        g.drawHorizontalLine(y, 0, getWidth());
+        g.drawHorizontalLine(y, box.getX(), box.getRight());
     }
 }
 
@@ -84,15 +85,16 @@ void DragBox::paint (juce::Graphics& g)
                          activeZone.getBottom());
     thumb.setXY(x, y);
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
+    g.fillRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius);   // clear the background
 
     drawGridlines(g);
     
-    g.setColour (juce::Colours::grey);
-    g.drawRoundedRectangle(0, 0, getWidth(), getHeight(), (float)thumbDrawRadius, 1.f);
+    g.setColour (MaimLookAndFeel().BEVEL_BLACK);
+    g.drawRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius, 3.f);
     
     if (thumbHovered) {
-        g.setColour (juce::Colours::red);
+        g.setColour (MaimLookAndFeel().SPLASH_COLOR_LIGHT);
         g.fillEllipse(x - thumbDrawRadius,
                       y - thumbDrawRadius,
                       thumbDrawRadius * 2,
@@ -100,7 +102,7 @@ void DragBox::paint (juce::Graphics& g)
 
     }
     
-    g.setColour (juce::Colours::magenta);
+    g.setColour (MaimLookAndFeel().SPLASH_COLOR_DARK);
     g.drawEllipse(x - thumbDrawRadius,
                   y - thumbDrawRadius,
                   thumbDrawRadius * 2,
@@ -117,8 +119,9 @@ void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
 
 void DragBox::resized()
 {
-    activeZone = getLocalBounds().withSizeKeepingCentre(getWidth() - thumbDrawRadius * 2,
-                                                   getHeight() - thumbDrawRadius * 2);
+    box = getLocalBounds().withSizeKeepingCentre(getWidth() - 10, getHeight() - 10);
+    activeZone = box.withSizeKeepingCentre(box.getWidth() - thumbDrawRadius * 2,
+                                                   box.getHeight() - thumbDrawRadius * 2);
     
     calculateGridLines(xSlider->getMinimum(),
                        xSlider->getMaximum(),

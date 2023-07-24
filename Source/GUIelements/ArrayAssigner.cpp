@@ -135,13 +135,13 @@ void ArrayAssigner::mouseDrag(const juce::MouseEvent& event)
 
 float ArrayAssigner::getValScreenY(const int rawVal)
 {
-    return activeArea.getHeight() * (1 - ((float)rawVal / (steps - 1))) + activeArea.getY();
+    return activeArea.getHeight() * (1 - ((float)rawVal / (steps))) + activeArea.getY();
 }
 
 int ArrayAssigner::getValIndex(const float screenY)
 {
     float v = 1 - ((screenY - activeArea.getY()) / activeArea.getHeight());
-    return (int) std::round(v * (steps - 1));
+    return (int) std::round(v * (steps));
 }
 
 void ArrayAssigner::paint (juce::Graphics& g)
@@ -153,18 +153,28 @@ void ArrayAssigner::paint (juce::Graphics& g)
     g.drawRect(activeAreaBorder, 2);
     float singleLineWidth = (float)activeArea.getWidth() / itemVals.size();
     g.setColour(MaimLookAndFeel().PANEL_BACKGROUND_COLOR);
-    for (int row = 0; row < steps; ++row) {
+    for (int row = 0; row < steps + 1; ++row) {
         g.drawHorizontalLine(getValScreenY(row), activeArea.getX(), activeArea.getRight());
     }
     for (int col = 0; col < itemVals.size() + 1; ++col) {
         g.drawVerticalLine(activeArea.getX() + singleLineWidth * col, activeArea.getY(), activeArea.getBottom());
     }
-    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+    g.setColour(MaimLookAndFeel().PANEL_BACKGROUND_COLOR);
     for (int i = 0; i < itemVals.size(); ++i) {
         int left = activeArea.getX() + singleLineWidth * i;
         int right = activeArea.getX() + singleLineWidth * (i + 1);
-        int y = getValScreenY(itemVals[i]);
-        g.fillRect(left, y - 1, right - left, 2);
+        int top = getValScreenY(i + 1);
+        int bottom = getValScreenY(i);
+        g.fillRect(left, top, right - left, bottom - top);
+    }
+
+    g.setColour(MaimLookAndFeel().SPLASH_COLOR_DARK.withAlpha(0.7f));
+    for (int i = 0; i < itemVals.size(); ++i) {
+        int left = activeArea.getX() + singleLineWidth * i;
+        int right = activeArea.getX() + singleLineWidth * (i + 1);
+        int top = getValScreenY(itemVals[i] + 1);
+        int bottom = getValScreenY(itemVals[i]);
+        g.fillRect(left, top, right - left, bottom - top);
     }
     needsRepainting = false;
 }

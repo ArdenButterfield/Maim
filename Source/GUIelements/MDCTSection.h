@@ -48,27 +48,7 @@ private:
         "mdctinvert",
         mdctBandInvertSlider
     };
-    
-    juce::Slider mdctPostPitchShiftSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    juce::AudioProcessorValueTreeState::SliderAttachment mdctPostPitchShiftAttachment {
-        parameters,
-        "mdctposthshift",
-        mdctPostPitchShiftSlider
-    };
-    
-    juce::Slider mdctPostAmpShiftSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    juce::AudioProcessorValueTreeState::SliderAttachment mdctPostAmpShiftAttachment {
-        parameters,
-        "mdctpostvshift",
-        mdctPostAmpShiftSlider
-    };
-    
+
     juce::Slider mdctWindowIncrementSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
