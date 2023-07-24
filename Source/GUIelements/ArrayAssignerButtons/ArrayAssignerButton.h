@@ -18,7 +18,7 @@ enum ButtonDesigns {
 class ArrayAssignerButton : public juce::Button
 {
 public:
-    ArrayAssignerButton(const juce::String& name, ButtonDesigns d) : juce::Button(name), buttonDesigns(d) {}
+    ArrayAssignerButton(const juce::String& name, ButtonDesigns d) : juce::Button(name), buttonDesigns(d), randomShapeIndex(4) {}
     void paintButton(juce::Graphics &g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
 
 private:
@@ -31,6 +31,8 @@ private:
     void drawRandomShape(juce::Graphics &g, juce::Rectangle<int> bounds);
     void drawShiftUpShape(juce::Graphics &g, juce::Rectangle<int> bounds);
     void drawShiftDownShape(juce::Graphics &g, juce::Rectangle<int> bounds);
+
+    void mouseUp (const juce::MouseEvent &) override;
 
     const ButtonDesigns buttonDesigns;
 
@@ -46,9 +48,80 @@ private:
         1, 0, 0, 0, 0, 0, 0, 0, 0
     };
 
+    juce::Random random;
+    int randomShapeIndex;
+
+    const std::array<std::array<char, buttonPixelDims * buttonPixelDims>, 6> randomShapes {
+        std::array<char, buttonPixelDims * buttonPixelDims>{
+            0, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 1, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 0
+        },
+        std::array<char, buttonPixelDims * buttonPixelDims>{
+            0, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 0
+        },
+        std::array<char, buttonPixelDims * buttonPixelDims>{
+            0, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 1, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 0
+        },
+        std::array<char, buttonPixelDims * buttonPixelDims>{
+            0, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 0
+        },
+        std::array<char, buttonPixelDims * buttonPixelDims>{
+            0, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 1, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 0
+        },
+        std::array<char, buttonPixelDims * buttonPixelDims>{
+            0, 1, 1, 1, 1, 1, 1, 1, 0,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 0, 0, 0, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 0, 0, 1,
+            0, 1, 1, 1, 1, 1, 1, 1, 0
+        }
+    };
 
     const std::array<char, buttonPixelDims * buttonPixelDims> randomShape {
-        1, 1, 1, 1, 1, 1, 1, 1, 1,
+        0, 1, 1, 1, 1, 1, 1, 1, 0,
         1, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 0, 1, 0, 0, 0, 1, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -56,29 +129,30 @@ private:
         1, 0, 0, 0, 0, 0, 0, 0, 1,
         1, 0, 1, 0, 0, 0, 1, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 0, 1,
-        1, 1, 1, 1, 1, 1, 1, 1, 1
+        0, 1, 1, 1, 1, 1, 1, 1, 0
     };
 
     const std::array<char, buttonPixelDims * buttonPixelDims> shiftUpShape {
         0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 1, 0, 0, 0, 0,
         0, 0, 0, 1, 0, 1, 0, 0, 0,
         0, 0, 1, 0, 0, 0, 1, 0, 0,
         0, 1, 0, 0, 0, 0, 0, 1, 0,
         1, 0, 0, 0, 0, 0, 0, 0, 1,
         0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0
+
     };
     const std::array<char, buttonPixelDims * buttonPixelDims> shiftDownShape {
         0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
         1, 0, 0, 0, 0, 0, 0, 0, 1,
         0, 1, 0, 0, 0, 0, 0, 1, 0,
         0, 0, 1, 0, 0, 0, 1, 0, 0,
         0, 0, 0, 1, 0, 1, 0, 0, 0,
         0, 0, 0, 0, 1, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0
     };
 

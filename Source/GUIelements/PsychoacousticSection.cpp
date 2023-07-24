@@ -13,7 +13,8 @@
 //==============================================================================
 PsychoacousticSection::PsychoacousticSection(juce::AudioProcessorValueTreeState& p) :
     StageWindow(p),
-    psychoanalGraph(p)
+    psychoanalGraph(p),
+    biasSlider(p, "thresholdbias", "Tilt")
 {
     parameters.state.addListener(this);
 

@@ -16,6 +16,7 @@
 #include "StageWindow.h"
 #include "PsychoanalGraph.h"
 #include "IndicatorLight.h"
+#include "NamedRotarySlider.h"
 
 //==============================================================================
 /*
@@ -30,6 +31,8 @@ public:
 private:
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
                                   const juce::Identifier &property) override;
+    NamedRotarySlider biasSlider;
+/*
     juce::Slider biasSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
@@ -39,7 +42,8 @@ private:
         "thresholdbias",
         biasSlider
     };
-    
+*/
+
     PsychoanalGraph psychoanalGraph;
     IndicatorLight shortFrameIndicator;
 

@@ -15,6 +15,7 @@
 
 #include "StageWindow.h"
 #include "DragBox.h"
+#include "NamedRotarySlider.h"
 
 //==============================================================================
 /*
@@ -26,7 +27,10 @@ public:
     void resized() override;
 private:
     DragBox butterflyDragBox;
-    
+
+    NamedRotarySlider mdctBandStepSlider;
+
+/*
     juce::Slider mdctBandStepSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
@@ -37,18 +41,10 @@ private:
         "mdctstep",
         mdctBandStepSlider
     };
-    
-    juce::Slider mdctBandInvertSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    
-    juce::AudioProcessorValueTreeState::SliderAttachment mdctBandInvertAttachment {
-        parameters,
-        "mdctinvert",
-        mdctBandInvertSlider
-    };
+*/
 
+    NamedRotarySlider mdctWindowIncrementSlider;
+/*
     juce::Slider mdctWindowIncrementSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
@@ -58,6 +54,7 @@ private:
         "mdctwindowincr",
         mdctWindowIncrementSlider
     };
-    
+*/
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MDCTSection)
 };

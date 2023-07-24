@@ -13,10 +13,11 @@
 
 MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
         : StageWindow(p),
-            butterflyDragBox(p, "butterflystandard", "butterflycrossed")
+            butterflyDragBox(p, "butterflystandard", "butterflycrossed"),
+      mdctBandStepSlider(p, "mdctstep", "!?"),
+      mdctWindowIncrementSlider(p, "mdctwindowincr", "???")
 {
     addAndMakeVisible(mdctBandStepSlider);
-    addAndMakeVisible(mdctBandInvertSlider);
     addAndMakeVisible(mdctWindowIncrementSlider);
     addAndMakeVisible(butterflyDragBox);
 }
@@ -29,6 +30,5 @@ void MDCTSection::resized()
     int halfHeight = otherpart.getHeight() / 2;
     int halfWidth = otherpart.getWidth() / 2;
     mdctBandStepSlider.setBounds(otherpart.withTrimmedBottom(halfHeight).withTrimmedRight(halfWidth));
-    mdctBandInvertSlider.setBounds(otherpart.withTrimmedBottom(halfHeight).withTrimmedLeft(halfWidth));
     mdctWindowIncrementSlider.setBounds(otherpart.withTrimmedTop(halfHeight).withTrimmedRight(halfWidth).withHeight(70));
 }

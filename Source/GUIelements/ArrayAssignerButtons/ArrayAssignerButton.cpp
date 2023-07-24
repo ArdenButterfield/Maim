@@ -18,11 +18,17 @@ void ArrayAssignerButton::drawPattern(juce::Graphics &g, juce::Rectangle<int> bo
     }
 }
 
+void ArrayAssignerButton::mouseUp (const juce::MouseEvent & e) {
+    randomShapeIndex = juce::Random().nextInt({0,6});
+    repaint();
+    juce::Button::mouseUp(e);
+}
+
 void ArrayAssignerButton::drawResetShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
     drawPattern(g, bounds, resetShape);
 }
 void ArrayAssignerButton::drawRandomShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
-    drawPattern(g, bounds, randomShape);
+    drawPattern(g, bounds, randomShapes[randomShapeIndex]);
 }
 void ArrayAssignerButton::drawShiftUpShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
     drawPattern(g, bounds, shiftUpShape);
