@@ -27,6 +27,9 @@ private:
     int nameHeight;
 
     const juce::Font nameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(14.f);
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NamedRotarySlider)
+
 };
 
 #endif //MAIM_NAMEDROTARYSLIDER_H

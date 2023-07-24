@@ -52,4 +52,6 @@ protected:
     const int LINE_WIDTH = 2; // For bevel
 
     juce::AudioProcessorValueTreeState& parameters;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StageWindow)
 };

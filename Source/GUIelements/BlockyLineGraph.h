@@ -15,6 +15,9 @@ public:
     void paint (juce::Graphics& g);
 private:
     const int pixelSize;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BlockyLineGraph)
+
 };
 
 #endif //MAIM_BLOCKYLINEGRAPH_H
