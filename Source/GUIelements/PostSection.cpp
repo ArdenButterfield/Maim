@@ -49,13 +49,15 @@ void PostSection::resized()
     setUsableBounds();
     int used_space = 0;
 
-    driveSection = usable_bounds.withWidth(125);
+    auto littleSection = usable_bounds.getWidth() / 6;
+
+    driveSection = usable_bounds.withWidth(littleSection);
     used_space += driveSection.getWidth();
 
-    bitrateSection = usable_bounds.withTrimmedLeft(used_space).withWidth(250);
+    bitrateSection = usable_bounds.withTrimmedLeft(used_space).withWidth(littleSection * 2);
     used_space += bitrateSection.getWidth();
 
-    filterSection = usable_bounds.withTrimmedLeft(used_space).withWidth(250);
+    filterSection = usable_bounds.withTrimmedLeft(used_space).withWidth(littleSection * 2);
     used_space += filterSection.getWidth();
 
     makeupSection = usable_bounds.withTrimmedLeft(used_space);

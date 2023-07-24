@@ -17,18 +17,27 @@ MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
       mdctBandStepSlider(p, "mdctstep", "!?"),
       mdctWindowIncrementSlider(p, "mdctwindowincr", "???")
 {
+    sectionName.setColour(sectionName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    sectionName.setFont(sectionNameFont);
+    sectionName.setText("Miscellanea", juce::dontSendNotification);
+    sectionName.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(mdctBandStepSlider);
     addAndMakeVisible(mdctWindowIncrementSlider);
     addAndMakeVisible(butterflyDragBox);
+    addAndMakeVisible(sectionName);
 }
-
 
 void MDCTSection::resized()
 {
-    butterflyDragBox.setBounds(getLocalBounds().withTrimmedRight(250));
-    auto otherpart = getLocalBounds().withTrimmedLeft(getWidth()-250);
-    int halfHeight = otherpart.getHeight() / 2;
-    int halfWidth = otherpart.getWidth() / 2;
-    mdctBandStepSlider.setBounds(otherpart.withTrimmedBottom(halfHeight).withTrimmedRight(halfWidth));
-    mdctWindowIncrementSlider.setBounds(otherpart.withTrimmedTop(halfHeight).withTrimmedRight(halfWidth).withHeight(70));
+    auto mainPart = getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20);
+    butterflyDragBox.setBounds(mainPart.withWidth(190).withRightX(mainPart.getRight()));
+    auto leftPart = mainPart.withTrimmedRight(200);
+    const int titleHeight = 60;
+    sectionName.setBounds(leftPart.withHeight(titleHeight));
+    leftPart = leftPart.withTrimmedTop(titleHeight);
+
+
+    int halfWidth = leftPart.getWidth() / 2;
+    mdctBandStepSlider.setBounds(leftPart.withTrimmedLeft(halfWidth));
+    mdctWindowIncrementSlider.setBounds(leftPart.withTrimmedRight(halfWidth));
 }

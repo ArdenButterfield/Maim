@@ -35,8 +35,9 @@ public:
     
     void mouseDown(const juce::MouseEvent &event) override;
     void mouseDrag(const juce::MouseEvent &event) override;
+    void mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &wheel) override;
 
-    void updateChart(const juce::Point<float>& mousePosition, bool strictBounds);
+        void updateChart(const juce::Point<float>& mousePosition, bool strictBounds);
     
     void paint (juce::Graphics&) override;
     void resized() override;

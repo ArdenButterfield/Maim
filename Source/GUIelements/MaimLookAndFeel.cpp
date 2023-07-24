@@ -233,10 +233,10 @@ void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& bu
     juce::Colour fillColour;
     juce::String buttonDisplayName;
     if (button.getToggleState()) {
-        fillColour = BEVEL_DARK;
+        fillColour = SPLASH_COLOR_LIGHT;
         buttonDisplayName = button.getName().fromLastOccurrenceOf("|", false, false);
     } else {
-        fillColour = BEVEL_LIGHT;
+        fillColour = CONTRAST_COLOR_LIGHT;
         buttonDisplayName = button.getName().upToFirstOccurrenceOf("|", false, false);
     }
     g.setColour(fillColour);

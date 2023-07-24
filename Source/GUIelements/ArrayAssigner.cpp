@@ -132,6 +132,27 @@ void ArrayAssigner::mouseDrag(const juce::MouseEvent& event)
     updateChart(event.position, false);
 }
 
+void ArrayAssigner::mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &wheel)
+{
+    if (!activeArea.contains((int)event.position.getX(),(int)event.position.getY())) {
+        return;
+    }
+
+    int inc;
+    if (wheel.deltaY > 0) {
+        inc = 1;
+    } else if (wheel.deltaY < 0) {
+        inc = -1;
+    } else {
+        return;
+    }
+
+
+    int i = (event.position.getX() - activeArea.getX()) * itemVals.size() / activeArea.getWidth();
+
+    setValue(i, itemVals[i] + inc);
+}
+
 
 float ArrayAssigner::getValScreenY(const int rawVal)
 {

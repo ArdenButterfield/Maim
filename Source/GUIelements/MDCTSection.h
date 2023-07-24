@@ -26,6 +26,8 @@ public:
     MDCTSection(juce::AudioProcessorValueTreeState& p);
     void resized() override;
 private:
+    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    juce::Label sectionName;
     DragBox butterflyDragBox;
 
     NamedRotarySlider mdctBandStepSlider;
