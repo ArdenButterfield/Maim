@@ -89,6 +89,23 @@ void DragBox::drawGradients(juce::Graphics& g)
 
 }
 
+juce::Colour DragBox::overlayFilm(const juce::Colour light, const juce::Colour film) {
+    auto r = film.getFloatRed();
+    auto g = film.getFloatGreen();
+    auto b = film.getFloatBlue();
+    auto a = film.getFloatAlpha();
+    auto lr = light.getFloatRed();
+    auto lg = light.getFloatGreen();
+    auto lb = light.getFloatBlue();
+
+    return juce::Colour::fromFloatRGBA(
+        lr * r * a + lr * (1.f - a),
+        lg * g * a + lg * (1.f - a),
+        lb * b * a + lb * (1.f - a),
+        light.getFloatAlpha()
+    );
+}
+
 void DragBox::paint (juce::Graphics& g)
 {
     int x = rescaleRange(xSlider->getValue(),
@@ -113,11 +130,11 @@ void DragBox::paint (juce::Graphics& g)
     g.drawRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius, 3.f);
     
     if (thumbHovered) {
-        auto fillColour = juce::Colours::white;
-        auto amountX = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum());
-        auto amountY = (ySlider->getValue() - ySlider->getMinimum()) / (ySlider->getMaximum() - ySlider->getMinimum());
-        fillColour = fillColour.interpolatedWith(MaimLookAndFeel().SPLASH_COLOR_DARK, amountX);
-        fillColour = fillColour.interpolatedWith(MaimLookAndFeel().CONTRAST_COLOR_DARK, amountY);
+        auto fillColour = MaimLookAndFeel().BEVEL_LIGHT;
+        float amountX = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum());
+        float amountY = (ySlider->getValue() - ySlider->getMinimum()) / (ySlider->getMaximum() - ySlider->getMinimum());
+        fillColour = overlayFilm(fillColour, MaimLookAndFeel().SPLASH_COLOR_DARK.withAlpha(amountX));
+        fillColour = overlayFilm(fillColour, MaimLookAndFeel().CONTRAST_COLOR_DARK.withAlpha(amountY));
         g.setColour (fillColour);
         g.fillEllipse(x - thumbDrawRadius,
                       y - thumbDrawRadius,

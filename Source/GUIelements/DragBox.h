@@ -66,7 +66,8 @@ private:
     
     bool thumbHovered;
     bool thumbDragged;
-    
+
+    static juce::Colour overlayFilm(const juce::Colour light, const juce::Colour film);
     
     const juce::String xParamID;
     const juce::String yParamID;
