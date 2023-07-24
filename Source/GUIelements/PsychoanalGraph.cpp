@@ -23,7 +23,13 @@ PsychoanalGraph::PsychoanalGraph(juce::AudioProcessorValueTreeState& p):
     while (c->getParentComponent()) {
         c = c->getParentComponent();
     }
-    
+
+    energyVals.fill(0);
+    thresholdVals.fill(0);
+    energy.loadData(energyVals.data());
+    threshold.loadData(thresholdVals.data());
+
+
     addAndMakeVisible(energy);
     addAndMakeVisible(threshold);
     

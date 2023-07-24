@@ -11,6 +11,10 @@ MDCTGraph::MDCTGraph(juce::AudioProcessorValueTreeState& p):
                                                                            postLine(0, 1, numSamples, MaimLookAndFeel().SPLASH_COLOR_DARK, 3)
 {
     parameters.state.addListener(this);
+    preSamples.fill(0);
+    postSamples.fill(0);
+    preLine.loadData(preSamples.data());
+    postLine.loadData(postSamples.data());
 /*
     parameters.addParameterListener("mdctfeedback", this);
     parameters.addParameterListener("mdctposthshift", this);

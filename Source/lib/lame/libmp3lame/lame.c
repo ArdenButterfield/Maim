@@ -190,6 +190,8 @@ void lame_clear_bends(lame_global_flags* gfp)
     }
 
     memset(gfp->bendFlagsAndData->feedback_data, 0, 2 * 2 * 576 * sizeof(float));
+    memset(gfp->bendFlagsAndData->mdct_pre_bend, 0, 576 * sizeof(float));
+    memset(gfp->bendFlagsAndData->mdct_post_bend, 0, 576 * sizeof(float));
     /*
     for (int gr = 0; gr < 2; ++gr) {
         for (int ch = 0; ch < 2; ++ch) {
