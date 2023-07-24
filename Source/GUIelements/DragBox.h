@@ -60,7 +60,8 @@ private:
                             const float outMin,
                             const float outMax,
                             std::vector<int>* v);
-    
+
+    void drawGradients(juce::Graphics& g);
     void drawGridlines(juce::Graphics&);
     
     bool thumbHovered;

@@ -71,6 +71,24 @@ void DragBox::drawGridlines(juce::Graphics& g)
     }
 }
 
+void DragBox::drawGradients(juce::Graphics& g)
+{
+    const auto numGradients = 10;
+    const auto gradientStep = (box.getRight() - activeZone.getX()) / numGradients;
+
+    const juce::Colour verticalColour = MaimLookAndFeel().SPLASH_COLOR_DARK.withAlpha(0.2f);
+    const juce::Colour horizontalColour = MaimLookAndFeel().CONTRAST_COLOR_DARK.withAlpha(0.2f);
+
+    for (auto i = 0; i < numGradients; ++i) {
+        auto barWidth = gradientStep * i * 0.7 / (numGradients);
+        g.setColour(horizontalColour);
+        g.fillRect(box.getX(), activeZone.getY() + i * gradientStep, box.getWidth(), barWidth);
+        g.setColour(verticalColour);
+        g.fillRect(activeZone.getX() + i * gradientStep, box.getY(), barWidth, box.getHeight());
+    }
+
+}
+
 void DragBox::paint (juce::Graphics& g)
 {
     int x = rescaleRange(xSlider->getValue(),
@@ -88,13 +106,19 @@ void DragBox::paint (juce::Graphics& g)
     g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
     g.fillRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius);   // clear the background
 
+    drawGradients(g);
     drawGridlines(g);
     
     g.setColour (MaimLookAndFeel().BEVEL_BLACK);
     g.drawRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius, 3.f);
     
     if (thumbHovered) {
-        g.setColour (MaimLookAndFeel().SPLASH_COLOR_LIGHT);
+        auto fillColour = juce::Colours::white;
+        auto amountX = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum());
+        auto amountY = (ySlider->getValue() - ySlider->getMinimum()) / (ySlider->getMaximum() - ySlider->getMinimum());
+        fillColour = fillColour.interpolatedWith(MaimLookAndFeel().SPLASH_COLOR_DARK, amountX);
+        fillColour = fillColour.interpolatedWith(MaimLookAndFeel().CONTRAST_COLOR_DARK, amountY);
+        g.setColour (fillColour);
         g.fillEllipse(x - thumbDrawRadius,
                       y - thumbDrawRadius,
                       thumbDrawRadius * 2,
@@ -102,7 +126,7 @@ void DragBox::paint (juce::Graphics& g)
 
     }
     
-    g.setColour (MaimLookAndFeel().SPLASH_COLOR_DARK);
+    g.setColour (MaimLookAndFeel().BEVEL_BLACK);
     g.drawEllipse(x - thumbDrawRadius,
                   y - thumbDrawRadius,
                   thumbDrawRadius * 2,
@@ -119,7 +143,8 @@ void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
 
 void DragBox::resized()
 {
-    box = getLocalBounds().withSizeKeepingCentre(getWidth() - 10, getHeight() - 10);
+    auto side = std::min(getWidth(), getHeight());
+    box = getLocalBounds().withSizeKeepingCentre(side - 10, side - 10);
     activeZone = box.withSizeKeepingCentre(box.getWidth() - thumbDrawRadius * 2,
                                                    box.getHeight() - thumbDrawRadius * 2);
     
