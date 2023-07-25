@@ -129,7 +129,6 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
 
     for (int start = 0; start < buffer.getNumSamples(); start += samplesPerBlock) {
         int length = std::min(buffer.getNumSamples() - start, samplesPerBlock);
-
         currentController->addNextInput(samplesL, samplesR, length);
         if (wantingToSwitch && (switchCountdown > 0)) {
             offController->addNextInput(samplesL, samplesR, length);
@@ -149,6 +148,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
                 buffer.addFromWithRamp(0, 0, samplesL, length, 1, 0);
                 buffer.addFromWithRamp(1, 0, samplesR, length, 1, 0);
 
+                currentControllerIndex = (currentControllerIndex + 1) % 2;
                 currentController = offController;
                 currentBitrate = desiredBitrate;
                 currentEncoder = desiredEncoder;
@@ -157,7 +157,6 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
                 continue;
             }
         }
-
         if (!currentController->copyOutput(samplesL, samplesR, length)) {
             memset(samplesL, 0, sizeof(float) * length);
             memset(samplesR, 0, sizeof(float) * length);

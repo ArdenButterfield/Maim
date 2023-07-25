@@ -24,8 +24,8 @@ bool MP3Controller::init(const int sampleRate,
     mp3Buffer.resize(mp3_buf_size);
     std::fill(mp3Buffer.begin(), mp3Buffer.end(), 0);
 
-    outputBufferL = std::make_unique<QueueBuffer<float>>(1152 * 2 + maxSamplesPerBlock, 0.f);
-    outputBufferR = std::make_unique<QueueBuffer<float>>(1152 * 2 + maxSamplesPerBlock, 0.f);
+    outputBufferL = std::make_unique<QueueBuffer<float>>(1152 * 4 + maxSamplesPerBlock, 0.f);
+    outputBufferR = std::make_unique<QueueBuffer<float>>(1152 * 4 + maxSamplesPerBlock, 0.f);
 
     if (!init_encoder()) {
         return false;
