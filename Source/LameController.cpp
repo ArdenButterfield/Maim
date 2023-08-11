@@ -45,27 +45,12 @@ void LameController::deinit_encoder()
 
 int LameController::validate_samplerate(const int samplerate)
 {
-    auto test_rate = std::find(allowed_samplerates.begin(),
-                              allowed_samplerates.end(),
-                              samplerate);
-    if (test_rate == allowed_samplerates.end()) {
-        return 44100;
-    } else {
-        return samplerate;
-    }
-
+    return getClosest(samplerate, allowed_samplerates);
 }
 
 int LameController::validate_bitrate(int bitrate)
 {
-    auto test_rate = std::find(allowed_bitrates.begin(),
-                               allowed_bitrates.end(),
-                              bitrate);
-    if (test_rate == allowed_bitrates.end()) {
-        return 96;
-    } else {
-        return bitrate;
-    }
+    return getClosest(bitrate, allowed_bitrates);
 }
 
 void LameController::addNextInput(float* left_input,

@@ -43,17 +43,8 @@ public:
 protected:
     lame_global_flags *lame_enc_handler = nullptr;
 
-    // Values from the LAME documentation
     const std::vector<int> allowed_samplerates = {
-        8000,
-        11025,
-        12000,
-        16000,
-        22050,
-        24000,
-        32000,
-        44100,
-        48000
+        32000, 44100, 48000
     };
     
     const std::vector<int> allowed_bitrates = {

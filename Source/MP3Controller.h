@@ -16,10 +16,12 @@
 #include <memory>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 
 #include <lame.h>
 
 #include "QueueBuffer.h"
+
 
 class MP3Controller
 {
@@ -53,7 +55,7 @@ protected:
     float pcm_convert(short samp) {
         return samp / (float)std::numeric_limits<short>::max();
     }
-    
+
     virtual bool init_encoder() = 0;
     virtual void deinit_encoder() = 0;
     virtual int validate_bitrate(int bitrate) = 0;
@@ -79,4 +81,23 @@ protected:
     
     int input_buf_size;
     int mp3_buf_size;
+
+    int getClosest(const int target, const std::vector<int>& options)
+    {
+        auto lower = options[0];
+        auto upper = options[options.size() - 1];
+        for (const auto option : options)
+        {
+            if (option < target)
+            {
+                lower = option;
+            }
+            else
+            {
+                upper = option;
+                return (target - lower) < (upper - target) ? lower : upper;
+            }
+        }
+        return lower;
+    }
 };

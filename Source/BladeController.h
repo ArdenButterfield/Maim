@@ -47,7 +47,6 @@ private:
     encoder_flags_and_data* blade_encoder = nullptr;
     std::array<std::unique_ptr<QueueBuffer<float>>, 2> inputBuffer;
     
-    // Values from the LAME documentation
     const std::vector<int> allowed_samplerates = {
         32000, 44100, 48000
     };
