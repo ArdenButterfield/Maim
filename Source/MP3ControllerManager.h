@@ -30,11 +30,11 @@ class MP3ControllerManager : public juce::AudioProcessorValueTreeState::Listener
 public juce::Timer
 {
 public:
-    MP3ControllerManager(int samplerate,
-                          int initialBitrate,
-                          int samplesPerBlock,
-                          juce::AudioProcessorValueTreeState& parameters);
+    MP3ControllerManager(juce::AudioProcessorValueTreeState& parameters);
     ~MP3ControllerManager();
+
+
+    void initialize(int samplerate, int initialBitrate, int samplesPerBlock);
 
     void processBlock(juce::AudioBuffer<float>& buffer);
     
@@ -82,10 +82,10 @@ private:
     
     int currentControllerIndex;
     
-    const int samplerate;
-    const int samplesPerBlock;
+    int samplerate;
+    int samplesPerBlock;
     
-    const int blocksBeforeSwitch;
+    int blocksBeforeSwitch;
     int switchCountdown;
     
     

@@ -10,14 +10,10 @@
 
 #include "MP3ControllerManager.h"
 
-MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, juce::AudioProcessorValueTreeState& p) :
-    samplerate(s),
-    samplesPerBlock(spb),
-    blocksBeforeSwitch(6000 / samplesPerBlock), // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
+MP3ControllerManager::MP3ControllerManager(juce::AudioProcessorValueTreeState& p) :
     parameters(p),
     currentEncoder(lame),
     currentControllerIndex(0)
-
 {
     parametersNeedUpdating = false;
     
@@ -41,21 +37,28 @@ MP3ControllerManager::MP3ControllerManager(int s, int initialBitrate, int spb, j
         parameters.addParameterListener(id.str(), this);
         bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(id.str());
     }
-    
-    lameControllers[0].init(samplerate, samplesPerBlock, initialBitrate);
-    
+}
+
+void MP3ControllerManager::initialize (int _samplerate, int _initialBitrate, int _samplesPerBlock)
+{
+    samplerate = _samplerate;
+    samplesPerBlock = _samplesPerBlock;
+    blocksBeforeSwitch = 6000 / samplesPerBlock;  // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
+
+    lameControllers[0].init(samplerate, samplesPerBlock, _initialBitrate);
+
     if (currentEncoder == lame) {
         currentController = &(lameControllers[currentControllerIndex]);
     } else {
         currentController = &(bladeControllers[currentControllerIndex]);
     }
-    
+
     offController = nullptr;
-    
-    currentBitrate = initialBitrate;
+
+    currentBitrate = _initialBitrate;
     wantingToSwitch = false;
     switchCountdown = 0;
-    
+
     startTimerHz(30);
 }
 

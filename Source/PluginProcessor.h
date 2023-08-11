@@ -82,7 +82,7 @@ private:
     std::atomic<bool> parametersNeedUpdating;
     juce::AudioProcessorValueTreeState parameters;
     
-    std::unique_ptr<MP3ControllerManager> mp3ControllerManager;
+    MP3ControllerManager mp3ControllerManager;
         
     std::array<juce::IIRFilter, 2> postFilterLo;
     std::array<juce::IIRFilter, 2> postFilterHi;
