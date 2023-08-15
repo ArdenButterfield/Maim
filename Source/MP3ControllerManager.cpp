@@ -43,16 +43,20 @@ void MP3ControllerManager::initialize (int _samplerate, int _initialBitrate, int
 {
     samplerate = _samplerate;
     samplesPerBlock = _samplesPerBlock;
-    blocksBeforeSwitch = 6000 / samplesPerBlock;  // Lame encoding + decoding delay, conservative estimate based on https://lame.sourceforge.io/tech-FAQ.txt
 
-    lameControllers[0].init(samplerate, samplesPerBlock, _initialBitrate);
+    // useful for debugging
+    lameControllers[0].name = "lame0";
+    lameControllers[1].name = "lame1";
+    bladeControllers[0].name = "blade0";
+    bladeControllers[1].name = "blade1";
 
     if (currentEncoder == lame) {
         currentController = &(lameControllers[currentControllerIndex]);
     } else {
         currentController = &(bladeControllers[currentControllerIndex]);
     }
-
+    currentController->init(samplerate, samplesPerBlock, _initialBitrate);
+    currentController->setOutputBufferToSilence(MP3FRAMESIZE);
     offController = nullptr;
 
     currentBitrate = _initialBitrate;
@@ -114,7 +118,6 @@ void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
     
     offController->init(samplerate, samplesPerBlock, desiredBitrate);
     wantingToSwitch = true;
-    switchCountdown = blocksBeforeSwitch;
 
 }
 
@@ -133,24 +136,22 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     for (int start = 0; start < buffer.getNumSamples(); start += samplesPerBlock) {
         int length = std::min(buffer.getNumSamples() - start, samplesPerBlock);
         currentController->addNextInput(samplesL, samplesR, length);
-        if (wantingToSwitch && (switchCountdown > 0)) {
-            offController->addNextInput(samplesL, samplesR, length);
-            if (offController->copyOutput(nullptr, nullptr, length)) {
-                --switchCountdown;
-            }
-        } else if (wantingToSwitch) {
-            offController->addNextInput(samplesL, samplesR, length);
-            if (offController->copyOutput(samplesL, samplesR, length)) {
-                auto tempBuffer = juce::AudioBuffer<float>(buffer.getNumChannels(),
+        if (wantingToSwitch)
+        {
+            offController->addNextInput (samplesL, samplesR, length);
+            auto extraSamples = offController->samplesInOutputQueue() - currentController->samplesInOutputQueue();
+            if (extraSamples >= 0)
+            {
+                offController->copyOutput (nullptr, nullptr, extraSamples);
+                auto tempBuffer = juce::AudioBuffer<float> (buffer.getNumChannels(),
                     length);
-                samplesL = tempBuffer.getWritePointer(0);
-                samplesR = tempBuffer.getWritePointer(1);
-                currentController->copyOutput(samplesL, samplesR, length);
-
-                buffer.applyGainRamp(0, length, 0, 1);
-                buffer.addFromWithRamp(0, 0, samplesL, length, 1, 0);
-                buffer.addFromWithRamp(1, 0, samplesR, length, 1, 0);
-
+                auto tempL = tempBuffer.getWritePointer (0);
+                auto tempR = tempBuffer.getWritePointer (1);
+                currentController->copyOutput (tempL, tempR, length);
+                offController->copyOutput (samplesL, samplesR, length);
+                buffer.applyGainRamp (start, length, 0, 1);
+                buffer.addFromWithRamp (0, start, tempL, length, 1, 0);
+                buffer.addFromWithRamp (1, start, tempR, length, 1, 0);
                 currentControllerIndex = (currentControllerIndex + 1) % 2;
                 currentController = offController;
                 currentBitrate = desiredBitrate;
@@ -168,13 +169,11 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         samplesL += samplesPerBlock;
         samplesR += samplesPerBlock;
     }
-
-
 }
 
-void MP3ControllerManager::updateParameters(bool updateOffController)
+void MP3ControllerManager::updateParameters()
 {
-    Encoder encoder = (Encoder)((juce::AudioParameterChoice*)
+    auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                 parameters.getParameter("encoder"))->getIndex();
     int bitrate = bitrates[((juce::AudioParameterChoice*)
                             parameters.getParameter("bitrate"))->getIndex()];

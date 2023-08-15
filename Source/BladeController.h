@@ -24,7 +24,7 @@ public:
     int validate_bitrate(int bitrate) override;
     int validate_samplerate(const int samplerate) override;
     
-    int samples_in_output_queue();
+    int samplesInOutputQueue();
     
     int getBitrate() override;
     void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) override;

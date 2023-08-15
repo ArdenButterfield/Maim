@@ -18,6 +18,7 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
     }
     float left_chunk[1152];
     float right_chunk[1152];
+    std::cout <<  name << "in: " << num_block_samples;
     while (inputBuffer[0]->num_items() >= 1152) {
         for (int i = 0; i < 1152; ++i) {
             left_chunk[i] = inputBuffer[0]->dequeue();
@@ -34,9 +35,10 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
                                     decodedRightChannel.data());
         
         if (dec_result < 0) {
-            std::cout << "Decoding error: " << dec_result << "\n";
+            std::cout << "Decoding error: " << dec_result;
             return;
         }
+        std::cout << "\tdec: " << dec_result;
         float amp;
         for (int i = 0; i < dec_result; ++i) {
             amp = pcm_convert(decodedLeftChannel[i]);
@@ -47,6 +49,7 @@ void BladeController::addNextInput(float *left_input, float* right_input, const 
             outputBufferR->enqueue(amp);
         }
     }
+    std::cout << "\t outbuf " << samplesInOutputQueue() << "\n";
 
 }
 
@@ -154,7 +157,7 @@ int BladeController::getShortBlockStatus()
     return blade_is_short_block(blade_encoder);
 }
 
-int BladeController::samples_in_output_queue()
+int BladeController::samplesInOutputQueue()
 {
     return outputBufferL->num_items();
 }

@@ -21,7 +21,6 @@ bool LameController::init_encoder()
     lame_set_brate(lame_enc_handler, bitrate);
     
     // Constant bitrate with no bit reservoir, to cut down on latency.
-    // TODO: we get some sort of vector error when using the bir reservoir
     lame_set_VBR(lame_enc_handler, vbr_off);
     lame_set_disable_reservoir(lame_enc_handler, 1);
     if (lame_init_params(lame_enc_handler) != 0) {
@@ -61,7 +60,7 @@ void LameController::addNextInput(float* left_input,
         return;
     }
 
-    int enc_result = lame_encode_buffer_ieee_float(
+    const auto enc_result = lame_encode_buffer_ieee_float(
                 lame_enc_handler,
                 left_input,
                 right_input,
@@ -74,7 +73,7 @@ void LameController::addNextInput(float* left_input,
         return;
     }
     
-    int dec_result = hip_decode(lame_dec_handler,
+    const auto dec_result = hip_decode(lame_dec_handler,
                                 mp3Buffer.data(),
                                 enc_result,
                                 decodedLeftChannel.data(),
@@ -94,6 +93,8 @@ void LameController::addNextInput(float* left_input,
         amp = pcm_convert(decodedRightChannel[i]);
         outputBufferR->enqueue(amp);
     }
+
+    std::cout <<  name << "in: " << num_block_samples << "\tenc: " << enc_result << "\tdec: " << dec_result << "\toutbuf: " << samplesInOutputQueue() << "\n";
 }
 
 int LameController::getBitrate()

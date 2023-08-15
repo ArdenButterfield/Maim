@@ -33,7 +33,9 @@ public:
     void deInit();
     virtual void addNextInput(float *left_input, float* right_input, const int num_block_samples) = 0;
     bool copyOutput(float* left, float* right, const int num_block_samples);
-    int samples_in_output_queue();
+    int samplesInOutputQueue();
+    void setOutputBufferToSilence(int numSamples);
+
     virtual int getBitrate() = 0;
     virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;
     virtual void setMDCTbandstepBends(bool invert, int step) = 0;
@@ -49,7 +51,7 @@ public:
     virtual float* getMDCTpreBend() = 0;
     virtual float* getMDCTpostBend() = 0;
     virtual int getShortBlockStatus() = 0;
-    
+    std::string name;
 protected:
     
     float pcm_convert(short samp) {

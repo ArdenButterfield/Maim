@@ -71,7 +71,7 @@ private:
     
     std::atomic<bool> parametersNeedUpdating;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
-    void updateParameters(bool updateOffController=false);
+    void updateParameters();
     void changeController(int bitrate, Encoder encoder);
     bool wantingToSwitch;
     
@@ -97,5 +97,6 @@ private:
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;
-    
+
+    const int MP3FRAMESIZE = 1152;
 };

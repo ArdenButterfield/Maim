@@ -54,6 +54,12 @@ public:
         return result;
     }
 
+    void clear() {
+        std::fill(buffer.begin(), buffer.end(), null_option);
+        read_pos = 0;
+        write_pos = 0;
+    }
+
 private:
     T null_option;
     int read_pos;

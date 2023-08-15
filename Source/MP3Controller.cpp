@@ -14,6 +14,7 @@ bool MP3Controller::init(const int sampleRate,
                          const int maxsampsperblock,
                          const int br)
 {
+    std::cout << name << " init " << sampleRate << " " << maxsampsperblock << " " << br << "\n";
     samplerate = validate_samplerate(sampleRate);
     bitrate = validate_bitrate(br);
     maxSamplesPerBlock = maxsampsperblock;
@@ -54,8 +55,7 @@ void MP3Controller::deInit()
 bool MP3Controller::copyOutput(float* left, float* right, const int num_block_samples)
 {
     if (outputBufferL->num_items() < num_block_samples) {
-        // std::cout << "Not enough items in queue.\n";
-        return false;
+        std::cout << "can't copy out " << num_block_samples << ", some space will be blank\n";
     }
     if (left == nullptr) {
         for (int i = 0; i < num_block_samples; ++i) {
@@ -76,11 +76,21 @@ bool MP3Controller::copyOutput(float* left, float* right, const int num_block_sa
             right[i] = outputBufferR->dequeue();
         }
     }
+    std::cout << name << " copy out " << num_block_samples << "\n";
     return true;
 
 }
 
-int MP3Controller::samples_in_output_queue()
+int MP3Controller::samplesInOutputQueue()
 {
     return outputBufferL->num_items();
+}
+void MP3Controller::setOutputBufferToSilence (int numSamples)
+{
+    outputBufferL->clear();
+    outputBufferR->clear();
+    for (auto i = 0; i < numSamples; ++i) {
+        outputBufferL->enqueue(0);
+        outputBufferR->enqueue(0);
+    }
 }
