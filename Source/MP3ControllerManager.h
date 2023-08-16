@@ -87,8 +87,15 @@ private:
     
     int blocksBeforeSwitch;
     int switchCountdown;
-    
-    
+
+    std::unique_ptr<QueueBuffer<float>> inputBufferL;
+    std::unique_ptr<QueueBuffer<float>> inputBufferR;
+
+    std::unique_ptr<QueueBuffer<float>> outputBufferL;
+    std::unique_ptr<QueueBuffer<float>> outputBufferR;
+
+    std::unique_ptr<QueueBuffer<float>> inputHistoryL;
+    std::unique_ptr<QueueBuffer<float>> inputHistoryR;
     
     std::array<LameController, 2> lameControllers;
     std::array<BladeController, 2> bladeControllers;

@@ -198,7 +198,7 @@ We initialize the current controller (lame0) with the default bitrate, and then 
 
 Already, we can see a problem with this approach. lame1 needs more samples before it is ready for decoding. However, by the time it *can* copy out, it copies out a great number of samples (3456), at which point it sits in an equilibrium, never burning through that output buffer.
 
-What do we need to do instead? We don't want to be in a situation where we don't have any samples to give back to the audioprocessor, which would result in an embarrasing gap of silence. The decoder is always going to give us a multiple of 1152 samples. 
+What do we need to do instead? We don't want to be in a situation where we don't have any samples to give back to the audioprocessor, which would result in an embarrassing gap of silence. The decoder is always going to give us a multiple of 1152 samples. 
 
 If our DAW's block size was always 1152 samples then this would be perfect -- but of course it isn't. If the DAW block size is *less* than 1152 samples, then we need to make sure that we have at least `1152 - DAWBufferSize` samples in our output queue. If the DAW block size is more than 1152 samples, I *think* it's enough to have a reserve of `1152 - (DAWBufferSize % 1152)` samples. 
 
@@ -714,6 +714,8 @@ encodeSamples(data) {
 
 Hold on a sec. We can do this even simpler.
 
+## An even simpler solution?
+
 What if the mp3 controller logic is:
 
 ```
@@ -756,3 +758,6 @@ The one issue with this is that I believe this solution will create a little gap
 The first option is a bit simpler to write, and is also a bit more immediate: we can switch between the old controller and the new in just one frame, rather than needing N frames to flush into it. The one downside, of course, is that we have to copy data to this buffer on every single frame, and we are not using it most of the time. This is especially bad since out queue implementation leaves something to be desired in terms of efficiency.
 
 That said, I'm getting ahead of myself. This whole method might not actually work, and I'm already worrying about optimizing stuff.
+
+### Trying it out
+

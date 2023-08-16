@@ -17,7 +17,6 @@ class LameController : public MP3Controller
 public:
     LameController() { bInitialized = false; }
     ~LameController() { deInit(); }
-    void addNextInput(float *left_input, float* right_input, const int num_block_samples) override;
     bool init_encoder() override;
     void deinit_encoder() override;
     int validate_bitrate(int bitrate) override;
@@ -42,6 +41,8 @@ public:
 
 protected:
     lame_global_flags *lame_enc_handler = nullptr;
+
+    int encodesamples(float* left, float* right) override;
 
     const std::vector<int> allowed_samplerates = {
         32000, 44100, 48000

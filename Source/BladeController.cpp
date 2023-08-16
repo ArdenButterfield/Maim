@@ -10,47 +10,9 @@
 
 #include "BladeController.h"
 
-void BladeController::addNextInput(float *left_input, float* right_input, const int num_block_samples)
+int BladeController::encodesamples(float* left, float* right)
 {
-    for (int i = 0; i < num_block_samples; ++i) {
-        inputBuffer[0]->enqueue(left_input[i]);
-        inputBuffer[1]->enqueue(right_input[i]);
-    }
-    float left_chunk[1152];
-    float right_chunk[1152];
-    std::cout <<  name << "in: " << num_block_samples;
-    while (inputBuffer[0]->num_items() >= 1152) {
-        for (int i = 0; i < 1152; ++i) {
-            left_chunk[i] = inputBuffer[0]->dequeue();
-            right_chunk[i] = inputBuffer[1]->dequeue();
-        }
-        int enc_result = blade_encode_chunk(blade_encoder,
-                                            left_chunk,
-                                            right_chunk,
-                                            (char*)&mp3Buffer[0]);
-        int dec_result = hip_decode(lame_dec_handler,
-                                    (unsigned char*)&mp3Buffer[0],
-                                    enc_result,
-                                    decodedLeftChannel.data(),
-                                    decodedRightChannel.data());
-        
-        if (dec_result < 0) {
-            std::cout << "Decoding error: " << dec_result;
-            return;
-        }
-        std::cout << "\tdec: " << dec_result;
-        float amp;
-        for (int i = 0; i < dec_result; ++i) {
-            amp = pcm_convert(decodedLeftChannel[i]);
-            outputBufferL->enqueue(amp);
-        }
-        for (int i = 0; i < dec_result; ++i) {
-            amp = pcm_convert(decodedRightChannel[i]);
-            outputBufferR->enqueue(amp);
-        }
-    }
-    std::cout << "\t outbuf " << samplesInOutputQueue() << "\n";
-
+    return blade_encode_chunk(blade_encoder, left, right, (char*)mp3Buffer.data());
 }
 
 bool BladeController::init_encoder()

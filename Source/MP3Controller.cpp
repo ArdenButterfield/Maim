@@ -22,7 +22,7 @@ bool MP3Controller::init(const int sampleRate,
     
     input_buf_size = maxSamplesPerBlock;
     // From LAME api: mp3buf_size in bytes = 1.25*num_samples + 7200
-    mp3_buf_size = input_buf_size * 1.25 + 7200;
+    mp3_buf_size = MP3FRAMESIZE * 1.25 + 7200;
     mp3Buffer.resize(mp3_buf_size);
     std::fill(mp3Buffer.begin(), mp3Buffer.end(), 0);
 
@@ -32,9 +32,32 @@ bool MP3Controller::init(const int sampleRate,
     if (!init_encoder()) {
         return false;
     }
+
+
     lame_dec_handler = hip_decode_init();
+
+    flushEncoder();
+
     bInitialized = true;
     return true;
+}
+
+void MP3Controller::flushEncoder()
+{
+    float left[1152];
+    float right[1152];
+    std::memset(left, 0, 1152 * sizeof(float));
+    std::memset(right, 0, 1152 * sizeof(float));
+    for (int i = 0; i < 4; ++i) {
+        auto encResult = encodesamples(left, right);
+        int decResult = hip_decode(lame_dec_handler,
+            (unsigned char*)&mp3Buffer[0],
+            encResult,
+            decodedLeftChannel.data(),
+            decodedRightChannel.data());
+
+        std::cout << "flushed " << decResult << "\n";
+    }
 }
 
 void MP3Controller::deInit()
@@ -53,45 +76,29 @@ void MP3Controller::deInit()
     mp3Buffer.resize(0);
 }
 
-bool MP3Controller::copyOutput(float* left, float* right, const int num_block_samples)
+bool MP3Controller::processFrame (float* left, float* right)
 {
-    if (outputBufferL->num_items() < num_block_samples) {
-        std::cout << "can't copy out " << num_block_samples << ", some space will be blank\n";
+    auto encResult = encodesamples(left, right);
+    if (encResult <= 0) {
+        std::cout << "encoding error: " << encResult << "\n";
+        return false;
     }
-    if (left == nullptr) {
-        for (int i = 0; i < num_block_samples; ++i) {
-            outputBufferL->dequeue();
-        }
-    } else {
-        for (int i = 0; i < num_block_samples; ++i) {
-            left[i] = outputBufferL->dequeue();
-        }
+
+    int decResult = hip_decode(lame_dec_handler,
+        (unsigned char*)&mp3Buffer[0],
+        encResult,
+        decodedLeftChannel.data(),
+        decodedRightChannel.data());
+    if (decResult != 1152) {
+        std::cout << "decoding error: " << decResult << "\n";
+        return false;
     }
-    
-    if (right == nullptr) {
-        for (int i = 0; i < num_block_samples; ++i) {
-            outputBufferR->dequeue();
-        }
-    } else {
-        for (int i = 0; i < num_block_samples; ++i) {
-            right[i] = outputBufferR->dequeue();
-        }
+
+    float amp;
+    for (int i = 0; i < decResult; ++i) {
+        left[i] = pcmConvert(decodedLeftChannel[i]);
+        right[i] = pcmConvert(decodedRightChannel[i]);
     }
-    std::cout << name << " copy out " << num_block_samples << "\n";
+
     return true;
-
-}
-
-int MP3Controller::samplesInOutputQueue()
-{
-    return outputBufferL->num_items();
-}
-void MP3Controller::setOutputBufferToSilence (int numSamples)
-{
-    outputBufferL->clear();
-    outputBufferR->clear();
-    for (auto i = 0; i < numSamples; ++i) {
-        outputBufferL->enqueue(0);
-        outputBufferR->enqueue(0);
-    }
 }

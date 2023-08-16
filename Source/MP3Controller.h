@@ -29,12 +29,11 @@ public:
     virtual ~MP3Controller() { }
     bool init(const int sampleRate,
               const int maxSamplesPerBlock,
-              const int bitrate);
+              const int bitrate
+            );
+    void flushEncoder();
     void deInit();
-    virtual void addNextInput(float *left_input, float* right_input, const int num_block_samples) = 0;
-    bool copyOutput(float* left, float* right, const int num_block_samples);
-    int samplesInOutputQueue();
-    void setOutputBufferToSilence(int numSamples);
+    bool processFrame(float* left, float* right);
 
     virtual int getBitrate() = 0;
     virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;
@@ -52,9 +51,10 @@ public:
     virtual float* getMDCTpostBend() = 0;
     virtual int getShortBlockStatus() = 0;
     std::string name;
+    static const int MP3FRAMESIZE = 1152;
 protected:
     
-    float pcm_convert(short samp) {
+    float pcmConvert (short samp) {
         return samp / (float)std::numeric_limits<short>::max();
     }
 
@@ -62,6 +62,8 @@ protected:
     virtual void deinit_encoder() = 0;
     virtual int validate_bitrate(int bitrate) = 0;
     virtual int validate_samplerate(int samplerate) = 0;
+
+    virtual int encodesamples(float* left, float* right) = 0;
     
     bool bInitialized;
     

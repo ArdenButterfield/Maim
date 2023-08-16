@@ -38,7 +38,7 @@ public:
             read_pos %= max_size;
         }
     }
-    
+
     int num_items() {
         return (write_pos + max_size - read_pos) % max_size;
     }
