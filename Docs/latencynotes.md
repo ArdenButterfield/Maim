@@ -569,8 +569,190 @@ blade1 copy out 512
 ...
 ```
 
-Wait huh? `blade1in: 512   dec: 4608        outbuf 2815`
+Wait huh? `blade1in: 512   dec: 4608        outbuf 2815`. 
+Why are there so fewer elements in the output buffer as was decoded?
+This is because in BladeController init, we do this:
 
-After that, though, it seems sensible, and we're returning more often.
+```c++
+    outputBufferL = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
+    outputBufferR = std::make_unique<QueueBuffer<float>>(2304 + maxSamplesPerBlock, 0.f);
+```
 
+This doesn't actually matter, though: when our queue is full, it discards the oldest samples, while keeping the most recent ones, which is what we were about to do anyway. There's no need to have the extra space to store all of those.
 
+Besides that, though, it seems sensible, and we're returning more often.
+
+We do, however, still run into some issues with not being able to copy out. 
+```
+blade1in: 512   dec: 1152        outbuf 1408
+blade1 copy out 512
+blade0 init 48000 512 16
+blade1in: 512    outbuf 896
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1536
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 1024
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade0 init 48000 512 24
+blade1in: 512   dec: 1152        outbuf 1664
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 1152
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 640
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1280
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 768
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade0 init 48000 512 32
+blade1in: 512   dec: 1152        outbuf 1408
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 896
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1536
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 1024
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1664
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade0 init 48000 512 40
+blade1in: 512    outbuf 1152
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 640
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1280
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 768
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade0 init 48000 512 48
+blade1in: 512   dec: 1152        outbuf 1408
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 896
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1536
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 1024
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512   dec: 1152        outbuf 1664
+blade0in: 512   dec: 0   outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 1152
+blade0in: 512    outbuf 0
+blade1 copy out 512
+blade1in: 512    outbuf 640
+blade0in: 512   dec: 3456        outbuf 2815
+blade0 copy out 2175
+blade1 copy out 512
+blade0 copy out 512
+blade1 init 48000 512 56
+blade0in: 512    outbuf 128
+blade1in: 512    outbuf 0
+can't copy out 512, some space will be blank
+blade0 copy out 512
+blade0in: 512   dec: 1152        outbuf 1152
+blade1in: 512    outbuf 0
+blade0 copy out 512
+blade0in: 512    outbuf 640
+blade1in: 512   dec: 0   outbuf 0
+blade0 copy out 512
+blade0in: 512    outbuf 128
+blade1in: 512    outbuf 0
+can't copy out 512, some space will be blank
+blade0 copy out 512
+blade0in: 512   dec: 1152        outbuf 1152
+blade1in: 512   dec: 0   outbuf 0
+blade0 copy out 512
+blade0in: 512    outbuf 640
+blade1in: 512    outbuf 0
+blade0 copy out 512
+blade0in: 512   dec: 1152        outbuf 1280
+blade1in: 512   dec: 3456        outbuf 2815
+blade1 copy out 1535
+...
+```
+
+Why is the blade0 outbuf able to get so small?
+
+I think the problem is because we're losing the samples in the in-buffer. We trim the new output buffer to be the same size as the old output buffer; however, our buffered samples are shared between the input and output buffers.
+
+Lame is a bit more complicated: instead of managing our own input buffer, there is an input buffer inside of Lame that we can't access. But what if we changed our use of Lame to be more like how we're using Blade, and only called the encode function when we had a multiple of 1152 samples? 
+
+Thus, our MP3 controller logic would be:
+
+```
+encodeSamples(data) {
+    inbuffer.enqueue(data)
+    while (size of inbuffer > 1152) {
+        frame = inbuffer.dequeue(1152)
+        encoded = decode(encode(frame))
+        outbuffer.enqueue(encoded)
+    }
+    return outbuffer.dequeue(data.numSamples)
+}
+```
+
+Hold on a sec. We can do this even simpler.
+
+What if the mp3 controller logic is:
+
+```
+init() {
+    normal init stuff...
+    decode(encode(1152 * N samples of silence))
+}
+
+processFrame(frame) {
+    assert frame length == 1152
+    result = decode(encode(frame))
+    assert result length == 1152
+    return result
+}
+```
+
+and then the mp3 controller manager is like:
+
+```
+processSamples(samples) {
+    inBuffer.enqueue(samples)
+    while (inBuffer.length >= 1152) {
+        inFrame = inBuffer.dequeue(1152)
+        if (wantingToSwitch) {
+            frameNew = newController.processFrame(inFrame)
+            frameOld = oldController.processFrame(inFrame)
+            outBuffer.enqueue(fade between the two frames)
+            oldController = newController
+            etc
+        } else {
+            outBuffer.enqueue(oldController.processFrame(inFrame))
+        }
+    }
+    samples = outbuffer.dequeue(numsamples)
+}
+```
+
+The one issue with this is that I believe this solution will create a little gap when switching to the new encoder, because of the encoding delay, and because we are flushing with silence. I see two solutions to this: we could keep another queue of the recent 1152 * N samples, and flush with those instead. Alternatively, we could have a countdown before switch, as we did in an earlier version.
+
+The first option is a bit simpler to write, and is also a bit more immediate: we can switch between the old controller and the new in just one frame, rather than needing N frames to flush into it. The one downside, of course, is that we have to copy data to this buffer on every single frame, and we are not using it most of the time. This is especially bad since out queue implementation leaves something to be desired in terms of efficiency.
+
+That said, I'm getting ahead of myself. This whole method might not actually work, and I'm already worrying about optimizing stuff.

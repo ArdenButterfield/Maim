@@ -14,6 +14,7 @@ bool MP3Controller::init(const int sampleRate,
                          const int maxsampsperblock,
                          const int br)
 {
+    deInit();
     std::cout << name << " init " << sampleRate << " " << maxsampsperblock << " " << br << "\n";
     samplerate = validate_samplerate(sampleRate);
     bitrate = validate_bitrate(br);
