@@ -169,8 +169,8 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         }
         if (wantingToSwitch) {
             float frameOutNew[2][MP3FRAMESIZE];
-            offController->processFrame(previousFrame[0], previousFrame[1], frameOutNew[0], frameOutNew[1]);
-            offController->processFrame(frameIn[0], frameIn[1], nullptr, nullptr);
+            offController->processFrame(previousFrame[0], previousFrame[1], nullptr, nullptr);
+            offController->processFrame(frameIn[0], frameIn[1], frameOutNew[0], frameOutNew[1]);
             currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
             fadeTowards (frameOut[0], frameOutNew[0], MP3FRAMESIZE);
             fadeTowards(frameOut[1], frameOutNew[1], MP3FRAMESIZE);
@@ -180,7 +180,6 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             offController = nullptr;
             currentControllerIndex = (currentControllerIndex + 1) % 2;
             wantingToSwitch = false;
-            
         } else {
             currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
         }

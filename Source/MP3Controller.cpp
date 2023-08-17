@@ -48,16 +48,17 @@ void MP3Controller::flushEncoder()
     float right[1152];
     std::memset(left, 0, 1152 * sizeof(float));
     std::memset(right, 0, 1152 * sizeof(float));
-    for (int i = 0; i < 4; ++i) {
+    int decResult = 0;
+    do {
         auto encResult = encodesamples(left, right);
-        int decResult = hip_decode(lame_dec_handler,
+        decResult = hip_decode(lame_dec_handler,
             (unsigned char*)&mp3Buffer[0],
             encResult,
             decodedLeftChannel.data(),
             decodedRightChannel.data());
 
         std::cout << "flushed " << decResult << "\n";
-    }
+    } while (decResult == 0);
 }
 
 void MP3Controller::deInit()
