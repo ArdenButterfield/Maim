@@ -184,6 +184,11 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             currentController->processFrame(frameL, frameR);
             fadeTowards (frameL, frameCopyL, MP3FRAMESIZE);
             fadeTowards(frameR, frameCopyR, MP3FRAMESIZE);
+            currentController = offController;
+            offController = nullptr;
+            currentControllerIndex = (currentControllerIndex + 1) % 2;
+            wantingToSwitch = false;
+            
         } else {
             currentController->processFrame(frameL, frameR);
         }
