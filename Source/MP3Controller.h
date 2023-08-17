@@ -33,7 +33,7 @@ public:
             );
     void flushEncoder();
     void deInit();
-    bool processFrame(float* left, float* right);
+    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut);
 
     virtual int getBitrate() = 0;
     virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;

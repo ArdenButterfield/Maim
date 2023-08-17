@@ -76,9 +76,9 @@ void MP3Controller::deInit()
     mp3Buffer.resize(0);
 }
 
-bool MP3Controller::processFrame (float* left, float* right)
+bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut, float* rightOut)
 {
-    auto encResult = encodesamples(left, right);
+    auto encResult = encodesamples(leftIn, rightIn);
     if (encResult <= 0) {
         std::cout << "encoding error: " << encResult << "\n";
         return false;
@@ -93,11 +93,15 @@ bool MP3Controller::processFrame (float* left, float* right)
         std::cout << "decoding error: " << decResult << "\n";
         return false;
     }
-
-    float amp;
-    for (int i = 0; i < decResult; ++i) {
-        left[i] = pcmConvert(decodedLeftChannel[i]);
-        right[i] = pcmConvert(decodedRightChannel[i]);
+    if (leftOut != nullptr) {
+        for (int i = 0; i < decResult; ++i) {
+            leftOut[i] = pcmConvert(decodedLeftChannel[i]);
+        }
+    }
+    if (rightOut != nullptr) {
+        for (int i = 0; i < decResult; ++i) {
+            rightOut[i] = pcmConvert(decodedRightChannel[i]);
+        }
     }
 
     return true;

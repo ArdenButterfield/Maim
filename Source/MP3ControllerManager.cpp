@@ -99,8 +99,6 @@ void MP3ControllerManager::initialize (int _samplerate, int _initialBitrate, int
     inputBufferR = std::make_unique<QueueBuffer<float>>(MP3FRAMESIZE + samplesPerBlock, 0.f);
     outputBufferL = std::make_unique<QueueBuffer<float>>(MP3FRAMESIZE + samplesPerBlock, 0.f);
     outputBufferR = std::make_unique<QueueBuffer<float>>(MP3FRAMESIZE + samplesPerBlock, 0.f);
-    inputHistoryL = std::make_unique<QueueBuffer<float>>(MP3FRAMESIZE * 4, 0.f);
-    inputHistoryR = std::make_unique<QueueBuffer<float>>(MP3FRAMESIZE * 4, 0.f);
 
     for (auto i = 0; i < MP3FRAMESIZE; ++i) {
         inputBufferL->enqueue(0);
@@ -158,46 +156,41 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         inputBufferL->enqueue(samplesL[s]);
     }
     for (auto s = 0; s < buffer.getNumSamples(); ++s) {
-        inputHistoryL->enqueue(samplesL[s]);
-    }
-    for (auto s = 0; s < buffer.getNumSamples(); ++s) {
         inputBufferR->enqueue(samplesR[s]);
     }
-    for (auto s = 0; s < buffer.getNumSamples(); ++s) {
-        inputHistoryR->enqueue(samplesR[s]);
-    }
-    float frameL[MP3FRAMESIZE];
-    float frameR[MP3FRAMESIZE];
+    float frameIn[2][MP3FRAMESIZE];
+    float frameOut[2][MP3FRAMESIZE];
     while (inputBufferL->num_items() >= MP3FRAMESIZE) {
         for (auto s = 0; s < MP3FRAMESIZE; ++s) {
-            frameL[s] = inputBufferL->dequeue();
+            frameIn[0][s] = inputBufferL->dequeue();
         }
         for (auto s = 0; s < MP3FRAMESIZE; ++s) {
-            frameR[s] = inputBufferR->dequeue();
+            frameIn[1][s] = inputBufferR->dequeue();
         }
         if (wantingToSwitch) {
-            float frameCopyL[MP3FRAMESIZE];
-            float frameCopyR[MP3FRAMESIZE];
-            std::memcpy(frameCopyL, frameL, MP3FRAMESIZE * sizeof(float));
-            std::memcpy(frameCopyR, frameR, MP3FRAMESIZE * sizeof(float));
-            offController->processFrame(frameCopyL, frameCopyR);
-            currentController->processFrame(frameL, frameR);
-            fadeTowards (frameL, frameCopyL, MP3FRAMESIZE);
-            fadeTowards(frameR, frameCopyR, MP3FRAMESIZE);
+            float frameOutNew[2][MP3FRAMESIZE];
+            offController->processFrame(previousFrame[0], previousFrame[1], frameOutNew[0], frameOutNew[1]);
+            offController->processFrame(frameIn[0], frameIn[1], nullptr, nullptr);
+            currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
+            fadeTowards (frameOut[0], frameOutNew[0], MP3FRAMESIZE);
+            fadeTowards(frameOut[1], frameOutNew[1], MP3FRAMESIZE);
             currentController = offController;
+            currentBitrate = desiredBitrate;
+            currentEncoder = desiredEncoder;
             offController = nullptr;
             currentControllerIndex = (currentControllerIndex + 1) % 2;
             wantingToSwitch = false;
             
         } else {
-            currentController->processFrame(frameL, frameR);
+            currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
         }
         for (auto s = 0; s < MP3FRAMESIZE; ++s) {
-            outputBufferL->enqueue(frameL[s]);
+            outputBufferL->enqueue(frameOut[0][s]);
         }
         for (auto s = 0; s < MP3FRAMESIZE; ++s) {
-            outputBufferR->enqueue(frameR[s]);
+            outputBufferR->enqueue(frameOut[1][s]);
         }
+        std::memcpy(previousFrame, frameIn, 2 * MP3FRAMESIZE * sizeof(float));
     }
 
     for (auto s = 0; s < buffer.getNumSamples(); ++s) {
