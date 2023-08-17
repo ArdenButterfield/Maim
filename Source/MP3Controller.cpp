@@ -102,6 +102,5 @@ bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut,
             rightOut[i] = pcmConvert(decodedRightChannel[i]);
         }
     }
-
     return true;
 }
