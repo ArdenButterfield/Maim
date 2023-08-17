@@ -15,7 +15,6 @@ bool MP3Controller::init(const int sampleRate,
                          const int br)
 {
     deInit();
-    std::cout << name << " init " << sampleRate << " " << maxsampsperblock << " " << br << "\n";
     samplerate = validate_samplerate(sampleRate);
     bitrate = validate_bitrate(br);
     maxSamplesPerBlock = maxsampsperblock;
@@ -57,7 +56,6 @@ void MP3Controller::flushEncoder()
             decodedLeftChannel.data(),
             decodedRightChannel.data());
 
-        std::cout << "flushed " << decResult << "\n";
     } while (decResult == 0);
 }
 
