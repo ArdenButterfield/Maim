@@ -28,6 +28,7 @@ public:
 private:
     juce::Rectangle<int> driveSection;
     juce::Rectangle<int> bitrateSection;
+    juce::Rectangle<int> randomSection;
     juce::Rectangle<int> filterSection;
     juce::Rectangle<int> makeupSection;
 
@@ -36,6 +37,7 @@ private:
     const juce::AudioProcessorValueTreeState::ButtonAttachment encoderAttachment;
     NamedRotarySlider bitrateSlider;
     NamedRotarySlider squishSlider;
+    NamedRotarySlider randomSlider;
     NamedRotarySlider loSlider;
     NamedRotarySlider hiSlider;
     NamedRotarySlider makeupSlider;

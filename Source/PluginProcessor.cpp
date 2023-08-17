@@ -55,7 +55,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
     
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID {"encoder", 1}, "Encoder", juce::StringArray {"Blade", "Lame"}, 1));
-    
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID {"random", 1}, "Random", 0.f, 1.f, 0.f));
+
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"hicut", 1}, "High cut", 100.f, 20000.f, 18000.f));
 
@@ -394,6 +397,7 @@ int MaimAudioProcessor::currentLatencySamples()
         // lame
         return 2880;
     }
+    return 0;
 }
 
 //==============================================================================

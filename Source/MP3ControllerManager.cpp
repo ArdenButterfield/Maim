@@ -40,7 +40,7 @@ MP3ControllerManager::MP3ControllerManager(juce::AudioProcessorValueTreeState& p
     parameters.addParameterListener("thresholdbias", this);
     parameters.addParameterListener("mdctfeedback", this);
     parameters.addParameterListener("encoder", this);
-    
+    parameters.addParameterListener("random", this);
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
         id << "bandorder" << i;
@@ -64,6 +64,7 @@ MP3ControllerManager::~MP3ControllerManager()
     parameters.removeParameterListener("thresholdbias", this);
     parameters.removeParameterListener("mdctfeedback", this);
     parameters.removeParameterListener("encoder", this);
+    parameters.removeParameterListener("random", this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
@@ -169,9 +170,9 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         }
         if (wantingToSwitch) {
             float frameOutNew[2][MP3FRAMESIZE];
-            offController->processFrame(previousFrame[0], previousFrame[1], nullptr, nullptr);
-            offController->processFrame(frameIn[0], frameIn[1], frameOutNew[0], frameOutNew[1]);
-            currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
+            offController->processFrame(previousFrame[0], previousFrame[1], nullptr, nullptr, randomizeProbability);
+            offController->processFrame(frameIn[0], frameIn[1], frameOutNew[0], frameOutNew[1], randomizeProbability);
+            currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1], randomizeProbability);
             fadeTowards (frameOut[0], frameOutNew[0], MP3FRAMESIZE);
             fadeTowards(frameOut[1], frameOutNew[1], MP3FRAMESIZE);
             currentController = offController;
@@ -181,7 +182,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             currentControllerIndex = (currentControllerIndex + 1) % 2;
             wantingToSwitch = false;
         } else {
-            currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
+            currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1], randomizeProbability);
         }
         for (auto s = 0; s < MP3FRAMESIZE; ++s) {
             outputBufferL->enqueue(frameOut[0][s]);
@@ -252,6 +253,8 @@ void MP3ControllerManager::updateParameters()
         }
         controller->setMDCTBandReassignmentBends(bandReassign);
     }
+
+    randomizeProbability = ((juce::AudioParameterFloat*) parameters.getParameter("random"))->get();
 
     auto psychoanalState = parameters.state.getChildWithName("psychoanal");
     auto indicator = psychoanalState.getProperty("shortblockindicator");

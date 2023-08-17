@@ -21,7 +21,7 @@
 #include <lame.h>
 
 #include "QueueBuffer.h"
-
+#include <juce_core/juce_core.h>
 
 class MP3Controller
 {
@@ -33,7 +33,7 @@ public:
             );
     void flushEncoder();
     void deInit();
-    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut);
+    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut, float randomizeProbability);
 
     virtual int getBitrate() = 0;
     virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;
@@ -52,6 +52,7 @@ public:
     virtual int getShortBlockStatus() = 0;
     std::string name;
     static const int MP3FRAMESIZE = 1152;
+    static const int MP3FRAMEHEADERBYTES = 4;
 protected:
     
     float pcmConvert (short samp) {
@@ -104,4 +105,6 @@ protected:
         }
         return lower;
     }
+
+    juce::Random random;
 };

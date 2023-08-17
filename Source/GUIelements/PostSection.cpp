@@ -17,6 +17,7 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p)
                                                                    encoderAttachment(p, "encoder", encoderButton),
                                                                    bitrateSlider(p, "bitrate", "Bitrate"),
                                                                    squishSlider(p, "bitratesquish", "Squish"),
+                                                                   randomSlider(p,"random","Random"),
                                                                    hiSlider(p, "hicut", "High"),
                                                                    loSlider(p, "locut", "Low"),
                                                                    makeupSlider(p, "makeupgain", "Makeup gain")
@@ -25,6 +26,7 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p)
     addAndMakeVisible(encoderButton);
     addAndMakeVisible(bitrateSlider);
     addAndMakeVisible(squishSlider);
+    addAndMakeVisible(randomSlider);
     addAndMakeVisible(hiSlider);
     addAndMakeVisible(loSlider);
     addAndMakeVisible(makeupSlider);
@@ -34,7 +36,7 @@ void PostSection::paint (juce::Graphics& g)
 {
     StageWindow::paint(g);
     g.setColour(MaimLookAndFeel().BEVEL_DARK);
-    for (const auto& section : { driveSection, bitrateSection, filterSection }) {
+    for (const auto& section : { driveSection, bitrateSection, randomSection, filterSection }) {
         g.drawVerticalLine(section.getRight(), section.getY() + 10,section.getBottom() - 10);
     }
 
@@ -49,13 +51,16 @@ void PostSection::resized()
     setUsableBounds();
     int used_space = 0;
 
-    auto littleSection = usable_bounds.getWidth() / 6;
+    auto littleSection = usable_bounds.getWidth() / 7;
 
     driveSection = usable_bounds.withWidth(littleSection);
     used_space += driveSection.getWidth();
 
     bitrateSection = usable_bounds.withTrimmedLeft(used_space).withWidth(littleSection * 2);
     used_space += bitrateSection.getWidth();
+
+    randomSection = usable_bounds.withTrimmedLeft(used_space).withWidth(littleSection);
+    used_space += randomSection.getWidth();
 
     filterSection = usable_bounds.withTrimmedLeft(used_space).withWidth(littleSection * 2);
     used_space += filterSection.getWidth();
@@ -69,7 +74,7 @@ void PostSection::resized()
     bitrateSlider.setBounds(top.withWidth(top.getWidth() / 2));
     squishSlider.setBounds(top.withTrimmedLeft(top.getWidth() / 2));
     encoderButton.setBounds(bottom.withTrimmedBottom(30).withSizeKeepingCentre(80, 30));
-
+    randomSlider.setBounds(randomSection);
     hiSlider.setBounds(filterSection.withTrimmedLeft(filterSection.getWidth() / 2));
     loSlider.setBounds(filterSection.withWidth(filterSection.getWidth() / 2));
     makeupSlider.setBounds(makeupSection);

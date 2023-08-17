@@ -23,6 +23,7 @@ bool LameController::init_encoder()
     // Constant bitrate with no bit reservoir, to cut down on latency.
     lame_set_VBR(lame_enc_handler, vbr_off);
     lame_set_disable_reservoir(lame_enc_handler, 1);
+    lame_set_error_protection(lame_enc_handler, 0);
     if (lame_init_params(lame_enc_handler) != 0) {
         lame_close(lame_enc_handler);
         std::cout << "Bad params\n";

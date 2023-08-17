@@ -9,6 +9,7 @@
 */
 
 #include "MP3Controller.h"
+#include <iomanip>
 
 bool MP3Controller::init(const int sampleRate,
                          const int maxsampsperblock,
@@ -75,12 +76,26 @@ void MP3Controller::deInit()
     mp3Buffer.resize(0);
 }
 
-bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut, float* rightOut)
+bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut, float* rightOut, float randomizeProbability)
 {
     auto encResult = encodesamples(leftIn, rightIn);
     if (encResult <= 0) {
         std::cout << "encoding error: " << encResult << "\n";
         return false;
+    }
+
+/*
+    for (int i = 0; i < 5; ++i) {
+        std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)mp3Buffer[i] << std::dec << " ";
+    }
+std::cout << "\n";
+
+ */
+    if (random.nextFloat() < randomizeProbability) {
+        int targetBit = random.nextInt({30, encResult});
+        std::cout << targetBit << "\n";
+        std::cout << "was " << (int)mp3Buffer[targetBit] << "\n";
+        random.fillBitsRandomly(&mp3Buffer[random.nextInt(targetBit)], 1);
     }
 
     int decResult = hip_decode(lame_dec_handler,

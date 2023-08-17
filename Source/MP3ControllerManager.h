@@ -95,6 +95,7 @@ private:
     std::unique_ptr<QueueBuffer<float>> outputBufferR;
 
     float previousFrame[2][1152];
+    float randomizeProbability;
     
     std::array<LameController, 2> lameControllers;
     std::array<BladeController, 2> bladeControllers;
