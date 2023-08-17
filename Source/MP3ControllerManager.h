@@ -71,7 +71,7 @@ private:
     
     std::atomic<bool> parametersNeedUpdating;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
-    void updateParameters(bool updateOffController=false);
+    void updateParameters();
     void changeController(int bitrate, Encoder encoder);
     bool wantingToSwitch;
     
@@ -87,8 +87,14 @@ private:
     
     int blocksBeforeSwitch;
     int switchCountdown;
-    
-    
+
+    std::unique_ptr<QueueBuffer<float>> inputBufferL;
+    std::unique_ptr<QueueBuffer<float>> inputBufferR;
+
+    std::unique_ptr<QueueBuffer<float>> outputBufferL;
+    std::unique_ptr<QueueBuffer<float>> outputBufferR;
+
+    float previousFrame[2][1152];
     
     std::array<LameController, 2> lameControllers;
     std::array<BladeController, 2> bladeControllers;
@@ -97,5 +103,6 @@ private:
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;
-    
+
+    const int MP3FRAMESIZE = 1152;
 };

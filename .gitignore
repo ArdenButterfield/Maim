@@ -58,3 +58,4 @@ Maim/lib/blade/test
 /Source/lib/lame/**/*.Po
 /Source/lib/lame/**/*.Plo
 
+venv

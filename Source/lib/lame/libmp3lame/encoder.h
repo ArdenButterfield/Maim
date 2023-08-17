@@ -54,7 +54,7 @@
  * set to 1160 to sync with FhG.
  */
 
-#define ENCDELAY      576
+#define ENCDELAY      48 // BEND
 
 
 

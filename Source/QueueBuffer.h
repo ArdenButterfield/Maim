@@ -38,7 +38,7 @@ public:
             read_pos %= max_size;
         }
     }
-    
+
     int num_items() {
         return (write_pos + max_size - read_pos) % max_size;
     }
@@ -52,6 +52,12 @@ public:
         read_pos++;
         read_pos %= max_size;
         return result;
+    }
+
+    void clear() {
+        std::fill(buffer.begin(), buffer.end(), null_option);
+        read_pos = 0;
+        write_pos = 0;
     }
 
 private:

@@ -92,6 +92,7 @@ MaimAudioProcessor::MaimAudioProcessor()
     parameters.addParameterListener("drive", this);
     parameters.addParameterListener("makeupgain", this);
     parameters.addParameterListener("mix", this);
+    parameters.addParameterListener("encoder", this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
@@ -101,6 +102,7 @@ MaimAudioProcessor::~MaimAudioProcessor()
     parameters.removeParameterListener("drive", this);
     parameters.removeParameterListener("makeupgain", this);
     parameters.removeParameterListener("mix", this);
+    parameters.removeParameterListener("encoder", this);
 }
 
 void MaimAudioProcessor::addMdctSamplesToParameters()
@@ -225,6 +227,7 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 //==============================================================================
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
+    setLatencySamples(currentLatencySamples());
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
     int bitrate = MP3ControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
@@ -288,6 +291,7 @@ void MaimAudioProcessor::updateParameters()
     postGain = juce::Decibels::decibelsToGain(makeupDB);
     
     parametersNeedUpdating = false;
+    setLatencySamples(currentLatencySamples());
 }
 
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
@@ -368,6 +372,27 @@ void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
             addPsychoanalStateToParameters();
             addMdctSamplesToParameters();
         }
+    }
+}
+int MaimAudioProcessor::currentLatencySamples()
+{
+    /* Currently, the number of samples of latency is determined experimentally,
+     * using pluginval and an impulse response testing program. These experiments showed that
+     * the impulse response held consistent across samplerates, bitrates, and block sizes; however,
+     * Blade had an impulse response of silence at low bitrates, so some other response may be
+     * needed for a more reliable test. I would like to try to get these numbers lower, which
+     * I suspect may be possible, and also to have an actual proof of the latency, rather than
+     * determining it experimentally.
+     */
+    auto encoder = (Encoder)((juce::AudioParameterChoice*)
+                                  parameters.getParameter("encoder"))->getIndex();
+    if (encoder == 0) {
+        // Blade
+        return 2209;
+    }
+    if (encoder == 1) {
+        // lame
+        return 2880;
     }
 }
 

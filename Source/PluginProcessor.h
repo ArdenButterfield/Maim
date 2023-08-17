@@ -69,6 +69,7 @@ public:
 private:
     void addPsychoanalStateToParameters();
     void addMdctSamplesToParameters();
+    int currentLatencySamples();
     float preGain;
     float postGain;
     

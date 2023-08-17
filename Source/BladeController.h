@@ -18,13 +18,12 @@ class BladeController : public MP3Controller
 public:
     BladeController() { bInitialized = false; }
     ~BladeController() { deInit(); }
-    void addNextInput(float *left_input, float* right_input, const int num_block_samples) override;
     bool init_encoder() override;
     void deinit_encoder() override;
     int validate_bitrate(int bitrate) override;
     int validate_samplerate(const int samplerate) override;
     
-    int samples_in_output_queue();
+    int samplesInOutputQueue();
     
     int getBitrate() override;
     void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) override;
@@ -46,7 +45,9 @@ public:
 private:
     encoder_flags_and_data* blade_encoder = nullptr;
     std::array<std::unique_ptr<QueueBuffer<float>>, 2> inputBuffer;
-    
+
+    int encodesamples(float* left, float* right) override;
+
     const std::vector<int> allowed_samplerates = {
         32000, 44100, 48000
     };

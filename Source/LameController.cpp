@@ -21,7 +21,6 @@ bool LameController::init_encoder()
     lame_set_brate(lame_enc_handler, bitrate);
     
     // Constant bitrate with no bit reservoir, to cut down on latency.
-    // TODO: we get some sort of vector error when using the bir reservoir
     lame_set_VBR(lame_enc_handler, vbr_off);
     lame_set_disable_reservoir(lame_enc_handler, 1);
     if (lame_init_params(lame_enc_handler) != 0) {
@@ -53,47 +52,15 @@ int LameController::validate_bitrate(int bitrate)
     return getClosest(bitrate, allowed_bitrates);
 }
 
-void LameController::addNextInput(float* left_input,
-                                  float* right_input,
-                                  const int num_block_samples) {
-    if (!bInitialized) {
-        std::cout << "Not initialized\n";
-        return;
-    }
-
-    int enc_result = lame_encode_buffer_ieee_float(
-                lame_enc_handler,
-                left_input,
-                right_input,
-                num_block_samples,
-                mp3Buffer.data(),
-                mp3Buffer.size());
-    
-    if (enc_result < 0) {
-        std::cout << "Encoding error: " << enc_result << "\n";
-        return;
-    }
-    
-    int dec_result = hip_decode(lame_dec_handler,
-                                mp3Buffer.data(),
-                                enc_result,
-                                decodedLeftChannel.data(),
-                                decodedRightChannel.data());
-    
-    if (dec_result < 0) {
-        std::cout << "Decoding error: " << dec_result << "\n";
-        return;
-    }
-    
-    float amp;
-    for (int i = 0; i < dec_result; ++i) {
-        amp = pcm_convert(decodedLeftChannel[i]);
-        outputBufferL->enqueue(amp);
-    }
-    for (int i = 0; i < dec_result; ++i) {
-        amp = pcm_convert(decodedRightChannel[i]);
-        outputBufferR->enqueue(amp);
-    }
+int LameController::encodesamples (float* left, float* right)
+{
+    return lame_encode_buffer_ieee_float(
+        lame_enc_handler,
+        left,
+        right,
+        MP3FRAMESIZE,
+        mp3Buffer.data(),
+        mp3Buffer.size());
 }
 
 int LameController::getBitrate()

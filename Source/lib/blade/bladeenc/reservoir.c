@@ -85,7 +85,8 @@ void					BladeResvFrameBegin
 
 	info = fr_ps->header;
 	mode_gr = 2;
-	resvLimit = 4088; /* main_data_begin has 9 bits in MPEG 1 */
+//	resvLimit = 4088; /* main_data_begin has 9 bits in MPEG 1 */
+	resvLimit = 0; /* main_data_begin has 9 bits in MPEG 1 */ // BEND
 
 
 	/*
