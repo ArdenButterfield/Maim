@@ -39,6 +39,22 @@ public:
         }
     }
 
+    void enqueue(const T* inputs, const int numInputs) {
+        if (numInputs > max_size) {
+            enqueue(inputs + (numInputs - max_size), max_size);
+            return;
+        }
+        if (max_size - write_pos >= numInputs) {
+            std::memcpy(&buffer[write_pos], inputs, numInputs * sizeof (T));
+        } else {
+            auto firstSegment = max_size - write_pos;
+            std::memcpy(&buffer[write_pos], inputs, firstSegment * sizeof (T));
+            std::memcpy(&buffer[0], inputs + firstSegment, numInputs - firstSegment * sizeof (T));
+        }
+        write_pos += numInputs;
+        write_pos %= max_size;
+    }
+
     int num_items() {
         return (write_pos + max_size - read_pos) % max_size;
     }

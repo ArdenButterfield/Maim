@@ -80,10 +80,13 @@ MaimAudioProcessor::MaimAudioProcessor()
                        ),
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters()),
-      mp3ControllerManager(parameters)
+      mp3ControllerManager(parameters),
+      dryWetMixer(std::max(BLADELATENCYSAMPLES, LAMELATENCYSAMPLES))
 {
     oldPreGain = 1;
     oldPostGain = 1;
+
+    dryWetMixer.setMixingRule(juce::dsp::DryWetMixingRule::linear);
     
     addPsychoanalStateToParameters();
     
@@ -228,6 +231,7 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
     setLatencySamples(currentLatencySamples());
+    dryWetMixer.prepare({fs, samplesPerBlock, 2});
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
     int bitrate = MP3ControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
@@ -286,7 +290,9 @@ void MaimAudioProcessor::updateParameters()
     if (driveDB > 0) {
         makeupDB -= driveDB / 2;
     }
-    
+
+    dryWetMixer.setWetMixProportion(((juce::AudioParameterFloat*)parameters.getParameter("mix"))->get() / 100);
+
     preGain = juce::Decibels::decibelsToGain(driveDB);
     postGain = juce::Decibels::decibelsToGain(makeupDB);
     
@@ -308,12 +314,15 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    dryWetMixer.pushDrySamples(buffer);
+
     if (oldPreGain != preGain) {
         buffer.applyGainRamp(0, buffer.getNumSamples(), oldPreGain, preGain);
         oldPreGain = preGain;
     } else {
         buffer.applyGain(preGain);
     }
+
     if (buffer.getNumSamples() <= estimatedSamplesPerBlock) {
         mp3ControllerManager.processBlock(buffer);
     }
@@ -330,6 +339,7 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     } else {
         buffer.applyGain(postGain);
     }
+    dryWetMixer.mixWetSamples(buffer);
 }
 
 //==============================================================================
@@ -386,14 +396,18 @@ int MaimAudioProcessor::currentLatencySamples()
      */
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                   parameters.getParameter("encoder"))->getIndex();
+    int latencySamples;
     if (encoder == 0) {
         // Blade
-        return 2209;
+        latencySamples = BLADELATENCYSAMPLES;
     }
     if (encoder == 1) {
         // lame
-        return 2880;
+        latencySamples = LAMELATENCYSAMPLES;
     }
+    dryWetMixer.setWetLatency(latencySamples);
+
+    return latencySamples;
 }
 
 //==============================================================================

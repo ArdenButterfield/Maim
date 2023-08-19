@@ -12,14 +12,16 @@
 
 //==============================================================================
 
-PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p),
-                                                                   driveSlider(p, "drive", "Drive"),
-                                                                   encoderAttachment(p, "encoder", encoderButton),
-                                                                   bitrateSlider(p, "bitrate", "Bitrate"),
-                                                                   squishSlider(p, "bitratesquish", "Squish"),
-                                                                   hiSlider(p, "hicut", "High"),
-                                                                   loSlider(p, "locut", "Low"),
-                                                                   makeupSlider(p, "makeupgain", "Makeup gain")
+PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
+        StageWindow(p),
+        driveSlider(p, "drive", "Drive"),
+        encoderAttachment(p, "encoder", encoderButton),
+        bitrateSlider(p, "bitrate", "Bitrate"),
+        squishSlider(p, "bitratesquish", "Squish"),
+        hiSlider(p, "hicut", "High"),
+        loSlider(p, "locut", "Low"),
+        makeupSlider(p, "makeupgain", "Makeup gain"),
+        mixSlider(p, "mix","Dry/Wet")
 {
     addAndMakeVisible(driveSlider);
     addAndMakeVisible(encoderButton);
@@ -28,6 +30,7 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) : StageWindow(p)
     addAndMakeVisible(hiSlider);
     addAndMakeVisible(loSlider);
     addAndMakeVisible(makeupSlider);
+    addAndMakeVisible(mixSlider);
 }
 
 void PostSection::paint (juce::Graphics& g)
@@ -49,7 +52,7 @@ void PostSection::resized()
     setUsableBounds();
     int used_space = 0;
 
-    auto littleSection = usable_bounds.getWidth() / 6;
+    auto littleSection = usable_bounds.getWidth() / 7;
 
     driveSection = usable_bounds.withWidth(littleSection);
     used_space += driveSection.getWidth();
@@ -72,5 +75,6 @@ void PostSection::resized()
 
     hiSlider.setBounds(filterSection.withTrimmedLeft(filterSection.getWidth() / 2));
     loSlider.setBounds(filterSection.withWidth(filterSection.getWidth() / 2));
-    makeupSlider.setBounds(makeupSection);
+    makeupSlider.setBounds(makeupSection.withWidth(makeupSection.getWidth() / 2));
+    mixSlider.setBounds(makeupSection.withTrimmedLeft(makeupSection.getWidth() / 2));
 }

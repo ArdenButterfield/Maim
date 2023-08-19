@@ -9,6 +9,8 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
+
 #include <array>
 #include <atomic>
 #include <string>
@@ -87,7 +89,10 @@ private:
         
     std::array<juce::IIRFilter, 2> postFilterLo;
     std::array<juce::IIRFilter, 2> postFilterHi;
-    
+
+    juce::dsp::DryWetMixer<float> dryWetMixer;
+    const int BLADELATENCYSAMPLES = 2209;
+    const int LAMELATENCYSAMPLES = 2880;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessor)
 };

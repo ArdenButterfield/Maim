@@ -40,7 +40,7 @@ MP3ControllerManager::MP3ControllerManager(juce::AudioProcessorValueTreeState& p
     parameters.addParameterListener("thresholdbias", this);
     parameters.addParameterListener("mdctfeedback", this);
     parameters.addParameterListener("encoder", this);
-    
+
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id;
         id << "bandorder" << i;
@@ -172,8 +172,10 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             offController->processFrame(previousFrame[0], previousFrame[1], nullptr, nullptr);
             offController->processFrame(frameIn[0], frameIn[1], frameOutNew[0], frameOutNew[1]);
             currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
+
             fadeTowards (frameOut[0], frameOutNew[0], MP3FRAMESIZE);
             fadeTowards(frameOut[1], frameOutNew[1], MP3FRAMESIZE);
+
             currentController = offController;
             currentBitrate = desiredBitrate;
             currentEncoder = desiredEncoder;

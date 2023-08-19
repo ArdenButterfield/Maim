@@ -227,6 +227,7 @@ target_link_libraries("${PROJECT_NAME}"
     juce::juce_graphics
     juce::juce_gui_basics
     juce::juce_gui_extra
+    juce::juce_dsp
 )
 
 

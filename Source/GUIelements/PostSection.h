@@ -39,6 +39,7 @@ private:
     NamedRotarySlider loSlider;
     NamedRotarySlider hiSlider;
     NamedRotarySlider makeupSlider;
+    NamedRotarySlider mixSlider;
 
     const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
 

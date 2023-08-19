@@ -45,7 +45,6 @@ public:
     juce::Rectangle<int> draw_beveled_rectangle(juce::Graphics& g, juce::Rectangle<int> rect, bool raised);
 
     void paint (juce::Graphics& g) override;
-
 protected:
     void setUsableBounds();
     juce::Rectangle<int> usable_bounds;
