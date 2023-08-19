@@ -14,9 +14,6 @@
   },
   "format": "UDZO",
   "contents": [
-    { "x": 250, "y": 245, "type": "file", "path": "dmg/Maim.component" },
-    { "x": 480, "y": 245, "type": "file", "path": "dmg/Your Mac's Component Folder" },
-    { "x": 250, "y": 405, "type": "file", "path": "dmg/Maim.vst3" },
-    { "x": 480, "y": 405, "type": "file", "path": "dmg/Your Mac's VST3 Folder" }
+    { "x": 250, "y": 245, "type": "file", "path": "build/Maim.pkg" }
   ]
 }

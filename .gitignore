@@ -5,6 +5,8 @@ Maim/maim\ audiohost\ setup.filtergraph
 
 cmake-build-debug
 .idea
+packaging/build
+packaging/plugins
 
 # Audio stuff
 **/*.wav
