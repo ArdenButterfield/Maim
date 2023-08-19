@@ -124,12 +124,6 @@ jobs:
         key: v3-${{ matrix.os }}-${{ matrix.type }}
         variant: ${{ matrix.ccache }}
 
-    - name: Import Certificates (macOS)
-      uses: apple-actions/import-codesign-certs@v1
-      if: ${{ matrix.name == 'macOS' }}
-      with:
-        p12-file-base64: ${{ secrets.DEV_ID_INSTALLER_CERT }}
-        p12-password: ${{ secrets.DEV_ID_INSTALLER_PASSWORD }}
     - name: Build LAME (windows)
       if: ${{ matrix.name == 'Windows' }}
       working-directory: Source/lib/lame
@@ -168,14 +162,26 @@ jobs:
         curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
         7z x pluginval_${{ matrix.name }}.zip
         ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
+    - name: Import app Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v1
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_APPLICATION_CERT }}
+        p12-password: ${{ secrets.DEV_ID_APPLICATION_PASSWORD }}
 
     - name: Codesign (macOS)
       working-directory: ${{ env.BUILD_DIR }}
       if: ${{ matrix.name == 'macOS' }}
       run: |
         # Each plugin must be code signed
-        codesign --force -s "${{ secrets.DEVELOPER_ID_INSTALLER}}" -v ${{ env.VST3_PATH }} --deep --strict --options=runtime --timestamp
-        codesign --force -s "${{ secrets.DEVELOPER_ID_INSTALLER}}" -v ${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.VST3_PATH }} --deep --strict --options=runtime --timestamp
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
+    - name: Import installer Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v1
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_INSTALLER_CERT }}
+        p12-password: ${{ secrets.DEV_ID_INSTALLER_PASSWORD }}
 
     - name: Add Custom Icons (macOS)
       if: ${{ matrix.name == 'macOS' }}
