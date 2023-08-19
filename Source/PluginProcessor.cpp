@@ -231,7 +231,7 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
     setLatencySamples(currentLatencySamples());
-    dryWetMixer.prepare({fs, samplesPerBlock, 2});
+    dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
     int bitrate = MP3ControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
