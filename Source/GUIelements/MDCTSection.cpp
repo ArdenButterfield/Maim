@@ -25,6 +25,18 @@ MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
     addAndMakeVisible(mdctWindowIncrementSlider);
     addAndMakeVisible(butterflyDragBox);
     addAndMakeVisible(sectionName);
+    parameters.addParameterListener("encoder", this);
+
+    if (((juce::AudioParameterChoice*)parameters.getParameter("encoder"))->getIndex() == 0) {
+        // blade
+        mdctWindowIncrementSlider.setVisible(false);
+        mdctBandStepSlider.setVisible(false);
+    }
+}
+
+MDCTSection::~MDCTSection()
+{
+    parameters.removeParameterListener("encoder",this);
 }
 
 void MDCTSection::resized()
@@ -40,4 +52,14 @@ void MDCTSection::resized()
     int halfWidth = leftPart.getWidth() / 2;
     mdctBandStepSlider.setBounds(leftPart.withTrimmedLeft(halfWidth));
     mdctWindowIncrementSlider.setBounds(leftPart.withTrimmedRight(halfWidth));
+}
+void MDCTSection::parameterChanged (const juce::String& parameterID, float newValue)
+{
+    if (newValue == 1) {
+        mdctBandStepSlider.setVisible(true);
+        mdctWindowIncrementSlider.setVisible(true);
+    } else {
+        mdctBandStepSlider.setVisible(false);
+        mdctWindowIncrementSlider.setVisible(false);
+    }
 }

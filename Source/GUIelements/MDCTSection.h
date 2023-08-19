@@ -20,15 +20,17 @@
 //==============================================================================
 /*
 */
-class MDCTSection  : public StageWindow
+class MDCTSection  : public StageWindow, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     MDCTSection(juce::AudioProcessorValueTreeState& p);
+    ~MDCTSection();
     void resized() override;
 private:
     const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
     juce::Label sectionName;
     DragBox butterflyDragBox;
+    void parameterChanged (const juce::String &parameterID, float newValue) override;
 
     NamedRotarySlider mdctBandStepSlider;
 
