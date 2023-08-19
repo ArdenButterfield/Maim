@@ -200,7 +200,7 @@ jobs:
         curl http://s.sudre.free.fr/Software/files/Packages.dmg -o Packages.dmg
         sudo hdiutil attach Packages.dmg
         sudo installer -package /Volumes/Packages\ 1.2.10/Install\ Packages.pkg -target /
-        sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
+        # sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
     - name: Create package, Notarize and Staple (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
