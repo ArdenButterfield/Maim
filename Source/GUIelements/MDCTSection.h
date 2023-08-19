@@ -16,6 +16,7 @@
 #include "StageWindow.h"
 #include "DragBox.h"
 #include "NamedRotarySlider.h"
+#include "TiltGraph.h"
 
 //==============================================================================
 /*
@@ -59,6 +60,7 @@ private:
         mdctWindowIncrementSlider
     };
 */
+    TiltGraph tiltGraph;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MDCTSection)
 };

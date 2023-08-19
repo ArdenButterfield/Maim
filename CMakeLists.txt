@@ -138,6 +138,8 @@ set(SourceFiles
     Source/PluginProcessor.h
     Source/BladeController.cpp
     Source/MP3Controller.h
+    Source/GUIelements/TiltGraph.cpp
+    Source/GUIelements/TiltGraph.h
     Source/GUIelements/TitlePanel.h
     Source/GUIelements/TitlePanel.cpp
     Source/GUIelements/MaimLookAndFeel.h

@@ -15,7 +15,8 @@ MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
         : StageWindow(p),
             butterflyDragBox(p, "butterflystandard", "butterflycrossed"),
       mdctBandStepSlider(p, "mdctstep", "!?"),
-      mdctWindowIncrementSlider(p, "mdctwindowincr", "???")
+      mdctWindowIncrementSlider(p, "mdctwindowincr", "???"),
+      tiltGraph(p)
 {
     sectionName.setColour(sectionName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
@@ -25,6 +26,7 @@ MDCTSection::MDCTSection(juce::AudioProcessorValueTreeState& p)
     addAndMakeVisible(mdctWindowIncrementSlider);
     addAndMakeVisible(butterflyDragBox);
     addAndMakeVisible(sectionName);
+    addAndMakeVisible(tiltGraph);
     parameters.addParameterListener("encoder", this);
 
     if (((juce::AudioParameterChoice*)parameters.getParameter("encoder"))->getIndex() == 0) {
@@ -52,6 +54,7 @@ void MDCTSection::resized()
     int halfWidth = leftPart.getWidth() / 2;
     mdctBandStepSlider.setBounds(leftPart.withTrimmedLeft(halfWidth));
     mdctWindowIncrementSlider.setBounds(leftPart.withTrimmedRight(halfWidth));
+    tiltGraph.setBounds(leftPart.withTrimmedTop(50));
 }
 void MDCTSection::parameterChanged (const juce::String& parameterID, float newValue)
 {
