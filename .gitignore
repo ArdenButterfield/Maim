@@ -7,6 +7,7 @@ cmake-build-debug
 .idea
 packaging/build
 packaging/plugins
+**.dmg
 
 # Audio stuff
 **/*.wav
