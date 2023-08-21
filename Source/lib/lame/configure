@@ -15899,7 +15899,7 @@ if test "x$GCC" = "xyes"; then
 		;;
 	*)
 		# default
-		OPTIMIZATION="-O3 ${OMIT_FRAME_POINTER} -ffast-math \
+		OPTIMIZATION="-O3 ${OMIT_FRAME_POINTER} \
 			-funroll-loops"
 		OPTIMIZATION_FULL="-fbranch-count-reg -fforce-addr"
 		;;

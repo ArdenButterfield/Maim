@@ -323,13 +323,19 @@ unsigned int			codecEncodeChunk
         for (int ch = 0; ch < 2; ++ch) {
             for (int s = 0; s < 576; ++s) {
             	m = fabsf(xr[gr][ch][s]);
-                flags->bends.feedback_data[gr][ch][s] = 
+                if (isnan(m) || isinf(m)) {
+                    m = 0;
+                }
+                float fed = flags->bends.feedback_data[gr][ch][s];
+
+                flags->bends.feedback_data[gr][ch][s] = (isnan(fed) || isinf(fed)) ? 0 :
                     dry * m + 
                     wet * flags->bends.feedback_data[gr][ch][s];
 
                 xr[gr][ch][s] = (xr[gr][ch][s] > 0) ? 
                 	flags->bends.feedback_data[gr][ch][s] : 
                 	-flags->bends.feedback_data[gr][ch][s];
+
             }
         }
     }

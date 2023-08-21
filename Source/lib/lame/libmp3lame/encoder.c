@@ -442,6 +442,7 @@ lame_encode_mp3_frame(       /* Output */
                 }
             }
         }
+        printf("\n");
     } else if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
         gfc->bendFlagsAndData->prev_block_long = 1;
         for (int gr = 0; gr < 2; ++gr) {
@@ -505,17 +506,21 @@ lame_encode_mp3_frame(       /* Output */
     for (int gr = 0; gr < 2; ++gr) {
         for (int ch = 0; ch < 2; ++ch) {
             for (int s = 0; s < 576; ++s) {
-                m = fabsf(gfc->l3_side.tt[gr][ch].xr[s]);
-                gfc->bendFlagsAndData->feedback_data[gr][ch][s] = 
-                    dry * m + 
-                    wet * gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+                float input = gfc->l3_side.tt[gr][ch].xr[s];
+                if (isnan(input) || isinf(input)) {
+                    input = 0;
+                }
+                m = fabsf(input);
+                float fed = gfc->bendFlagsAndData->feedback_data[gr][ch][s];
+                gfc->bendFlagsAndData->feedback_data[gr][ch][s] = (isnan(fed) || isinf(fed)) ? 0 :
+                                                                  dry * m + wet * fed;
                 gfc->l3_side.tt[gr][ch].xr[s] = (gfc->l3_side.tt[gr][ch].xr[s] > 0) ?
                     gfc->bendFlagsAndData->feedback_data[gr][ch][s] :
                     -gfc->bendFlagsAndData->feedback_data[gr][ch][s];
             }
         }
     }
-
+    printf("\n");
     for (int i = 0; i < 576; ++i) {
         post_bend[i] = 0;
     }
