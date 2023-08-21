@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    ArrayAssigner.h
+    ReassignmentSection.h
     Created: 9 Apr 2023 7:03:21pm
     Author:  Arden Butterfield
 
@@ -23,15 +23,15 @@
 //==============================================================================
 /*
 */
-class ArrayAssigner  :
+class ReassignmentSection :
         public StageWindow,
         public juce::Timer,
         public juce::AudioProcessorValueTreeState::Listener,
         public juce::Button::Listener
 {
 public:
-    ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int steps);
-    ~ArrayAssigner() override;
+    ReassignmentSection (juce::AudioProcessorValueTreeState& p, int numItems, int steps);
+    ~ReassignmentSection() override;
     
     void mouseDown(const juce::MouseEvent &event) override;
     void mouseDrag(const juce::MouseEvent &event) override;
@@ -43,6 +43,9 @@ public:
     void resized() override;
 
 private:
+    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    juce::Label sectionName;
+
     ArrayAssignerButton resetButton;
     ArrayAssignerButton randomButton;
     ArrayAssignerButton upButton;
@@ -73,5 +76,5 @@ private:
     
     std::atomic<bool> needsRepainting;
     int steps;
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrayAssigner)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReassignmentSection)
 };

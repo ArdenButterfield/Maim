@@ -14,6 +14,7 @@ TitlePanel::~TitlePanel()
 void TitlePanel::paint (juce::Graphics& g)
 {
     auto inner_rect = draw_beveled_rectangle(g, getLocalBounds(), true);
+    auto textRect = inner_rect.withTrimmedLeft(10);
     auto gradient = juce::ColourGradient::horizontal(MaimLookAndFeel().SPLASH_COLOR_DARK,
         MaimLookAndFeel().SPLASH_COLOR_LIGHT,
         inner_rect);
@@ -23,8 +24,10 @@ void TitlePanel::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont(title_font);
-    g.drawText ("Maim", inner_rect,
+    g.drawText ("MAIM", textRect,
         juce::Justification::centredLeft, true);
+    g.setFont(tooltip_font);
+    g.drawText("Version 0.0.1", textRect.withTrimmedBottom(10).withTrimmedLeft(2), juce::Justification::bottomLeft, true);
 }
 
 void TitlePanel::resized()

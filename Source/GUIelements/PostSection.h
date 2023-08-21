@@ -32,7 +32,7 @@ private:
     juce::Rectangle<int> makeupSection;
 
     NamedRotarySlider driveSlider;
-    juce::ToggleButton encoderButton {"Blade|Lame"};
+    juce::ToggleButton encoderButton {"Blade Encoder|Lame Encoder"};
     const juce::AudioProcessorValueTreeState::ButtonAttachment encoderAttachment;
     NamedRotarySlider bitrateSlider;
     NamedRotarySlider squishSlider;

@@ -99,7 +99,7 @@ set(SourceFiles
     Source/lib/blade/bladeenc/codec.c
     Source/lib/blade/bladeenc/l3bitstream.c
     Source/lib/blade/bladeenc/encoder.h
-    Source/GUIelements/ArrayAssigner.cpp
+        Source/GUIelements/ReassignmentSection.cpp
     Source/GUIelements/guiUtil.h
     Source/GUIelements/MainArea.cpp
     Source/GUIelements/PostSection.h
@@ -109,16 +109,16 @@ set(SourceFiles
     Source/GUIelements/LineGraph.h
     Source/GUIelements/PsychoanalGraph.cpp
     Source/GUIelements/PostSection.cpp
-    Source/GUIelements/MDCTSection.cpp
-    Source/GUIelements/QuantizeSection.cpp
+        Source/GUIelements/MiscellaneaSection.cpp
+        Source/GUIelements/MDCTGraphSection.cpp
     Source/GUIelements/DragBox.cpp
-    Source/GUIelements/MDCTSection.h
+        Source/GUIelements/MiscellaneaSection.h
     Source/GUIelements/MainArea.h
     Source/GUIelements/IndicatorLight.cpp
-    Source/GUIelements/ArrayAssigner.h
+        Source/GUIelements/ReassignmentSection.h
     Source/GUIelements/IndicatorLight.h
     Source/GUIelements/PsychoanalGraph.h
-    Source/GUIelements/QuantizeSection.h
+        Source/GUIelements/MDCTGraphSection.h
     Source/GUIelements/DragBox.h
     Source/GUIelements/PsychoacousticSection.cpp
     Source/MP3ControllerManager.cpp

@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    MDCTSection.h
+    MiscellaneaSection.h
     Created: 7 Apr 2023 9:21:14am
     Author:  Arden Butterfield
 
@@ -21,18 +21,21 @@
 //==============================================================================
 /*
 */
-class MDCTSection  : public StageWindow, public juce::AudioProcessorValueTreeState::Listener
+class MiscellaneaSection : public StageWindow, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    MDCTSection(juce::AudioProcessorValueTreeState& p);
-    ~MDCTSection();
+    MiscellaneaSection (juce::AudioProcessorValueTreeState& p);
+    ~MiscellaneaSection();
     void resized() override;
+    void paint (juce::Graphics&) override;
 private:
     const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    const juce::Font lameLabelFont = juce::Font(MaimLookAndFeel().main_font).withHeight(10.f);
     juce::Label sectionName;
+    juce::Label lameOnlyLabel;
     DragBox butterflyDragBox;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
-
+    juce::Rectangle<int> lameOnlySection;
     NamedRotarySlider mdctBandStepSlider;
 
 /*
@@ -62,5 +65,5 @@ private:
 */
     TiltGraph tiltGraph;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MDCTSection)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MiscellaneaSection)
 };

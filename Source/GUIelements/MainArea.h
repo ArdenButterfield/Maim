@@ -13,13 +13,13 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_graphics/juce_graphics.h>
 
-#include "StageWindow.h"
-#include "PsychoacousticSection.h"
-#include "MDCTSection.h"
-#include "QuantizeSection.h"
+#include "MDCTGraphSection.h"
+#include "MiscellaneaSection.h"
 #include "PostSection.h"
+#include "PsychoacousticSection.h"
+#include "ReassignmentSection.h"
+#include "StageWindow.h"
 #include "TitlePanel.h"
-#include "ArrayAssigner.h"
 //==============================================================================
 /*
 */
@@ -34,11 +34,11 @@ public:
 
 private:
     PsychoacousticSection psychoacousticSection;
-    MDCTSection mdctSection;
-    QuantizeSection quantizeSection;
+    MiscellaneaSection miscellaneaSection;
+    MDCTGraphSection mdctGraphSection;
     PostSection postSection;
     TitlePanel titlePanel;
-    ArrayAssigner arrayAssigner;
+    ReassignmentSection reassignmentSection;
 
     juce::AudioProcessorValueTreeState& parameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainArea)

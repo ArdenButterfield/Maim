@@ -1,17 +1,17 @@
 /*
   ==============================================================================
 
-    QuantizeSection.cpp
+    MDCTGraphSection.cpp
     Created: 8 Apr 2023 1:50:16pm
     Author:  Arden Butterfield
 
   ==============================================================================
 */
 
-#include "QuantizeSection.h"
+#include "MDCTGraphSection.h"
 
 //==============================================================================
-QuantizeSection::QuantizeSection(juce::AudioProcessorValueTreeState& p)
+MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
 : StageWindow(p), mdctGraph(p)
 {
     addAndMakeVisible(mdctGraph);
@@ -26,7 +26,7 @@ QuantizeSection::QuantizeSection(juce::AudioProcessorValueTreeState& p)
 
 }
 
-void QuantizeSection::resized()
+void MDCTGraphSection::resized()
 {
     auto graphArea = getLocalBounds()
                          .withTrimmedTop(10)
@@ -40,9 +40,9 @@ void QuantizeSection::resized()
 
 }
 
-void QuantizeSection::mouseEnter(const juce::MouseEvent& e) {
+void MDCTGraphSection::mouseEnter(const juce::MouseEvent& e) {
 
 }
-void QuantizeSection::mouseExit(const juce::MouseEvent& e) {
+void MDCTGraphSection::mouseExit(const juce::MouseEvent& e) {
 
 }

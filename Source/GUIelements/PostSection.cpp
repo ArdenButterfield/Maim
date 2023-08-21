@@ -36,6 +36,8 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
 void PostSection::paint (juce::Graphics& g)
 {
     StageWindow::paint(g);
+    g.setColour(BEVEL_LIGHT);
+    g.fillRect(usable_bounds);
     g.setColour(MaimLookAndFeel().BEVEL_DARK);
     for (const auto& section : { driveSection, bitrateSection, filterSection }) {
         g.drawVerticalLine(section.getRight(), section.getY() + 10,section.getBottom() - 10);
@@ -44,7 +46,7 @@ void PostSection::paint (juce::Graphics& g)
     g.setColour(MaimLookAndFeel().BEVEL_BLACK);
     g.setFont(sectionNameFont);
     g.drawText("EQ", filterSection.withTrimmedTop(filterSection.getHeight() - 30), juce::Justification::centredTop, true);
-    g.drawText("Codec", bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 30), juce::Justification::centredTop, true);
+    // g.drawText("Codec", bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 30), juce::Justification::centredTop, true);
 }
 
 void PostSection::resized()
@@ -71,7 +73,7 @@ void PostSection::resized()
     auto bottom = bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 60);
     bitrateSlider.setBounds(top.withWidth(top.getWidth() / 2));
     squishSlider.setBounds(top.withTrimmedLeft(top.getWidth() / 2));
-    encoderButton.setBounds(bottom.withTrimmedBottom(30).withSizeKeepingCentre(80, 30));
+    encoderButton.setBounds(bottom.withSizeKeepingCentre(bottom.getWidth() - 20, 30));
 
     hiSlider.setBounds(filterSection.withTrimmedLeft(filterSection.getWidth() / 2));
     loSlider.setBounds(filterSection.withWidth(filterSection.getWidth() / 2));

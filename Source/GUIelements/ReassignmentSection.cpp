@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    ArrayAssigner.cpp
+    ReassignmentSection.cpp
     Created: 9 Apr 2023 7:03:21pm
     Author:  Arden Butterfield
 
@@ -13,10 +13,10 @@
 
 #include <cmath>
 
-#include "ArrayAssigner.h"
+#include "ReassignmentSection.h"
 
 //==============================================================================
-ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems, int s) :
+ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p, int numItems, int s) :
     StageWindow(p),
     resetButton("reset", RESET),
     randomButton("random", RANDOM),
@@ -24,11 +24,18 @@ ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems
     downButton("down", SHIFT_DOWN),
     pTree(p)
 {
+    sectionName.setColour(sectionName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    sectionName.setFont(sectionNameFont);
+    sectionName.setText("Frequency Reassignment", juce::dontSendNotification);
+    sectionName.setJustificationType(juce::Justification::centredTop);
+
+
     addAndMakeVisible(resetButton);
     addAndMakeVisible(randomButton);
     addAndMakeVisible(upButton);
     addAndMakeVisible(downButton);
-    
+    addAndMakeVisible(sectionName);
+
     resetButton.addListener(this);
     randomButton.addListener(this);
     upButton.addListener(this);
@@ -53,7 +60,7 @@ ArrayAssigner::ArrayAssigner(juce::AudioProcessorValueTreeState& p, int numItems
     
 }
 
-ArrayAssigner::~ArrayAssigner()
+ReassignmentSection::~ReassignmentSection()
 {
     for (int i = 0; i < 32; ++i) {
         std::stringstream id;
@@ -67,7 +74,7 @@ ArrayAssigner::~ArrayAssigner()
     downButton.removeListener(this);
 }
 
-void ArrayAssigner::setValue(const int index, const int newVal)
+void ReassignmentSection::setValue(const int index, const int newVal)
 {
     if ((index < 0) || (index >= itemVals.size())) {
         return;
@@ -76,7 +83,7 @@ void ArrayAssigner::setValue(const int index, const int newVal)
     (*parameters[index]) = newVal;
 }
 
-void ArrayAssigner::resetGraph()
+void ReassignmentSection::resetGraph()
 {
     for (int i = 0; i < itemVals.size(); ++i) {
         setValue(i, i);
@@ -84,7 +91,7 @@ void ArrayAssigner::resetGraph()
     repaint();
 }
 
-void ArrayAssigner::randomizeGraph()
+void ReassignmentSection::randomizeGraph()
 {
     for (int i = 0; i < itemVals.size(); ++i) {
         setValue(i, random.nextInt(itemVals.size()));
@@ -92,7 +99,7 @@ void ArrayAssigner::randomizeGraph()
     repaint();
 }
 
-void ArrayAssigner::shiftGraph(bool up)
+void ReassignmentSection::shiftGraph(bool up)
 {
     int inc = up ? 1 : -1;
     for (int i = 0; i < itemVals.size(); ++i) {
@@ -101,7 +108,7 @@ void ArrayAssigner::shiftGraph(bool up)
     repaint();
 }
 
-void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool strictBounds)
+void ReassignmentSection::updateChart(const juce::Point<float>& mousePosition, bool strictBounds)
 {
     float x, y;
     x = mousePosition.getX();
@@ -122,17 +129,17 @@ void ArrayAssigner::updateChart(const juce::Point<float>& mousePosition, bool st
     repaint();
 }
 
-void ArrayAssigner::mouseDown(const juce::MouseEvent& event)
+void ReassignmentSection::mouseDown(const juce::MouseEvent& event)
 {
     updateChart(event.position, true);
 }
 
-void ArrayAssigner::mouseDrag(const juce::MouseEvent& event)
+void ReassignmentSection::mouseDrag(const juce::MouseEvent& event)
 {
     updateChart(event.position, false);
 }
 
-void ArrayAssigner::mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &wheel)
+void ReassignmentSection::mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &wheel)
 {
     if (!activeArea.contains((int)event.position.getX(),(int)event.position.getY())) {
         return;
@@ -154,18 +161,18 @@ void ArrayAssigner::mouseWheelMove(const juce::MouseEvent &event, const juce::Mo
 }
 
 
-float ArrayAssigner::getValScreenY(const int rawVal)
+float ReassignmentSection::getValScreenY(const int rawVal)
 {
     return activeArea.getHeight() * (1 - ((float)rawVal / (steps))) + activeArea.getY();
 }
 
-int ArrayAssigner::getValIndex(const float screenY)
+int ReassignmentSection::getValIndex(const float screenY)
 {
     float v = 1 - ((screenY - activeArea.getY()) / activeArea.getHeight());
     return (int) std::round(v * (steps));
 }
 
-void ArrayAssigner::paint (juce::Graphics& g)
+void ReassignmentSection::paint (juce::Graphics& g)
 {
     StageWindow::paint(g);
     g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
@@ -200,16 +207,25 @@ void ArrayAssigner::paint (juce::Graphics& g)
     needsRepainting = false;
 }
 
-void ArrayAssigner::resized()
+void ReassignmentSection::resized()
 {
-    auto mainRect = getLocalBounds().withSizeKeepingCentre(getWidth() - 50, getHeight() - 50);
-    auto buttonRect = mainRect.withHeight(40);
-    int buttonWidth = buttonRect.getWidth() / 4;
+    // Buttons overlap with each other, and with the top edge of the active area.
+    int buttonWidth = (getWidth() - 30) / 4;
+    int mainRectWidth = buttonWidth * 4 - 6;
+    auto mainRect = getLocalBounds().withSizeKeepingCentre(mainRectWidth, getHeight() - 30);
+    const auto buttonHeight = 40;
+    const auto titleHeight = 25;
+    sectionName.setBounds(mainRect.withHeight(titleHeight));
+    mainRect = mainRect.withTrimmedTop(titleHeight);
+    int buttonDeltaX = buttonWidth - 2;
+    auto buttonRect = mainRect.withHeight(buttonHeight);
+
     resetButton.setBounds(buttonRect.withWidth(buttonWidth));
-    randomButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth, 0));
-    upButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth * 2, 0));
-    downButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonWidth * 3, 0));
-    activeAreaBorder = mainRect.withTrimmedTop(40);
+    randomButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonDeltaX, 0));
+    upButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonDeltaX * 2, 0));
+    downButton.setBounds(buttonRect.withWidth(buttonWidth).translated(buttonDeltaX * 3, 0));
+
+    activeAreaBorder = mainRect.withTrimmedTop(buttonHeight - 2);
     activeArea = activeAreaBorder
                      .withTrimmedTop(10)
                      .withTrimmedLeft(10)
@@ -217,28 +233,28 @@ void ArrayAssigner::resized()
                      .withTrimmedBottom(10);
 }
 
-void ArrayAssigner::parameterChanged (const juce::String &parameterID, float newValue)
+void ReassignmentSection::parameterChanged (const juce::String &parameterID, float newValue)
 {
     buildItemValsFromParams();
     
     needsRepainting = true;
 }
 
-void ArrayAssigner::buildItemValsFromParams()
+void ReassignmentSection::buildItemValsFromParams()
 {
     for (int i = 0; i < itemVals.size(); ++i) {
         setValue(i, parameters[i]->get());
     }
 }
 
-void ArrayAssigner::timerCallback()
+void ReassignmentSection::timerCallback()
 {
     if (needsRepainting) {
         repaint();
     }
 }
 
-void ArrayAssigner::buttonClicked (juce::Button * b)
+void ReassignmentSection::buttonClicked (juce::Button * b)
 {
     if (b == &resetButton) {
         resetGraph();
@@ -250,6 +266,6 @@ void ArrayAssigner::buttonClicked (juce::Button * b)
         shiftGraph(false);
     }
 }
-void ArrayAssigner::buttonStateChanged (juce::Button * b)
+void ReassignmentSection::buttonStateChanged (juce::Button * b)
 {
 }

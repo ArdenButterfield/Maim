@@ -13,18 +13,18 @@
 //==============================================================================
 MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
     psychoacousticSection(p),
-    mdctSection(p),
-    quantizeSection(p),
-    arrayAssigner(p, 20, 20),
+                                                             miscellaneaSection (p),
+                                                             mdctGraphSection (p),
+                                                             reassignmentSection (p, 20, 20),
     postSection(p),
     titlePanel (p),
     parameters(p)
 
 {
     addAndMakeVisible(psychoacousticSection);
-    addAndMakeVisible(mdctSection);
-    addAndMakeVisible(quantizeSection);
-    addAndMakeVisible(arrayAssigner);
+    addAndMakeVisible(miscellaneaSection);
+    addAndMakeVisible(mdctGraphSection);
+    addAndMakeVisible(reassignmentSection);
     addAndMakeVisible(postSection);
     addAndMakeVisible(titlePanel);
 }
@@ -76,20 +76,20 @@ void MainArea::resized()
         .withTrimmedBottom(bigFourElementHeight + margin);
     auto titleBounds = psychoacousticBounds.withHeight(titleHeight);
     psychoacousticBounds = psychoacousticBounds.withTrimmedTop(titleHeight + margin);
-    auto mdctBounds = bigFourRightColumn
+    auto mdctGraphBounds = bigFourRightColumn
         .withTrimmedBottom(bigFourElementHeight + margin);
-    auto quantizeBounds = bigFourLeftColumn
+    auto reassignmentBounds = bigFourLeftColumn
         .withTrimmedTop(bigFourElementHeight + margin);
-    auto decodeBounds = bigFourRightColumn
+    auto miscellaneaBounds = bigFourRightColumn
         .withTrimmedTop(bigFourElementHeight + margin);
     
     auto postSectionBounds = activeArea
         .withTrimmedTop(activeArea.getHeight() - postSectionHeight);
     
     psychoacousticSection.setBounds(psychoacousticBounds);
-    mdctSection.setBounds(mdctBounds);
-    quantizeSection.setBounds(quantizeBounds);
-    arrayAssigner.setBounds(decodeBounds);
+    miscellaneaSection.setBounds(miscellaneaBounds);
+    mdctGraphSection.setBounds(mdctGraphBounds);
+    reassignmentSection.setBounds(reassignmentBounds);
     postSection.setBounds(postSectionBounds);
 
     titlePanel.setBounds(titleBounds);
