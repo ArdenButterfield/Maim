@@ -30,6 +30,10 @@ public:
     void resized() override;
 
 private:
+    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    juce::Label sectionName;
+    juce::Label feedbackName;
+
     DemureSlider MDCTfeedbackSlider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
@@ -39,11 +43,11 @@ private:
         "mdctfeedback",
         MDCTfeedbackSlider
     };
+
     DemureSlider mdctPostPitchShiftSlider {
         juce::Slider::LinearHorizontal,
         juce::Slider::TextBoxAbove
     };
-
 
     juce::AudioProcessorValueTreeState::SliderAttachment mdctPostPitchShiftAttachment {
         parameters,

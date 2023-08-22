@@ -1079,6 +1079,21 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
                  */
                 // TESTT:
                 // switching to short type instead: mangles the hits.
+                float bubu, bubd, bdbu, bdbd;
+                bubu = gfc->bendFlagsAndData->butterfly_bubu;
+                bubd = gfc->bendFlagsAndData->butterfly_bubd;
+                bdbu = gfc->bendFlagsAndData->butterfly_bdbu;
+                bubd = gfc->bendFlagsAndData->butterfly_bdbd;
+/*
+                float combo = bubu + bubd;
+                if (gfc->bendFlagsAndData->mdct_band_step < 15 && (combo > 1)) {
+                    // Prevent loud screeching
+                    bubd /= combo;
+                    bubu /= combo;
+                    bdbd /= combo;
+                    bdbd /= combo;
+                }
+*/
                 if (type != SHORT_TYPE && band != 0) {
                     // start k loop at 16: loud pops at drum hits, sounds like scrubbing a pot
                     // no loop or shorter loop: a bit noisy but not much change
@@ -1089,8 +1104,15 @@ mdct_sub48(lame_internal_flags * gfc, const sample_t * w0, const sample_t * w1)
 
                         // swap bd bu: cool flangery sound
                         // either/both 0: very thin, but transients pop through
+//                        mdct_enc[-1 - k] = bubu * bu + bdbu * bd;
+//                        mdct_enc[k] = bubd * bu + bdbd * bd;
                         mdct_enc[-1 - k] = gfc->bendFlagsAndData->butterfly_bubu * bu + gfc->bendFlagsAndData->butterfly_bdbu * bd;
                         mdct_enc[k] = gfc->bendFlagsAndData->butterfly_bubd * bu + gfc->bendFlagsAndData->butterfly_bdbd * bd;
+                        float combo = gfc->bendFlagsAndData->butterfly_bubu + gfc->bendFlagsAndData->butterfly_bdbu;
+                        if ((combo > 1) && (gfc->bendFlagsAndData->mdct_band_step < 16)) {
+                            mdct_enc[-1-k] /= combo;
+                            mdct_enc[k] /= combo;
+                        }
                     }
                 }
             }

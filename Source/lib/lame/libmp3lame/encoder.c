@@ -520,7 +520,6 @@ lame_encode_mp3_frame(       /* Output */
             }
         }
     }
-    printf("\n");
     for (int i = 0; i < 576; ++i) {
         post_bend[i] = 0;
     }

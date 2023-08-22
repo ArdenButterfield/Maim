@@ -57,10 +57,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID {"encoder", 1}, "Encoder", juce::StringArray {"Blade", "Lame"}, 1));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"hicut", 1}, "High cut", 100.f, 20000.f, 18000.f));
+        juce::ParameterID {"hicut", 1}, "High cut", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.30f), 18000.f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"locut", 1}, "Low cut", 10.f, 10000.f, 10.f));
+        juce::ParameterID {"locut", 1}, "Low cut", juce::NormalisableRange<float>(10.f, 20000.f, 1.f, 0.30f), 10.f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"mix", 1}, "Mix", 0.f, 100.f, 100.f));

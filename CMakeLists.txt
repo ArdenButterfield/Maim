@@ -152,7 +152,7 @@ set(SourceFiles
     Source/GUIelements/BlockyLineGraph.h
     Source/GUIelements/DemureSlider.cpp
     Source/GUIelements/DemureSlider.h
-    Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
+        Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
     Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.h
 )
 target_include_directories("${PROJECT_NAME}"

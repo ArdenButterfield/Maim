@@ -1445,6 +1445,15 @@ L3psycho_anal_vbr(lame_internal_flags * gfc,
 
     vbrpsy_compute_block_type(cfg, uselongblock);
 
+    // BEND: long blocks only for empty butterfly sounds better
+    const int threshold = 0.25;
+    if ((gfc->bendFlagsAndData->butterfly_bubu < 0.25)
+        && (gfc->bendFlagsAndData->butterfly_bubd < 0.25)
+        && (gfc->bendFlagsAndData->butterfly_bdbu < 0.25)
+        && (gfc->bendFlagsAndData->butterfly_bdbd < 0.25)) {
+        uselongblock[0] = 1;
+        uselongblock[1] = 1;
+    }
     /* LONG BLOCK CASE */
     {
         for (chn = 0; chn < n_chn_psy; chn++) {

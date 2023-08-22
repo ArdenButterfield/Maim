@@ -58,6 +58,7 @@ void MDCTGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasCh
 void MDCTGraph::paint (juce::Graphics& g)
 {
     g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);
+    g.drawRect(getLocalBounds());
 
 }
 

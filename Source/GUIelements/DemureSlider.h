@@ -12,10 +12,12 @@
 class DemureSlider : public juce::Slider
 {
 public:
-    DemureSlider (SliderStyle style, TextEntryBoxPosition textBoxPosition) : juce::Slider(style, textBoxPosition) {};
+    DemureSlider (SliderStyle style, TextEntryBoxPosition textBoxPosition) : juce::Slider(style, textBoxPosition), label(nullptr) {};
     void mouseEnter(const juce::MouseEvent& e) override;
     void mouseExit(const juce::MouseEvent& e) override;
-
+    void setLabel (juce::Label* label);
+private:
+    juce::Label* label;
 };
 
 #endif //MAIM_DEMURESLIDER_H
