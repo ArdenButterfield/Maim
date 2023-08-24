@@ -3,7 +3,9 @@ Maim/Builds
 Maim/JuceLibraryCode
 Maim/maim\ audiohost\ setup.filtergraph
 
-cmake-build-debug
+
+cmake-build-*
+Packages.dmg
 .idea
 packaging/build
 packaging/plugins
