@@ -7,8 +7,8 @@
 
 MDCTGraph::MDCTGraph(juce::AudioProcessorValueTreeState& p):
                                                                            parameters(p),
-                                                                           preLine(0, 1, numSamples, MaimLookAndFeel().CONTRAST_COLOR_LIGHT, 3),
-                                                                           postLine(0, 1, numSamples, MaimLookAndFeel().SPLASH_COLOR_DARK, 3)
+                                                                           preLine(0, 1, numSamples, MaimColours::CONTRAST_COLOR_LIGHT, 3),
+                                                                           postLine(0, 1, numSamples, MaimColours::SPLASH_COLOR_DARK, 3)
 {
     parameters.state.addListener(this);
     preSamples.fill(0);
@@ -57,7 +57,7 @@ void MDCTGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasCh
 
 void MDCTGraph::paint (juce::Graphics& g)
 {
-    g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);
+    g.fillAll (MaimColours::BEVEL_LIGHT);
     g.drawRect(getLocalBounds());
 
 }

@@ -12,7 +12,7 @@ TiltGraph::TiltGraph(juce::AudioProcessorValueTreeState& p) : parameters(p)
     shapeWidth = ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get() / 18.f;
 }
 
-TiltGraph::~TiltGraph() noexcept
+TiltGraph::~TiltGraph()
 {
     parameters.removeParameterListener("mdctstep", this);
     parameters.removeParameterListener("mdctwindowincr", this);

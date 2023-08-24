@@ -322,7 +322,7 @@ unsigned int			codecEncodeChunk
     for (int gr = 0; gr < 2; ++gr) {
         for (int ch = 0; ch < 2; ++ch) {
             for (int s = 0; s < 576; ++s) {
-            	m = fabsf(xr[gr][ch][s]);
+            	m = fabs(xr[gr][ch][s]);
                 if (isnan(m) || isinf(m)) {
                     m = 0;
                 }

@@ -15,8 +15,8 @@ void TitlePanel::paint (juce::Graphics& g)
 {
     auto inner_rect = draw_beveled_rectangle(g, getLocalBounds(), true);
     auto textRect = inner_rect.withTrimmedLeft(10);
-    auto gradient = juce::ColourGradient::horizontal(MaimLookAndFeel().SPLASH_COLOR_DARK,
-        MaimLookAndFeel().SPLASH_COLOR_LIGHT,
+    auto gradient = juce::ColourGradient::horizontal(MaimColours::SPLASH_COLOR_DARK,
+        MaimColours::SPLASH_COLOR_LIGHT,
         inner_rect);
     g.setGradientFill(gradient);
     g.fillRect(inner_rect);

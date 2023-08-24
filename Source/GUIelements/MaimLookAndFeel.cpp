@@ -11,26 +11,26 @@ MaimLookAndFeel::MaimLookAndFeel() :
 {
     // this->setColour(juce::ResizableWindow::backgroundColourId, PANEL_BACKGROUND_COLOR);
     setColour(juce::ResizableWindow::backgroundColourId, juce::Colour(0xffb3b2a8));
-    setColour(juce::ComboBox::backgroundColourId, BEVEL_LIGHT);
-    setColour(juce::ComboBox::textColourId, BEVEL_BLACK);
-    setColour(juce::ComboBox::outlineColourId, BEVEL_DARK);
-    setColour(juce::ComboBox::focusedOutlineColourId, BEVEL_BLACK);
-    setColour(juce::ComboBox::arrowColourId, BEVEL_DARK);
+    setColour(juce::ComboBox::backgroundColourId, MaimColours::BEVEL_LIGHT);
+    setColour(juce::ComboBox::textColourId, MaimColours::BEVEL_BLACK);
+    setColour(juce::ComboBox::outlineColourId, MaimColours::BEVEL_DARK);
+    setColour(juce::ComboBox::focusedOutlineColourId, MaimColours::BEVEL_BLACK);
+    setColour(juce::ComboBox::arrowColourId, MaimColours::BEVEL_DARK);
 
-    setColour(juce::PopupMenu::backgroundColourId, BEVEL_LIGHT);
-    setColour(juce::PopupMenu::textColourId, BEVEL_DARK);
-    setColour(juce::PopupMenu::headerTextColourId, BEVEL_BLACK);
-    setColour(juce::PopupMenu::highlightedBackgroundColourId, BEVEL_WHITE);
-    setColour(juce::PopupMenu::highlightedTextColourId, BEVEL_BLACK);
+    setColour(juce::PopupMenu::backgroundColourId, MaimColours::BEVEL_LIGHT);
+    setColour(juce::PopupMenu::textColourId, MaimColours::BEVEL_DARK);
+    setColour(juce::PopupMenu::headerTextColourId, MaimColours::BEVEL_BLACK);
+    setColour(juce::PopupMenu::highlightedBackgroundColourId, MaimColours::BEVEL_WHITE);
+    setColour(juce::PopupMenu::highlightedTextColourId, MaimColours::BEVEL_BLACK);
 
-    setColour(juce::Slider::textBoxTextColourId, BEVEL_DARK);
+    setColour(juce::Slider::textBoxTextColourId, MaimColours::BEVEL_DARK);
     const float transparent_alpha = 0;
     setColour(juce::Slider::textBoxOutlineColourId,
-        PANEL_BACKGROUND_COLOR.withAlpha(transparent_alpha));
-    setColour(juce::Slider::textBoxHighlightColourId, BEVEL_BLACK);
+        MaimColours::PANEL_BACKGROUND_COLOR.withAlpha(transparent_alpha));
+    setColour(juce::Slider::textBoxHighlightColourId, MaimColours::BEVEL_BLACK);
     setColour(juce::Slider::textBoxBackgroundColourId,
-        PANEL_BACKGROUND_COLOR.withAlpha(transparent_alpha));
-    setColour(juce::Label::textWhenEditingColourId, BEVEL_BLACK);
+        MaimColours::PANEL_BACKGROUND_COLOR.withAlpha(transparent_alpha));
+    setColour(juce::Label::textWhenEditingColourId, MaimColours::BEVEL_BLACK);
 
 
     setColour(juce::CaretComponent::caretColourId, juce::Colour(0xff2e2edb));
@@ -92,7 +92,7 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
             pi * (shadow_tilt + 1) + penumbra_rad);
         penumbra.closeSubPath();
 
-        g.setColour(BEVEL_LIGHT);
+        g.setColour(MaimColours::BEVEL_LIGHT);
         g.fillPath(penumbra);
 
         juce::Path shadow;
@@ -105,7 +105,7 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
             pi * (shadow_tilt + 1) - penumbra_rad);
         shadow.closeSubPath();
 
-        g.setColour(BEVEL_DARK);
+        g.setColour(MaimColours::BEVEL_DARK);
         g.fillPath(shadow);
 
     }
@@ -148,11 +148,11 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
     bool focused = false;
 
     juce::Colour white, light, dark, black, thumb_bg;
-    white = BEVEL_WHITE;
-    light = BEVEL_LIGHT;
-    dark = BEVEL_DARK;
-    black = BEVEL_BLACK;
-    thumb_bg = PANEL_BACKGROUND_COLOR;
+    white = MaimColours::BEVEL_WHITE;
+    light = MaimColours::BEVEL_LIGHT;
+    dark = MaimColours::BEVEL_DARK;
+    black = MaimColours::BEVEL_BLACK;
+    thumb_bg = MaimColours::PANEL_BACKGROUND_COLOR;
 
     const int pixel_size = 2;
     const int tick_spacing = 10; // 11 ticks
@@ -233,15 +233,15 @@ void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& bu
     juce::Colour fillColour;
     juce::String buttonDisplayName;
     if (button.getToggleState()) {
-        fillColour = SPLASH_COLOR_LIGHT;
+        fillColour = MaimColours::SPLASH_COLOR_LIGHT;
         buttonDisplayName = button.getName().fromLastOccurrenceOf("|", false, false);
     } else {
-        fillColour = CONTRAST_COLOR_LIGHT;
+        fillColour = MaimColours::CONTRAST_COLOR_LIGHT;
         buttonDisplayName = button.getName().upToFirstOccurrenceOf("|", false, false);
     }
     g.setColour(fillColour);
     g.fillRect(button.getLocalBounds());
-    g.setColour(BEVEL_BLACK);
+    g.setColour(MaimColours::BEVEL_BLACK);
     g.drawRect(button.getLocalBounds());
     g.setFont(tooltip_font);
     g.drawText(buttonDisplayName, button.getLocalBounds(), juce::Justification::centred, false);

@@ -137,7 +137,6 @@ jobs:
       working-directory: Source/lib/lame
       run: |
         ./configure CFLAGS="-fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
-        make clean
         make
     - name: Build LAME (mac)
       if: ${{ matrix.name == 'macOS' }}
@@ -145,7 +144,6 @@ jobs:
       working-directory: Source/lib/lame
       run: |
         ./configure CFLAGS="-arch x86_64 -arch arm64 -fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
-        make clean
         make
     - name: Configure
       shell: bash

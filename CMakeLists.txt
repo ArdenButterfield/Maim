@@ -152,8 +152,9 @@ set(SourceFiles
     Source/GUIelements/BlockyLineGraph.h
     Source/GUIelements/DemureSlider.cpp
     Source/GUIelements/DemureSlider.h
-        Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
+    Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
     Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.h
+    Source/GUIelements/MaimColours.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE

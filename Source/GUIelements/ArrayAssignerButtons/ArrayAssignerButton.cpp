@@ -43,17 +43,17 @@ void ArrayAssignerButton::drawShiftDownShape(juce::Graphics &g, juce::Rectangle<
 void ArrayAssignerButton::paintButton (juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
     int borderPix = 2;
     auto bounds = getLocalBounds();
-    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+    g.setColour(MaimColours::BEVEL_BLACK);
     g.fillRect(bounds);
     bounds = bounds.withSizeKeepingCentre(bounds.getWidth() - borderPix * 2, bounds.getHeight() - borderPix * 2);
-    g.setColour(MaimLookAndFeel().BEVEL_DARK);
+    g.setColour(MaimColours::BEVEL_DARK);
     g.fillRect(bounds);
     if (shouldDrawButtonAsDown) {
         bounds = bounds.withTrimmedTop(borderPix).withTrimmedLeft(borderPix);
     } else {
         bounds = bounds.withTrimmedRight(borderPix).withTrimmedBottom(borderPix);
     }
-    g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
+    g.setColour(MaimColours::BEVEL_LIGHT);
     g.fillRect(bounds);
     if (shouldDrawButtonAsDown) {
         bounds = bounds.withTrimmedRight(borderPix).withTrimmedBottom(borderPix);
@@ -63,9 +63,9 @@ void ArrayAssignerButton::paintButton (juce::Graphics& g, bool shouldDrawButtonA
 
     bounds = bounds.withSizeKeepingCentre(shapeSize, shapeSize);
     if (shouldDrawButtonAsHighlighted) {
-        g.setColour(MaimLookAndFeel().SPLASH_COLOR_DARK);
+        g.setColour(MaimColours::SPLASH_COLOR_DARK);
     } else {
-        g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+        g.setColour(MaimColours::BEVEL_BLACK);
     }
     switch (buttonDesigns)
     {

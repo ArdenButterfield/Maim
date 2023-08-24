@@ -14,8 +14,8 @@
 //==============================================================================
 PsychoanalGraph::PsychoanalGraph(juce::AudioProcessorValueTreeState& p):
     parameters(p),
-    threshold(0, 1, 22, MaimLookAndFeel().BEVEL_DARK),
-    energy(0, 1, 22, MaimLookAndFeel().SPLASH_COLOR_DARK)
+    threshold(0, 1, 22, MaimColours::BEVEL_DARK),
+    energy(0, 1, 22, MaimColours::SPLASH_COLOR_DARK)
 {
     parameters.state.addListener(this);
     
@@ -64,8 +64,8 @@ void PsychoanalGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropert
 
 void PsychoanalGraph::paint (juce::Graphics& g)
 {
-    g.fillAll (MaimLookAndFeel().BEVEL_LIGHT);   // clear the background
-    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+    g.fillAll (MaimColours::BEVEL_LIGHT);   // clear the background
+    g.setColour(MaimColours::BEVEL_BLACK);
     g.drawRect(getLocalBounds(), 2);
 }
 

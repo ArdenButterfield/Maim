@@ -24,7 +24,7 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
     downButton("down", SHIFT_DOWN),
     pTree(p)
 {
-    sectionName.setColour(sectionName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Frequency Reassignment", juce::dontSendNotification);
     sectionName.setJustificationType(juce::Justification::centredTop);
@@ -175,19 +175,19 @@ int ReassignmentSection::getValIndex(const float screenY)
 void ReassignmentSection::paint (juce::Graphics& g)
 {
     StageWindow::paint(g);
-    g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
+    g.setColour(MaimColours::BEVEL_LIGHT);
     g.fillRect(activeAreaBorder);
-    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+    g.setColour(MaimColours::BEVEL_BLACK);
     g.drawRect(activeAreaBorder, 2);
     float singleLineWidth = (float)activeArea.getWidth() / itemVals.size();
-    g.setColour(MaimLookAndFeel().PANEL_BACKGROUND_COLOR);
+    g.setColour(MaimColours::PANEL_BACKGROUND_COLOR);
     for (int row = 0; row < steps + 1; ++row) {
         g.drawHorizontalLine(getValScreenY(row), activeArea.getX(), activeArea.getRight());
     }
     for (int col = 0; col < itemVals.size() + 1; ++col) {
         g.drawVerticalLine(activeArea.getX() + singleLineWidth * col, activeArea.getY(), activeArea.getBottom());
     }
-    g.setColour(MaimLookAndFeel().PANEL_BACKGROUND_COLOR);
+    g.setColour(MaimColours::PANEL_BACKGROUND_COLOR);
     for (int i = 0; i < itemVals.size(); ++i) {
         int left = activeArea.getX() + singleLineWidth * i;
         int right = activeArea.getX() + singleLineWidth * (i + 1);
@@ -196,7 +196,7 @@ void ReassignmentSection::paint (juce::Graphics& g)
         g.fillRect(left, top, right - left, bottom - top);
     }
 
-    g.setColour(MaimLookAndFeel().SPLASH_COLOR_DARK.withAlpha(0.7f));
+    g.setColour(MaimColours::SPLASH_COLOR_DARK.withAlpha(0.7f));
     for (int i = 0; i < itemVals.size(); ++i) {
         int left = activeArea.getX() + singleLineWidth * i;
         int right = activeArea.getX() + singleLineWidth * (i + 1);

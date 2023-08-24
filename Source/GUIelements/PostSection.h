@@ -23,7 +23,7 @@ class PostSection  : public StageWindow
 {
 public:
     PostSection(juce::AudioProcessorValueTreeState& p);
-    void paint (juce::Graphics& g);
+    void paint (juce::Graphics& g) override;
     void resized() override;
 private:
     juce::Rectangle<int> driveSection;

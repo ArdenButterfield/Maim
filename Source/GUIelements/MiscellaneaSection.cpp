@@ -17,11 +17,11 @@ MiscellaneaSection::MiscellaneaSection (juce::AudioProcessorValueTreeState& p)
       mdctWindowIncrementSlider(p, "mdctwindowincr", "Flip"),
       tiltGraph(p)
 {
-    sectionName.setColour(sectionName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Miscellanea", juce::dontSendNotification);
     sectionName.setJustificationType(juce::Justification::topRight);
-    lameOnlyLabel.setColour(lameOnlyLabel.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    lameOnlyLabel.setColour(lameOnlyLabel.textColourId, MaimColours::BEVEL_BLACK);
     lameOnlyLabel.setFont(lameLabelFont);
     lameOnlyLabel.setText("Sliders for Lame\nencoder only", juce::dontSendNotification);
     lameOnlyLabel.setJustificationType(juce::Justification::centred);
@@ -47,9 +47,9 @@ MiscellaneaSection::~MiscellaneaSection()
 void MiscellaneaSection::paint (juce::Graphics& g)
 {
     StageWindow::paint(g);
-    g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
+    g.setColour(MaimColours::BEVEL_LIGHT);
     g.fillRect(lameOnlySection);
-    g.setColour(MaimLookAndFeel().BEVEL_DARK);
+    g.setColour(MaimColours::BEVEL_DARK);
     g.drawRect(lameOnlySection, 1);
 }
 

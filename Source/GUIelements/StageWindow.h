@@ -32,11 +32,11 @@ public:
     const juce::Font H2_font = main_font.withHeight(17.f);
     const juce::Font H3_font = main_font.withHeight(14.f);
 
-    const juce::Colour PANEL_BACKGROUND_COLOR = MaimLookAndFeel().PANEL_BACKGROUND_COLOR;
-    const juce::Colour BEVEL_WHITE = MaimLookAndFeel().BEVEL_WHITE;
-    const juce::Colour BEVEL_LIGHT = MaimLookAndFeel().BEVEL_LIGHT;
-    const juce::Colour BEVEL_DARK = MaimLookAndFeel().BEVEL_DARK;
-    const juce::Colour BEVEL_BLACK = MaimLookAndFeel().BEVEL_BLACK;
+    const juce::Colour PANEL_BACKGROUND_COLOR = MaimColours::PANEL_BACKGROUND_COLOR;
+    const juce::Colour BEVEL_WHITE = MaimColours::BEVEL_WHITE;
+    const juce::Colour BEVEL_LIGHT = MaimColours::BEVEL_LIGHT;
+    const juce::Colour BEVEL_DARK = MaimColours::BEVEL_DARK;
+    const juce::Colour BEVEL_BLACK = MaimColours::BEVEL_BLACK;
 
     const juce::Colour TEXT_COLOR = juce::Colours::black;
     const juce::Colour BORDER_COLOR = juce::Colours::darkblue;

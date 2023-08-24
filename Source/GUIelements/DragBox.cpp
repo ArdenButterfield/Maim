@@ -62,7 +62,7 @@ void DragBox::calculateGridLines(const float minVal,
 
 void DragBox::drawGridlines(juce::Graphics& g)
 {
-    g.setColour(MaimLookAndFeel().BEVEL_DARK);
+    g.setColour(MaimColours::BEVEL_DARK);
     for (const auto x: verticalGridlines) {
         g.drawVerticalLine(x, box.getY(), box.getBottom());
     }
@@ -76,8 +76,8 @@ void DragBox::drawGradients(juce::Graphics& g)
     const auto numGradients = 10;
     const auto gradientStep = (box.getRight() - activeZone.getX()) / numGradients;
 
-    const juce::Colour verticalColour = MaimLookAndFeel().SPLASH_COLOR_DARK.withAlpha(0.2f);
-    const juce::Colour horizontalColour = MaimLookAndFeel().CONTRAST_COLOR_DARK.withAlpha(0.2f);
+    const juce::Colour verticalColour = MaimColours::SPLASH_COLOR_DARK.withAlpha(0.2f);
+    const juce::Colour horizontalColour = MaimColours::CONTRAST_COLOR_DARK.withAlpha(0.2f);
 
     for (auto i = 0; i < numGradients; ++i) {
         auto barWidth = gradientStep * i * 0.7 / (numGradients);
@@ -120,21 +120,21 @@ void DragBox::paint (juce::Graphics& g)
                          activeZone.getBottom());
     thumb.setXY(x, y);
 
-    g.setColour(MaimLookAndFeel().BEVEL_LIGHT);
+    g.setColour(MaimColours::BEVEL_LIGHT);
     g.fillRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius);   // clear the background
 
     drawGradients(g);
     drawGridlines(g);
     
-    g.setColour (MaimLookAndFeel().BEVEL_BLACK);
+    g.setColour (MaimColours::BEVEL_BLACK);
     g.drawRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius, 3.f);
     
     if (thumbHovered) {
-        auto fillColour = MaimLookAndFeel().BEVEL_LIGHT;
+        auto fillColour = MaimColours::BEVEL_LIGHT;
         float amountX = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum());
         float amountY = (ySlider->getValue() - ySlider->getMinimum()) / (ySlider->getMaximum() - ySlider->getMinimum());
-        fillColour = overlayFilm(fillColour, MaimLookAndFeel().SPLASH_COLOR_DARK.withAlpha(amountX));
-        fillColour = overlayFilm(fillColour, MaimLookAndFeel().CONTRAST_COLOR_DARK.withAlpha(amountY));
+        fillColour = overlayFilm(fillColour, MaimColours::SPLASH_COLOR_DARK.withAlpha(amountX));
+        fillColour = overlayFilm(fillColour, MaimColours::CONTRAST_COLOR_DARK.withAlpha(amountY));
         g.setColour (fillColour);
         g.fillEllipse(x - thumbDrawRadius,
                       y - thumbDrawRadius,
@@ -143,7 +143,7 @@ void DragBox::paint (juce::Graphics& g)
 
     }
     
-    g.setColour (MaimLookAndFeel().BEVEL_BLACK);
+    g.setColour (MaimColours::BEVEL_BLACK);
     g.drawEllipse(x - thumbDrawRadius,
                   y - thumbDrawRadius,
                   thumbDrawRadius * 2,

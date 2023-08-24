@@ -62,5 +62,9 @@ Maim/lib/blade/test
 /Source/lib/lame/**/Makefile
 /Source/lib/lame/**/*.Po
 /Source/lib/lame/**/*.Plo
+Source/lib/lame/config.log
+Source/lib/lame/config.h
+Source/lib/lame/config.status
+Source/lib/lame/libtool
 
 venv

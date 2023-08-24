@@ -14,12 +14,12 @@
 MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
 : StageWindow(p), mdctGraph(p)
 {
-    sectionName.setColour(sectionName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Spectral Effects", juce::dontSendNotification);
     sectionName.setJustificationType(juce::Justification::centredTop);
 
-    feedbackName.setColour(feedbackName.textColourId, MaimLookAndFeel().BEVEL_BLACK);
+    feedbackName.setColour(feedbackName.textColourId, MaimColours::BEVEL_BLACK);
     feedbackName.setFont(sectionNameFont.withHeight(15));
     feedbackName.setText("Feedback", juce::dontSendNotification);
     feedbackName.setJustificationType(juce::Justification::centredTop);

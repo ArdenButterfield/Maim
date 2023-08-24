@@ -38,12 +38,12 @@ void PostSection::paint (juce::Graphics& g)
     StageWindow::paint(g);
     g.setColour(BEVEL_LIGHT);
     g.fillRect(usable_bounds);
-    g.setColour(MaimLookAndFeel().BEVEL_DARK);
+    g.setColour(MaimColours::BEVEL_DARK);
     for (const auto& section : { driveSection, bitrateSection, filterSection }) {
         g.drawVerticalLine(section.getRight(), section.getY() + 10,section.getBottom() - 10);
     }
 
-    g.setColour(MaimLookAndFeel().BEVEL_BLACK);
+    g.setColour(MaimColours::BEVEL_BLACK);
     g.setFont(sectionNameFont);
     g.drawText("EQ", filterSection.withTrimmedTop(filterSection.getHeight() - 30), juce::Justification::centredTop, true);
     // g.drawText("Codec", bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 30), juce::Justification::centredTop, true);
