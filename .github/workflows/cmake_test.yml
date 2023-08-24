@@ -124,12 +124,6 @@ jobs:
         key: v3-${{ matrix.os }}-${{ matrix.type }}
         variant: ${{ matrix.ccache }}
 
-    - name: Import Certificates (macOS)
-      uses: apple-actions/import-codesign-certs@v1
-      if: ${{ matrix.name == 'macOS' }}
-      with:
-        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
-        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
     - name: Build LAME (windows)
       if: ${{ matrix.name == 'Windows' }}
       working-directory: Source/lib/lame
@@ -168,6 +162,13 @@ jobs:
         curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
         7z x pluginval_${{ matrix.name }}.zip
         ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
+    - name: Import app Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v1
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
+        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+        keychain: sign_app
 
     - name: Codesign (macOS)
       working-directory: ${{ env.BUILD_DIR }}
@@ -176,44 +177,45 @@ jobs:
         # Each plugin must be code signed
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.VST3_PATH }} --deep --strict --options=runtime --timestamp
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ${{ env.AU_PATH }} --deep --strict --options=runtime --timestamp
-
-    - name: Add Custom Icons (macOS)
+    - name: Import installer Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v1
       if: ${{ matrix.name == 'macOS' }}
-      working-directory: ${{ env.BUILD_DIR }}
-      run: |
-        # add the icns as its own icon resource (meta!)
-        sips -i ../packaging/pamplejuce.icns
-
-        # Grab the resource, put in tempfile
-        DeRez -only icns ../packaging/pamplejuce.icns > /tmp/icons
-
-        # Stuff the resource into the strange Icon? file's resource fork
-        Rez -a /tmp/icons -o ${{ env.VST3_PATH }}/Icon$'\r'
-        Rez -a /tmp/icons -o ${{ env.AU_PATH }}/Icon$'\r'
-
-        # Set custom icon attribute
-        SetFile -a C ${{ env.VST3_PATH }}
-        SetFile -a C ${{ env.AU_PATH }}
-
-    - name: Create DMG, Notarize and Staple (macOS)
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_INSTALLER_CERT }}
+        p12-password: ${{ secrets.DEV_ID_INSTALLER_PASSWORD }}
+        keychain: sign_installer
+    - name: Install Packages software (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
+        curl http://s.sudre.free.fr/Software/files/Packages.dmg -o Packages.dmg
+        sudo hdiutil attach Packages.dmg
+        sudo installer -package /Volumes/Packages\ 1.2.10/Install\ Packages.pkg -target /
+        # sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
+    - name: Create and sign package (macOS)
+      if: ${{ matrix.name == 'macOS' }}
+      run: |
+        mkdir packaging/plugins
+        mv "${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PROJECT_NAME }}.vst3" packaging/plugins
+        mv "${{ env.ARTIFACTS_PATH }}/AU/${{ env.PROJECT_NAME }}.component" packaging/plugins
         npm install -g appdmg
-        mkdir -p packaging/dmg
+        packagesbuild packaging/Maim.pkgproj
+        productsign --sign "${{ secrets.DEVELOPER_ID_INSTALLER}}" packaging/build/Maim.pkg packaging/build/MaimSigned.pkg
+        mv packaging/build/MaimSigned.pkg packaging/build/Maim.pkg
         
-        # Create directories for the dmg symlinks
-        sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/Components && sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/VST3
-        ln -s /Library/Audio/Plug-Ins/Components "packaging/dmg/Your Mac's Component folder"
-        ln -s /Library/Audio/Plug-Ins/VST3 "packaging/dmg/Your Mac's VST3 folder"
-        mv "${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PROJECT_NAME }}.vst3" packaging/dmg
-        mv "${{ env.ARTIFACTS_PATH }}/AU/${{ env.PROJECT_NAME }}.component" packaging/dmg
-        
-        # Run appdmg to create the .dmg
-        cd packaging && appdmg dmg.json ${{ env.PRODUCT_NAME}}.dmg
-        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force ${{ env.PRODUCT_NAME }}.dmg
-        xcrun notarytool submit ${{ env.PRODUCT_NAME }}.dmg --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
-        xcrun stapler staple ${{ env.PRODUCT_NAME }}.dmg
-
+        appdmg packaging/dmg.json packaging/${{ env.PRODUCT_NAME}}.dmg
+    - name: Import dmg Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v1
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
+        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+        keychain: sign_dmg
+    - name: sign and notarize dmg (macOS)
+      if: ${{ matrix.name == 'macOS' }}
+      run: |
+        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force packaging/${{ env.PRODUCT_NAME }}.dmg
+        xcrun notarytool submit packaging/${{ env.PRODUCT_NAME }}.dmg --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+        xcrun stapler staple packaging/${{ env.PRODUCT_NAME }}.dmg
     - name: Zip
       if: ${{ matrix.name == 'Linux' }}
       working-directory: ${{ env.ARTIFACTS_PATH }}
