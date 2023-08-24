@@ -182,6 +182,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
             offController = nullptr;
             currentControllerIndex = (currentControllerIndex + 1) % 2;
             wantingToSwitch = false;
+            updateParameters();
         } else {
             currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
         }
