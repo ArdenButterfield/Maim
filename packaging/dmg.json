@@ -14,6 +14,6 @@
   },
   "format": "UDZO",
   "contents": [
-    { "x": 250, "y": 245, "type": "file", "path": "build/Maim.pkg" }
+    { "x": 250, "y": 245, "type": "file", "path": "build/MaimSigned.pkg" }
   ]
 }
