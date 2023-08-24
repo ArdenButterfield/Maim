@@ -168,6 +168,8 @@ jobs:
       with:
         p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
         p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+        keychain: sign_app
+
     - name: Codesign (macOS)
       working-directory: ${{ env.BUILD_DIR }}
       if: ${{ matrix.name == 'macOS' }}
@@ -181,6 +183,7 @@ jobs:
       with:
         p12-file-base64: ${{ secrets.DEV_ID_INSTALLER_CERT }}
         p12-password: ${{ secrets.DEV_ID_INSTALLER_PASSWORD }}
+        keychain: sign_installer
     - name: Add Custom Icons (macOS)
       if: ${{ matrix.name == 'macOS' }}
       working-directory: ${{ env.BUILD_DIR }}
@@ -205,7 +208,7 @@ jobs:
         sudo hdiutil attach Packages.dmg
         sudo installer -package /Volumes/Packages\ 1.2.10/Install\ Packages.pkg -target /
         # sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
-    - name: Create package, Notarize and Staple (macOS)
+    - name: Create and sign package (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
         mkdir packaging/plugins
@@ -214,13 +217,23 @@ jobs:
         
         packagesbuild packaging/Maim.pkgproj
         productsign --sign "${{ secrets.DEVELOPER_ID_INSTALLER}}" packaging/build/Maim.pkg packaging/build/MaimSigned.pkg
-        npm install -g appdmg
         
         cd packaging && appdmg dmg.json ${{ env.PRODUCT_NAME}}.dmg
-        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force ${{ env.PRODUCT_NAME }}.dmg
-        xcrun notarytool submit ${{ env.PRODUCT_NAME }}.dmg --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
-        xcrun stapler staple ${{ env.PRODUCT_NAME }}.dmg
+    - name: Import dmg Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v1
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
+        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+        keychain: sign_dmg
 
+    - name: sign and notarize dmg (macOS)
+      if: ${{ matrix.name == 'macOS' }}
+      run: |
+      npm install -g appdmg
+      codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i com.wildergarden.wildergarden --force ${{ env.PRODUCT_NAME }}.dmg
+      xcrun notarytool submit ${{ env.PRODUCT_NAME }}.dmg --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+      xcrun stapler staple ${{ env.PRODUCT_NAME }}.dmg
     - name: Zip
       if: ${{ matrix.name == 'Linux' }}
       working-directory: ${{ env.ARTIFACTS_PATH }}
