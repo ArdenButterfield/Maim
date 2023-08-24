@@ -184,23 +184,6 @@ jobs:
         p12-file-base64: ${{ secrets.DEV_ID_INSTALLER_CERT }}
         p12-password: ${{ secrets.DEV_ID_INSTALLER_PASSWORD }}
         keychain: sign_installer
-    - name: Add Custom Icons (macOS)
-      if: ${{ matrix.name == 'macOS' }}
-      working-directory: ${{ env.BUILD_DIR }}
-      run: |
-        # add the icns as its own icon resource (meta!)
-        sips -i ../packaging/pamplejuce.icns
-
-        # Grab the resource, put in tempfile
-        DeRez -only icns ../packaging/pamplejuce.icns > /tmp/icons
-
-        # Stuff the resource into the strange Icon? file's resource fork
-        Rez -a /tmp/icons -o ${{ env.VST3_PATH }}/Icon$'\r'
-        Rez -a /tmp/icons -o ${{ env.AU_PATH }}/Icon$'\r'
-
-        # Set custom icon attribute
-        SetFile -a C ${{ env.VST3_PATH }}
-        SetFile -a C ${{ env.AU_PATH }}
     - name: Install Packages software (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
@@ -217,6 +200,7 @@ jobs:
         npm install -g appdmg
         packagesbuild packaging/Maim.pkgproj
         productsign --sign "${{ secrets.DEVELOPER_ID_INSTALLER}}" packaging/build/Maim.pkg packaging/build/MaimSigned.pkg
+        mv packaging/build/MaimSigned.pkg packaging/build/Maim.pkg
         
         appdmg packaging/dmg.json packaging/${{ env.PRODUCT_NAME}}.dmg
     - name: Import dmg Certificates (macOS)

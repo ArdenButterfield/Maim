@@ -1,19 +1,6 @@
 {
   "title": "Maim",
-  "icon": "pamplejuce.icns",
-  "background": "background.jpg",
-  "window": {
-    "position": {
-      "x": 100,
-      "y": 100
-    },
-    "size": {
-      "width": 730,
-      "height": 520
-    }
-  },
-  "format": "UDZO",
   "contents": [
-    { "x": 250, "y": 245, "type": "file", "path": "build/MaimSigned.pkg" }
+    { "x": 50, "y": 50, "type": "file", "path": "build/Maim.pkg" }
   ]
 }
