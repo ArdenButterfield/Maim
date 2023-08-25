@@ -142,10 +142,11 @@ void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
 
 void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
 {
-    if (parametersNeedUpdating) {
-        updateParameters();
-    }
-    
+    // if (parametersNeedUpdating) {
+    //     updateParameters();
+    // }
+    updateParameters();
+
     if (buffer.getNumChannels() != 2) {
         return;
     }
