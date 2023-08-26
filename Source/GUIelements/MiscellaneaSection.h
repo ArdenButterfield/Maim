@@ -33,6 +33,7 @@ private:
     const juce::Font lameLabelFont = juce::Font(MaimLookAndFeel().main_font).withHeight(10.f);
     juce::Label sectionName;
     juce::Label lameOnlyLabel;
+    juce::Label butterflyLabel;
     DragBox butterflyDragBox;
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     juce::Rectangle<int> lameOnlySection;

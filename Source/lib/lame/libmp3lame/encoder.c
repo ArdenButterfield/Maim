@@ -588,29 +588,28 @@ lame_encode_mp3_frame(       /* Output */
     if (gfc->ov_enc.mode_ext == MPG_MD_MS_LR) {
         masking = (III_psy_ratio (*)[2])masking_MS; /* use MS masking */
         pe_use = pe_MS;
-        if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
-            for (int i = 0; i < 22; ++i) {
-                masking_MS[0][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-                masking_MS[0][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-                masking_MS[1][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-                masking_MS[1][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-            }
-        }
 
     }
     else {
         masking = (III_psy_ratio (*)[2])masking_LR; /* use LR masking */
         pe_use = pe;
-        if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
-            for (int i = 0; i < 22; ++i) {
-                masking_LR[0][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-                masking_LR[0][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-                masking_LR[1][0].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-                masking_LR[1][1].thm.l[i] *= gfc->bendFlagsAndData->threshold_bias[i];
-            }
-        }
 
     }
+
+    if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
+        for (int i = 0; i < 22; ++i) {
+            for (int i1 = 0; i1 < 2; ++i1) {
+                for (int i2 = 0; i2 < 2; ++i2) {
+                    float thresh = masking[i1][i2].thm.l[i] * gfc->bendFlagsAndData->threshold_bias[i];
+                    if (isnan(thresh) || isinf(thresh)) {
+                        thresh = 0;
+                    }
+                    masking_MS[i1][i2].thm.l[i] = thresh;
+                }
+            }
+        }
+    }
+
 
     if (!(gfc->bendFlagsAndData->in_short_block)) {
         for (int i = 0; i < 22; ++i) {

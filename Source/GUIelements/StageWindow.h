@@ -26,7 +26,7 @@ public:
 
     const juce::Font main_font = juce::Font(MaimLookAndFeel().main_font);
     const juce::Font bold_font = juce::Font(MaimLookAndFeel().bold_font);
-    const juce::Font tooltip_font = juce::Font(MaimLookAndFeel().tooltip_font);
+    const juce::Font tooltip_font = juce::Font(MaimLookAndFeel().tooltip_font).withHeight(15);
     const juce::Font title_font = main_font.withHeight(60.f);
     const juce::Font H1_font = main_font.withHeight(21.f);
     const juce::Font H2_font = main_font.withHeight(17.f);

@@ -36,7 +36,7 @@ MP3ControllerManager::MP3ControllerManager(juce::AudioProcessorValueTreeState& p
     parameters.addParameterListener("mdctwindowincr", this);
     parameters.addParameterListener("mdctsampincr", this);
     parameters.addParameterListener("bitrate", this);
-    parameters.addParameterListener("bitratesquish", this);
+    parameters.addParameterListener("turbo", this);
     parameters.addParameterListener("thresholdbias", this);
     parameters.addParameterListener("mdctfeedback", this);
     parameters.addParameterListener("encoder", this);
@@ -60,7 +60,7 @@ MP3ControllerManager::~MP3ControllerManager()
     parameters.removeParameterListener("mdctwindowincr", this);
     parameters.removeParameterListener("mdctsampincr", this);
     parameters.removeParameterListener("bitrate", this);
-    parameters.removeParameterListener("bitratesquish", this);
+    parameters.removeParameterListener("turbo", this);
     parameters.removeParameterListener("thresholdbias", this);
     parameters.removeParameterListener("mdctfeedback", this);
     parameters.removeParameterListener("encoder", this);
@@ -242,7 +242,7 @@ void MP3ControllerManager::updateParameters()
             ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()
         );
         controller->setBitrateSquishBends(
-            ((juce::AudioParameterFloat*) parameters.getParameter("bitratesquish"))->get()
+            ((juce::AudioParameterFloat*) parameters.getParameter("turbo"))->get()
         );
 
          controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get()

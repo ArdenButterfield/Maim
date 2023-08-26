@@ -17,7 +17,7 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
         driveSlider(p, "drive", "Drive"),
         encoderAttachment(p, "encoder", encoderButton),
         bitrateSlider(p, "bitrate", "Bitrate"),
-        squishSlider(p, "bitratesquish", "Squish"),
+        squishSlider(p, "turbo", "Turbo"),
         hiSlider(p, "hicut", "High"),
         loSlider(p, "locut", "Low"),
         makeupSlider(p, "makeupgain", "Makeup gain"),
@@ -69,8 +69,8 @@ void PostSection::resized()
 
     driveSlider.setBounds(driveSection);
 
-    auto top = bitrateSection.withTrimmedBottom(60);
-    auto bottom = bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 60);
+    auto top = bitrateSection.withTrimmedBottom(40).withTrimmedTop(4);
+    auto bottom = bitrateSection.withTrimmedTop(bitrateSection.getHeight() - 40);
     bitrateSlider.setBounds(top.withWidth(top.getWidth() / 2));
     squishSlider.setBounds(top.withTrimmedLeft(top.getWidth() / 2));
     encoderButton.setBounds(bottom.withSizeKeepingCentre(bottom.getWidth() - 20, 30));

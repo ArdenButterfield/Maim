@@ -243,7 +243,7 @@ void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& bu
     g.fillRect(button.getLocalBounds());
     g.setColour(MaimColours::BEVEL_BLACK);
     g.drawRect(button.getLocalBounds());
-    g.setFont(tooltip_font);
+    g.setFont(juce::Font(main_font).withHeight(15));
     g.drawText(buttonDisplayName, button.getLocalBounds(), juce::Justification::centred, false);
 }
 

@@ -27,16 +27,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
         juce::ParameterID {"mdctinvert", 1}, "MDCT band invert", false));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
-        juce::ParameterID {"mdctposthshift", 1}, "MDCT post pitch shift", -100, 100, 0));
+        juce::ParameterID {"mdctposthshift", 1}, "MDCT pitch shift", -100, 100, 0));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"mdctpostvshift", 1}, "MDCT post amplitude shift", -1.f, 1.f, 0.f));
+        juce::ParameterID {"mdctpostvshift", 1}, "MDCT amplitude shift", -1.f, 1.f, 0.f));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
         juce::ParameterID {"mdctwindowincr", 1}, "MDCT window increment", -64, 64, 64));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"mdctfeedback", 1}, "MDCT feedback", 0, 1, 0));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"bitratesquish", 1}, "Bitrate squish", 0, 1, 0));
+        juce::ParameterID {"turbo", 1}, "Turbo", 0, 1, 0));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID {"thresholdbias", 1}, "Threshold bias", -1, 1, 0));

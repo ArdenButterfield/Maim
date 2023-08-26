@@ -37,7 +37,6 @@
 #include "lame-analysis.h"
 #include <float.h>
 
-
 #define NSATHSCALE 100  /* Assuming dynamic range=96dB, this value should be 92 */
 
 /*

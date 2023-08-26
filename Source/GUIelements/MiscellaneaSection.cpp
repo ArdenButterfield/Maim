@@ -20,14 +20,19 @@ MiscellaneaSection::MiscellaneaSection (juce::AudioProcessorValueTreeState& p)
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Miscellanea", juce::dontSendNotification);
-    sectionName.setJustificationType(juce::Justification::topRight);
+    sectionName.setJustificationType(juce::Justification::centred);
     lameOnlyLabel.setColour(lameOnlyLabel.textColourId, MaimColours::BEVEL_BLACK);
     lameOnlyLabel.setFont(lameLabelFont);
     lameOnlyLabel.setText("Sliders for Lame\nencoder only", juce::dontSendNotification);
     lameOnlyLabel.setJustificationType(juce::Justification::centred);
+    butterflyLabel.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
+    butterflyLabel.setFont(sectionNameFont.withHeight(13));
+    butterflyLabel.setText("Butterfly", juce::dontSendNotification);
+    butterflyLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(mdctBandStepSlider);
     addAndMakeVisible(mdctWindowIncrementSlider);
     addAndMakeVisible(butterflyDragBox);
+    addAndMakeVisible(butterflyLabel);
     addAndMakeVisible(sectionName);
     addAndMakeVisible(tiltGraph);
     addAndMakeVisible(lameOnlyLabel);
@@ -55,23 +60,24 @@ void MiscellaneaSection::paint (juce::Graphics& g)
 
 void MiscellaneaSection::resized()
 {
-    auto mainPart = getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20);
-    butterflyDragBox.setBounds(mainPart.withWidth(190).withRightX(mainPart.getRight()));
-    auto leftPart = mainPart.withTrimmedRight(200);
     const int titleHeight = 25;
-    sectionName.setBounds(leftPart.withHeight(titleHeight));
-    leftPart = leftPart.withTrimmedTop(titleHeight);
-    lameOnlySection = leftPart
-                          .withTrimmedTop(10);
+    const int rightPartWidth = 170;
+    auto mainPart = getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20);
+    sectionName.setBounds(mainPart.withHeight(titleHeight));
+    mainPart = mainPart.withTrimmedTop(titleHeight);
+    auto rightPart = mainPart.withWidth(rightPartWidth).withRightX(mainPart.getRight());
+    auto leftPart = mainPart.withTrimmedRight(rightPartWidth + 10);
+    butterflyDragBox.setBounds(leftPart.withHeight(leftPart.getWidth()));
+    butterflyLabel.setBounds(leftPart.withTrimmedTop(leftPart.getWidth()));
+    lameOnlySection = rightPart.withTrimmedTop(5);
     auto lameOnlySectionInner = lameOnlySection
                                     .withTrimmedTop(5)
-                                    .withTrimmedLeft(5)
-                                    .withTrimmedRight(5)
+                                    .withTrimmedLeft(15)
+                                    .withTrimmedRight(15)
                                     .withTrimmedBottom(5);
     lameOnlyLabel.setBounds(lameOnlySectionInner);
     int halfWidth = lameOnlySectionInner.getWidth() / 2;
-    tiltGraph.setBounds(lameOnlySectionInner.withHeight(63).withBottomY(lameOnlySectionInner.getBottom()));
-    leftPart = lameOnlySectionInner.withTrimmedBottom(tiltGraph.getHeight());
+    tiltGraph.setBounds(lameOnlySectionInner.withHeight(57).withBottomY(lameOnlySectionInner.getBottom()));
     mdctBandStepSlider.setBounds(lameOnlySectionInner.withTrimmedLeft(halfWidth));
     mdctWindowIncrementSlider.setBounds(lameOnlySectionInner.withTrimmedRight(halfWidth));
 }
