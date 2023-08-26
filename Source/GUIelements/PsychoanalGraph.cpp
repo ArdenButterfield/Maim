@@ -53,12 +53,9 @@ void PsychoanalGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropert
         }
     } else if (property == juce::Identifier("threshold")) {
         juce::Array<juce::var>* t = treeWhosePropertyHasChanged[property].getArray();
-        std::cout << "new threshold";
         for (int i = 0; i < 22; ++i) {
             thresholdVals[i] = (float)(*t)[i].operator double();
-            std::cout << thresholdVals[i] << " ";
         }
-        std::cout << "\n";
     }
     
     energy.loadData(energyVals.data());
