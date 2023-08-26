@@ -42,7 +42,8 @@ public:
     virtual void setMDCTwindowincrBends(int window_incr) = 0;
     virtual void setMDCTBandReassignmentBends(int* order) = 0;
     virtual void setBitrateSquishBends(float squish) = 0;
-    virtual void setThresholdBias(float bias) = 0;
+    virtual void _setThresholdBias(float bias) = 0;
+    void setThresholdBias(float bias);
     virtual void setMDCTfeedback(float feedback) = 0;
     
     virtual float* getPsychoanalThreshold() = 0;
@@ -57,6 +58,7 @@ protected:
     float pcmConvert (short samp) {
         return samp / (float)std::numeric_limits<short>::max();
     }
+    float actualThresholdBias;
 
     virtual bool init_encoder() = 0;
     virtual void deinit_encoder() = 0;

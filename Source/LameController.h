@@ -29,7 +29,7 @@ public:
     void setMDCTwindowincrBends(int window_incr) override;
     void setMDCTBandReassignmentBends(int* order) override;
     void setBitrateSquishBends(float squish) override;
-    void setThresholdBias(float bias) override;
+    void _setThresholdBias(float bias) override;
     void setMDCTfeedback(float feedback) override;
 
     float* getPsychoanalThreshold() override;

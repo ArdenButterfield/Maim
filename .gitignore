@@ -68,3 +68,5 @@ Source/lib/lame/config.status
 Source/lib/lame/libtool
 
 venv
+Source/lib/lame/stamp-h1
+Source/lib/lame/lame.spec

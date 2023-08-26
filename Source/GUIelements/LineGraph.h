@@ -54,7 +54,7 @@ public:
     
     void CalculateXValues() {
         for (int i = 0; i < numPoints; ++i) {
-            xVals[i] = getWidth() * ((float)i) / ((float)numPoints);
+            xVals[i] = getWidth() * ((float)i) / ((float)numPoints - 1);
         }
     }
 
