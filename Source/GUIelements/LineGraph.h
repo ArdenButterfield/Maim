@@ -41,9 +41,8 @@ public:
             return;
         }
         for (int i = 0; i < numPoints; ++i) {
-            if ((ymin <= data[i]) && (data[i] <= ymax)) {
-                yVals[i] = getHeight() - (data[i] - ymin) / (ymax - ymin) * getHeight();
-            }
+            auto d = std::max(ymin, std::min(data[i], ymax));
+            yVals[i] = getHeight() - (d - ymin) / (ymax - ymin) * getHeight();
         }
         triggerAsyncUpdate();
     }

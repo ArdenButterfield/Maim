@@ -109,7 +109,7 @@ bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut,
 
 void MP3Controller::setThresholdBias (float bias)
 {
-    const float incr = 0.05;
+/*    const float incr = 0.05;
     if (std::abs(bias - actualThresholdBias) < incr) {
         actualThresholdBias = bias;
     } else if (bias > actualThresholdBias) {
@@ -117,5 +117,6 @@ void MP3Controller::setThresholdBias (float bias)
     } else {
         actualThresholdBias -= incr;
     }
-    _setThresholdBias(actualThresholdBias);
+    _setThresholdBias(actualThresholdBias);*/
+    _setThresholdBias(bias);
 }
