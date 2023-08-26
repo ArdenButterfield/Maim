@@ -94,7 +94,7 @@ private:
     std::unique_ptr<QueueBuffer<float>> outputBufferL;
     std::unique_ptr<QueueBuffer<float>> outputBufferR;
 
-    float previousFrame[2][1152];
+    float previousFrames[2][2][1152];
     
     std::array<LameController, 2> lameControllers;
     std::array<BladeController, 2> bladeControllers;

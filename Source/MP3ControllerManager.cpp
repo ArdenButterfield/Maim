@@ -10,11 +10,11 @@
 
 #include "MP3ControllerManager.h"
 
-void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples) {
+void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int startFadeFrom) {
     // NOTE: should potentially be an equal-power crossfade, to prevent a dip in volume.
     // Juce applyGainRamp uses a linear ramp as well, though.
-    for (int i = 0; i < numSamples; ++i) {
-        float inc = (float)i / (float)numSamples;
+    for (int i = startFadeFrom; i < numSamples; ++i) {
+        float inc = (float)i / (float)(numSamples - startFadeFrom);
         currentBuffer[i] = inc * newBuffer[i] + (1 - inc) * currentBuffer[i];
     }
 }
@@ -74,6 +74,7 @@ MP3ControllerManager::~MP3ControllerManager()
 
 void MP3ControllerManager::initialize (int _samplerate, int _initialBitrate, int _samplesPerBlock)
 {
+    std::memset(previousFrames, 0, 2 * 2 * 1152 * sizeof(float));
     samplerate = _samplerate;
     samplesPerBlock = _samplesPerBlock;
 
@@ -170,12 +171,13 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         }
         if (wantingToSwitch) {
             float frameOutNew[2][MP3FRAMESIZE];
-            offController->processFrame(previousFrame[0], previousFrame[1], nullptr, nullptr);
+            offController->processFrame(previousFrames[0][0], previousFrames[0][1], nullptr, nullptr);
+            offController->processFrame(previousFrames[1][0], previousFrames[1][1], nullptr, nullptr);
             offController->processFrame(frameIn[0], frameIn[1], frameOutNew[0], frameOutNew[1]);
             currentController->processFrame(frameIn[0], frameIn[1], frameOut[0], frameOut[1]);
 
-            fadeTowards (frameOut[0], frameOutNew[0], MP3FRAMESIZE);
-            fadeTowards(frameOut[1], frameOutNew[1], MP3FRAMESIZE);
+            fadeTowards (frameOut[0], frameOutNew[0], MP3FRAMESIZE, 0);
+            fadeTowards(frameOut[1], frameOutNew[1], MP3FRAMESIZE, 0);
 
             currentController = offController;
             currentBitrate = desiredBitrate;
@@ -192,7 +194,8 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
         for (auto s = 0; s < MP3FRAMESIZE; ++s) {
             outputBufferR->enqueue(frameOut[1][s]);
         }
-        std::memcpy(previousFrame, frameIn, 2 * MP3FRAMESIZE * sizeof(float));
+        std::memcpy(previousFrames[0], previousFrames[1], 2 * MP3FRAMESIZE * sizeof(float));
+        std::memcpy(previousFrames[1], frameIn, 2 * MP3FRAMESIZE * sizeof(float));
     }
 
     for (auto s = 0; s < buffer.getNumSamples(); ++s) {
