@@ -27,7 +27,7 @@ void TitlePanel::paint (juce::Graphics& g)
     g.drawText ("MAIM", textRect,
         juce::Justification::centredLeft, true);
     g.setFont(tooltip_font);
-    g.drawText("Version 0.0.1", textRect.withTrimmedBottom(10).withTrimmedLeft(2), juce::Justification::bottomLeft, true);
+    g.drawText("Version 1.0.0alpha", textRect.withTrimmedBottom(10).withTrimmedLeft(2), juce::Justification::bottomLeft, true);
 }
 
 void TitlePanel::resized()

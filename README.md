@@ -2,12 +2,21 @@
 
 *MAIM Ain't an Implementation of Mp3*
 
-MAIM is an audio plugin that circuit bends an MP3 encoder in real time, disrupting the control flow sending data down unexpected paths to create digital distortions. 
+MAIM is an audio plugin that circuit bends an MP3 encoder in real time, 
+disrupting the control flow sending data down unexpected paths to create digital distortions. 
 
-This plugin is still very much a work in progress, and is changing rapidly, so there are no guarantees that it works at any point in time. That said, feel free to give the code a try, and raise an issue or make a pull request if you have any suggestions!
+## Installation Instructions
 
-## Building and Installation
+Under the releases tab from the Github, download the installer corresponding to your operating system.
 
+On Windows or Mac, follow the instructions in the installer to install the plugin to your plugins folder.
+
+On Linux, you'll have to copy Maim.vst3 to your plugin folder. Often this is at ~/.vst3, 
+but if you're making music on Linux you're probably already a step ahead of me.
+
+If you have any issues, please raise an issue on the issues page of this repository and describe your situation.
+
+If instead you wish to build the plugin yourself, see the [build instructions](Docs/BUILDING.md).
 To build MAIM, first build the LAME library. This step is necessary even if you have LAME installed on your machine, as MAIM uses a modified version of LAME. To do this, run the following commands:
 
 ```sh
