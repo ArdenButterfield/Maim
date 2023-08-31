@@ -56,9 +56,7 @@ void PsychoanalGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropert
         std::cout << "new threshold";
         for (int i = 0; i < 22; ++i) {
             thresholdVals[i] = (float)(*t)[i].operator double();
-            std::cout << thresholdVals[i] << " ";
         }
-        std::cout << "\n";
     }
     
     energy.loadData(energyVals.data());

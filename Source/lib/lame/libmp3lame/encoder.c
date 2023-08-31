@@ -442,7 +442,6 @@ lame_encode_mp3_frame(       /* Output */
                 }
             }
         }
-        printf("\n");
     } else if ((blocktype[0] == NORM_TYPE) && (blocktype[1] == NORM_TYPE)) {
         gfc->bendFlagsAndData->prev_block_long = 1;
         for (int gr = 0; gr < 2; ++gr) {
@@ -621,13 +620,7 @@ lame_encode_mp3_frame(       /* Output */
     /*
     Sometimes small mag float values, but sometimes very big float values? whats up here?
     is it a short block long block thing?
-    for (int i = 0; i < SBMAX_l; ++i) {
-        printf("%f ", (*masking)[0].en.l[i]);
-    }
-    for (int )
-    printf("\n");
-    */
-    
+
     /* copy data for MP3 frame analyzer */
     if (cfg->analysis && gfc->pinfo != NULL) {
         for (gr = 0; gr < cfg->mode_gr; gr++) {
