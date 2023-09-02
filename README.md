@@ -17,15 +17,6 @@ but if you're making music on Linux you're probably already a step ahead of me.
 If you have any issues, please raise an issue on the issues page of this repository and describe your situation.
 
 If instead you wish to build the plugin yourself, see the [build instructions](Docs/BUILDING.md).
-To build MAIM, first build the LAME library. This step is necessary even if you have LAME installed on your machine, as MAIM uses a modified version of LAME. To do this, run the following commands:
-
-```sh
-cd Maim/lib/lame
-./configure
-make
-```
-
-The rest of the build process is standard for a JUCE plugin: open Maim.jucer in Projucer, set the paths to JUCE if necessary, click the button to open Maim in your IDE, then build all.
 
 ## Contributing
 
