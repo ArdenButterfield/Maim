@@ -69,6 +69,7 @@ public:
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     
 private:
+    void processBlockStereo(juce::AudioBuffer<float>& buffer);
     void addPsychoanalStateToParameters();
     void addMdctSamplesToParameters();
     int currentLatencySamples();

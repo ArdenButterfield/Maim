@@ -300,20 +300,8 @@ void MaimAudioProcessor::updateParameters()
     setLatencySamples(currentLatencySamples());
 }
 
-void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                       juce::MidiBuffer& midiMessages)
+void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
 {
-
-    if (parametersNeedUpdating) {
-        updateParameters();
-    }
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
     dryWetMixer.pushDrySamples(buffer);
 
     if (oldPreGain != preGain) {
@@ -327,7 +315,7 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         mp3ControllerManager.processBlock(buffer);
     }
 
-    for (int i = 0; i < std::min(2, buffer.getNumSamples()); ++i) {
+    for (int i = 0; i < 2; ++i) {
         auto samples = buffer.getWritePointer(i);
         postFilterHi[i].processSamples(samples, buffer.getNumSamples());
         postFilterLo[i].processSamples(samples, buffer.getNumSamples());
@@ -340,6 +328,31 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         buffer.applyGain(postGain);
     }
     dryWetMixer.mixWetSamples(buffer);
+}
+
+void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
+                                       juce::MidiBuffer& midiMessages)
+{
+
+    if (parametersNeedUpdating) {
+        updateParameters();
+    }
+    juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+
+    for (auto i = std::min(totalNumInputChannels,2); i < totalNumOutputChannels; ++i)
+        buffer.clear (i, 0, buffer.getNumSamples());
+    std::cout << totalNumInputChannels << " " << buffer.getNumChannels() << "\n";
+    if (totalNumInputChannels >= 2 && buffer.getNumChannels() >= 2) {
+        processBlockStereo(buffer);
+    } else if (totalNumInputChannels >= 1 && buffer.getNumChannels() >= 1) {
+        juce::AudioBuffer<float> stereoBuffer(2, buffer.getNumSamples());
+        stereoBuffer.copyFrom(0,0,buffer,0,0,buffer.getNumSamples());
+        stereoBuffer.copyFrom(1,0,buffer,0,0,buffer.getNumSamples());
+        processBlockStereo(stereoBuffer);
+        buffer.copyFrom(0,0,stereoBuffer,0,0,buffer.getNumSamples());
+    }
 }
 
 //==============================================================================
@@ -356,7 +369,7 @@ juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
 //==============================================================================
 void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    
+
     auto state = parameters.copyState();
     for (const juce::String parameterName : {"psychoanal", "mdct"}) {
         auto s = state.getChildWithName(parameterName);
@@ -368,9 +381,8 @@ void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     copyXmlToBinary (*xml, destData);
     addPsychoanalStateToParameters();
     addMdctSamplesToParameters();
-    
-}
 
+}
 void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     

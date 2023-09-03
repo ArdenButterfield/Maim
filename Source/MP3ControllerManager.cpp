@@ -148,9 +148,6 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     // }
     updateParameters();
 
-    if (buffer.getNumChannels() != 2) {
-        return;
-    }
     auto samplesL = buffer.getWritePointer(0);
     auto samplesR = buffer.getWritePointer(1);
 
