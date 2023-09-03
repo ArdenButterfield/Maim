@@ -343,7 +343,6 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (auto i = std::min(totalNumInputChannels,2); i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-    std::cout << totalNumInputChannels << " " << buffer.getNumChannels() << "\n";
     if (totalNumInputChannels >= 2 && buffer.getNumChannels() >= 2) {
         processBlockStereo(buffer);
     } else if (totalNumInputChannels >= 1 && buffer.getNumChannels() >= 1) {
