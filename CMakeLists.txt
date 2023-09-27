@@ -99,45 +99,31 @@ set(SourceFiles
     Source/lib/blade/bladeenc/codec.c
     Source/lib/blade/bladeenc/l3bitstream.c
     Source/lib/blade/bladeenc/encoder.h
-        Source/GUIelements/ReassignmentSection.cpp
-    Source/GUIelements/guiUtil.h
+    Source/GUIelements/ReassignmentSection.cpp
     Source/GUIelements/MainArea.cpp
     Source/GUIelements/PostSection.h
     Source/GUIelements/StageWindow.cpp
-    Source/GUIelements/PsychoacousticSection.h
+    Source/GUIelements/EncoderBitrateSection.h
     Source/GUIelements/StageWindow.h
     Source/GUIelements/LineGraph.h
     Source/GUIelements/PsychoanalGraph.cpp
     Source/GUIelements/PostSection.cpp
-        Source/GUIelements/MiscellaneaSection.cpp
-        Source/GUIelements/MDCTGraphSection.cpp
-    Source/GUIelements/DragBox.cpp
-        Source/GUIelements/MiscellaneaSection.h
+    Source/GUIelements/MiscellaneaSection.cpp
+    Source/GUIelements/MDCTGraphSection.cpp
+    Source/GUIelements/MiscellaneaSection.h
     Source/GUIelements/MainArea.h
     Source/GUIelements/IndicatorLight.cpp
-        Source/GUIelements/ReassignmentSection.h
+    Source/GUIelements/ReassignmentSection.h
     Source/GUIelements/IndicatorLight.h
     Source/GUIelements/PsychoanalGraph.h
-        Source/GUIelements/MDCTGraphSection.h
+    Source/GUIelements/MDCTGraphSection.h
     Source/GUIelements/DragBox.h
-    Source/GUIelements/PsychoacousticSection.cpp
-    Source/MP3ControllerManager.cpp
-    Source/BladeController.h
-    Source/MP3ControllerManager.h
-    Source/PluginProcessor.cpp
-    Source/MP3Controller.cpp
-    Source/QueueBuffer.h
-    Source/RootMeanSquare.cpp
-    Source/PluginEditor.h
-    Source/RootMeanSquare.h
-    Source/AutoGain.cpp
-    Source/PluginEditor.cpp
-    Source/LameController.h
-    Source/AutoGain.h
-    Source/LameController.cpp
-    Source/PluginProcessor.h
-    Source/BladeController.cpp
-    Source/MP3Controller.h
+    Source/GUIelements/DragBox.cpp
+    Source/GUIelements/SquishFlipDragBox.cpp
+    Source/GUIelements/SquishFlipDragBox.h
+    Source/GUIelements/ButterflyDragBox.cpp
+    Source/GUIelements/ButterflyDragBox.h
+    Source/GUIelements/EncoderBitrateSection.cpp
     Source/GUIelements/TiltGraph.cpp
     Source/GUIelements/TiltGraph.h
     Source/GUIelements/TitlePanel.h
@@ -155,6 +141,23 @@ set(SourceFiles
     Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
     Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.h
     Source/GUIelements/MaimColours.h
+    Source/MP3ControllerManager.cpp
+    Source/BladeController.h
+    Source/MP3ControllerManager.h
+    Source/PluginProcessor.cpp
+    Source/MP3Controller.cpp
+    Source/QueueBuffer.h
+    Source/RootMeanSquare.cpp
+    Source/PluginEditor.h
+    Source/RootMeanSquare.h
+    Source/AutoGain.cpp
+    Source/PluginEditor.cpp
+    Source/LameController.h
+    Source/AutoGain.h
+    Source/LameController.cpp
+    Source/PluginProcessor.h
+    Source/BladeController.cpp
+    Source/MP3Controller.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE

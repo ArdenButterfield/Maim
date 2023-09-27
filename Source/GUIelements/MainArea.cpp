@@ -51,7 +51,7 @@ void MainArea::paint (juce::Graphics& g)
 void MainArea::resized()
 {
     int margin = 10;
-    int postSectionHeight = 150;
+    int postSectionWidth = 100;
     int titleHeight = 100;
     
     auto activeArea = getLocalBounds()
@@ -59,38 +59,17 @@ void MainArea::resized()
         .withTrimmedLeft(margin)
         .withTrimmedRight(margin)
         .withTrimmedBottom(margin);
-    
-    auto bigFour = activeArea
-        .withTrimmedBottom(postSectionHeight)
-        .withTrimmedBottom(margin);
-    
-    int bigFourElementWidth = (bigFour.getWidth() - margin) / 2;
-    int bigFourElementHeight = (bigFour.getHeight() - margin) / 2;
-    
-    auto bigFourLeftColumn = bigFour
-        .withTrimmedRight(bigFourElementWidth + margin);
-    auto bigFourRightColumn = bigFour
-        .withTrimmedLeft(bigFourElementWidth + margin);
-    
-    auto psychoacousticBounds = bigFourLeftColumn
-        .withTrimmedBottom(bigFourElementHeight + margin);
-    auto titleBounds = psychoacousticBounds.withHeight(titleHeight);
-    psychoacousticBounds = psychoacousticBounds.withTrimmedTop(titleHeight + margin);
-    auto mdctGraphBounds = bigFourRightColumn
-        .withTrimmedBottom(bigFourElementHeight + margin);
-    auto reassignmentBounds = bigFourLeftColumn
-        .withTrimmedTop(bigFourElementHeight + margin);
-    auto miscellaneaBounds = bigFourRightColumn
-        .withTrimmedTop(bigFourElementHeight + margin);
-    
-    auto postSectionBounds = activeArea
-        .withTrimmedTop(activeArea.getHeight() - postSectionHeight);
-    
-    psychoacousticSection.setBounds(psychoacousticBounds);
-    miscellaneaSection.setBounds(miscellaneaBounds);
-    mdctGraphSection.setBounds(mdctGraphBounds);
-    reassignmentSection.setBounds(reassignmentBounds);
-    postSection.setBounds(postSectionBounds);
 
-    titlePanel.setBounds(titleBounds);
+    auto tilesArea = activeArea.withTrimmedRight(postSectionWidth + margin);
+    postSection.setBounds(activeArea.withWidth(postSectionWidth).withRightX(activeArea.getRight()));
+
+    auto topRow = tilesArea.withHeight(230);
+    auto bottomRow = tilesArea.withTrimmedTop(topRow.getHeight() + margin);
+
+    titlePanel.setBounds(topRow.withWidth(150));
+    psychoacousticSection.setBounds(topRow.withTrimmedLeft(titlePanel.getWidth() + margin));
+
+    reassignmentSection.setBounds(bottomRow.withWidth(220));
+    mdctGraphSection.setBounds(bottomRow.withTrimmedLeft(reassignmentSection.getWidth() + margin).withWidth(290));
+    miscellaneaSection.setBounds(bottomRow.withX(mdctGraphSection.getRight() + margin).withRight(bottomRow.getRight()));
 }

@@ -40,7 +40,17 @@ public:
     void mouseDoubleClick (const juce::MouseEvent &event) override;
     void mouseDown(const juce::MouseEvent &event) override;
 
-private:
+protected:
+    static float rescaleRange(float v,
+         float oldMin,
+         float oldMax,
+         float newMin,
+         float newMax);
+    virtual void drawBackground(juce::Graphics& g, int x, int y) {}
+    virtual void calculationsOnResize() {}
+    virtual juce::Colour getThumbFillColour(int x, int y) {return {};}
+    virtual juce::Colour getOutlineColour(int x, int y) {return {};}
+    virtual juce::Colour getBackgroundColour(int x, int y) {return {};}
     void timerCallback() override;
     std::atomic<bool> needsRepainting;
     
@@ -51,24 +61,10 @@ private:
     juce::Rectangle<int> box;
     juce::Rectangle<int> activeZone;
     
-    const float gridStep = 2.0f;
-    std::vector<int> horizontalGridlines;
-    std::vector<int> verticalGridlines;
-    void calculateGridLines(const float minVal,
-                            const float maxVal,
-                            const float step,
-                            const float outMin,
-                            const float outMax,
-                            std::vector<int>* v);
 
-    void drawGradients(juce::Graphics& g);
-    void drawGridlines(juce::Graphics&);
-    
     bool thumbHovered;
     bool thumbDragged;
 
-    static juce::Colour overlayFilm(const juce::Colour light, const juce::Colour film);
-    
     const juce::String xParamID;
     const juce::String yParamID;
     std::unique_ptr<juce::Slider> xSlider;

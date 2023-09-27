@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    PsychoacousticSection.h
+    EncoderBitrateSection.h
     Created: 8 Apr 2023 1:50:05pm
     Author:  Arden Butterfield
 
@@ -21,31 +21,25 @@
 //==============================================================================
 /*
 */
-class PsychoacousticSection  : public StageWindow, public juce::ValueTree::Listener
+class EncoderBitrateSection : public StageWindow, public juce::ValueTree::Listener
 {
 public:
-    PsychoacousticSection(juce::AudioProcessorValueTreeState& p);
-    ~PsychoacousticSection();
+    EncoderBitrateSection (juce::AudioProcessorValueTreeState& p);
+    ~EncoderBitrateSection();
     void resized() override;
 
 private:
     void valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasChanged,
                                   const juce::Identifier &property) override;
     NamedRotarySlider biasSlider;
-/*
-    juce::Slider biasSlider {
-        juce::Slider::RotaryVerticalDrag,
-        juce::Slider::TextBoxBelow
-    };
-    juce::AudioProcessorValueTreeState::SliderAttachment biasAttachment {
-        parameters,
-        "thresholdbias",
-        biasSlider
-    };
-*/
+
+    juce::ToggleButton encoderButton {"Blade Encoder|Lame Encoder"};
+    const juce::AudioProcessorValueTreeState::ButtonAttachment encoderAttachment;
+    NamedRotarySlider bitrateSlider;
+    NamedRotarySlider squishSlider;
 
     PsychoanalGraph psychoanalGraph;
     IndicatorLight shortFrameIndicator;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PsychoacousticSection)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EncoderBitrateSection)
 };

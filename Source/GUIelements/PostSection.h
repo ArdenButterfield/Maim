@@ -26,22 +26,13 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 private:
-    juce::Rectangle<int> driveSection;
-    juce::Rectangle<int> bitrateSection;
-    juce::Rectangle<int> filterSection;
-    juce::Rectangle<int> makeupSection;
-
     NamedRotarySlider driveSlider;
-    juce::ToggleButton encoderButton {"Blade Encoder|Lame Encoder"};
-    const juce::AudioProcessorValueTreeState::ButtonAttachment encoderAttachment;
-    NamedRotarySlider bitrateSlider;
-    NamedRotarySlider squishSlider;
     NamedRotarySlider loSlider;
     NamedRotarySlider hiSlider;
     NamedRotarySlider makeupSlider;
     NamedRotarySlider mixSlider;
 
-    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    std::array<NamedRotarySlider*, 5> sliders = {&driveSlider, &hiSlider, &loSlider, &makeupSlider, &mixSlider};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PostSection)
 };

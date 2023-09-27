@@ -14,8 +14,10 @@ public:
     ~TitlePanel();
     void paint (juce::Graphics& g) override;
     void resized() override;
-
 private:
+
+    juce::HyperlinkButton manualLink;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TitlePanel)
 };
 

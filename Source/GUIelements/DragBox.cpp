@@ -11,16 +11,6 @@
 #include "DragBox.h"
 #include "MaimLookAndFeel.h"
 
-float rescaleRange(const float v,
-                   const float oldMin,
-                   const float oldMax,
-                   const float newMin,
-                   const float newMax)
-{
-    float v2 = juce::jmax(juce::jmin(v, oldMax), oldMin);
-    return (v2 - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
-}
-
 //==============================================================================
 DragBox::DragBox(juce::AudioProcessorValueTreeState& p,
                  const juce::String& xID,
@@ -46,65 +36,16 @@ DragBox::~DragBox()
     parameters.removeParameterListener(yParamID, this);
 }
 
-void DragBox::calculateGridLines(const float minVal,
-                                 const float maxVal,
-                                 const float step,
-                                 const float outMin,
-                                 const float outMax,
-                                 std::vector<int>* v)
+float DragBox::rescaleRange(const float v,
+    const float oldMin,
+    const float oldMax,
+    const float newMin,
+    const float newMax)
 {
-    v->clear();
-    auto minGridlineIndex = ceil(minVal / step);
-    for (auto i = minGridlineIndex; i * step < maxVal; ++i) {
-        v->push_back(rescaleRange(i, minVal, maxVal, outMin, outMax));
-    }
+    float v2 = juce::jmax(juce::jmin(v, oldMax), oldMin);
+    return (v2 - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
 }
 
-void DragBox::drawGridlines(juce::Graphics& g)
-{
-    g.setColour(MaimColours::BEVEL_DARK);
-    for (const auto x: verticalGridlines) {
-        g.drawVerticalLine(x, box.getY(), box.getBottom());
-    }
-    for (const auto y: horizontalGridlines) {
-        g.drawHorizontalLine(y, box.getX(), box.getRight());
-    }
-}
-
-void DragBox::drawGradients(juce::Graphics& g)
-{
-    const auto numGradients = 10;
-    const auto gradientStep = (box.getRight() - activeZone.getX()) / numGradients;
-
-    const juce::Colour verticalColour = MaimColours::SPLASH_COLOR_DARK.withAlpha(0.2f);
-    const juce::Colour horizontalColour = MaimColours::CONTRAST_COLOR_DARK.withAlpha(0.2f);
-
-    for (auto i = 0; i < numGradients; ++i) {
-        auto barWidth = gradientStep * i * 0.7 / (numGradients);
-        g.setColour(horizontalColour);
-        g.fillRect(box.getX(), activeZone.getY() + i * gradientStep, box.getWidth(), barWidth);
-        g.setColour(verticalColour);
-        g.fillRect(activeZone.getX() + i * gradientStep, box.getY(), barWidth, box.getHeight());
-    }
-
-}
-
-juce::Colour DragBox::overlayFilm(const juce::Colour light, const juce::Colour film) {
-    auto r = film.getFloatRed();
-    auto g = film.getFloatGreen();
-    auto b = film.getFloatBlue();
-    auto a = film.getFloatAlpha();
-    auto lr = light.getFloatRed();
-    auto lg = light.getFloatGreen();
-    auto lb = light.getFloatBlue();
-
-    return juce::Colour::fromFloatRGBA(
-        lr * r * a + lr * (1.f - a),
-        lg * g * a + lg * (1.f - a),
-        lb * b * a + lb * (1.f - a),
-        light.getFloatAlpha()
-    );
-}
 
 void DragBox::paint (juce::Graphics& g)
 {
@@ -120,22 +61,16 @@ void DragBox::paint (juce::Graphics& g)
                          activeZone.getBottom());
     thumb.setXY(x, y);
 
-    g.setColour(MaimColours::BEVEL_LIGHT);
+    g.setColour(getBackgroundColour(x, y));
     g.fillRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius);   // clear the background
 
-    drawGradients(g);
-    drawGridlines(g);
-    
-    g.setColour (MaimColours::BEVEL_BLACK);
+    drawBackground(g, x, y);
+
+    g.setColour (getOutlineColour(x, y));
     g.drawRoundedRectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight(), (float)thumbDrawRadius, 3.f);
     
     if (thumbHovered) {
-        auto fillColour = MaimColours::BEVEL_LIGHT;
-        float amountX = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum());
-        float amountY = (ySlider->getValue() - ySlider->getMinimum()) / (ySlider->getMaximum() - ySlider->getMinimum());
-        fillColour = overlayFilm(fillColour, MaimColours::SPLASH_COLOR_DARK.withAlpha(amountX));
-        fillColour = overlayFilm(fillColour, MaimColours::CONTRAST_COLOR_DARK.withAlpha(amountY));
-        g.setColour (fillColour);
+        g.setColour (getThumbFillColour(x, y));
         g.fillEllipse(x - thumbDrawRadius,
                       y - thumbDrawRadius,
                       thumbDrawRadius * 2,
@@ -143,7 +78,7 @@ void DragBox::paint (juce::Graphics& g)
 
     }
     
-    g.setColour (MaimColours::BEVEL_BLACK);
+    g.setColour (getOutlineColour(x, y));
     g.drawEllipse(x - thumbDrawRadius,
                   y - thumbDrawRadius,
                   thumbDrawRadius * 2,
@@ -164,19 +99,8 @@ void DragBox::resized()
     box = getLocalBounds().withSizeKeepingCentre(side - 10, side - 10);
     activeZone = box.withSizeKeepingCentre(box.getWidth() - thumbDrawRadius * 2,
                                                    box.getHeight() - thumbDrawRadius * 2);
-    
-    calculateGridLines(xSlider->getMinimum(),
-                       xSlider->getMaximum(),
-                       gridStep,
-                       activeZone.getX(),
-                       activeZone.getRight(),
-                       &verticalGridlines);
-    calculateGridLines(ySlider->getMinimum(),
-                       ySlider->getMaximum(),
-                       gridStep,
-                       activeZone.getY(),
-                       activeZone.getBottom(),
-                       &horizontalGridlines);
+
+    calculationsOnResize();
 }
 
 void DragBox::mouseMove(const juce::MouseEvent& event)

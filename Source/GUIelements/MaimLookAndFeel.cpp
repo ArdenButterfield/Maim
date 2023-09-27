@@ -58,7 +58,7 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
     juce::Colour notch = juce::Colour(0xff2d2d46);
     bool focused = false;
 
-    const auto radius = (float) juce::jmin(width / 2, height / 2) * 0.8;
+    const auto radius = (float) juce::jmin(width / 2, height / 2) - 5;
     const auto inner_radius = focused ? radius - 2 : radius;
     const auto centerx = (float) x + (float) width  * 0.5f;
     const auto centery = (float) y + (float) height * 0.5f;
@@ -230,21 +230,32 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
 }
 
 void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
-    juce::Colour fillColour;
-    juce::String buttonDisplayName;
-    if (button.getToggleState()) {
-        fillColour = MaimColours::SPLASH_COLOR_LIGHT;
-        buttonDisplayName = button.getName().fromLastOccurrenceOf("|", false, false);
-    } else {
-        fillColour = MaimColours::CONTRAST_COLOR_LIGHT;
-        buttonDisplayName = button.getName().upToFirstOccurrenceOf("|", false, false);
-    }
+
+    const auto bottomOptionSelected = button.getToggleState();
+
+    const auto topRect = button.getLocalBounds().withHeight(button.getHeight() / 2);
+    const auto bottomRect = topRect.withBottomY(button.getHeight());
+
+    const auto activeRect = bottomOptionSelected ? bottomRect : topRect;
+    const auto inactiveRect = bottomOptionSelected ? topRect : bottomRect;
+    const auto fillColour = bottomOptionSelected ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::CONTRAST_COLOR_LIGHT;
+    const auto topName = button.getName().upToFirstOccurrenceOf("|", false, false);
+    const auto bottomName = button.getName().fromLastOccurrenceOf("|", false, false);
+
+
+
+
     g.setColour(fillColour);
-    g.fillRect(button.getLocalBounds());
+    g.fillRect(activeRect);
+    g.setColour(MaimColours::BEVEL_LIGHT);
+    g.fillRect(inactiveRect);
     g.setColour(MaimColours::BEVEL_BLACK);
-    g.drawRect(button.getLocalBounds());
+    g.drawRect(button.getLocalBounds(), 2);
     g.setFont(juce::Font(main_font).withHeight(15));
-    g.drawText(buttonDisplayName, button.getLocalBounds(), juce::Justification::centred, false);
+    g.setColour(bottomOptionSelected ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
+    g.drawText(topName, topRect, juce::Justification::centred, false);
+    g.setColour(bottomOptionSelected ? MaimColours::BEVEL_BLACK : MaimColours::BEVEL_DARK);
+    g.drawText(bottomName, bottomRect, juce::Justification::centred, false);
 }
 
 #if false

@@ -17,6 +17,7 @@ public:
     NamedRotarySlider(juce::AudioProcessorValueTreeState& p, juce::String parameterName, juce::String displayName);
     void resized() override;
     void paint(juce::Graphics &g) override;
+    void setFontSize(float size);
 private:
     juce::Slider slider {
         juce::Slider::RotaryVerticalDrag,
@@ -26,7 +27,7 @@ private:
     const juce::String displayName;
     int nameHeight;
 
-    const juce::Font nameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(14.f);
+    juce::Font nameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(14.f);
 };
 
 #endif //MAIM_NAMEDROTARYSLIDER_H
