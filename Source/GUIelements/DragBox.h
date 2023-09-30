@@ -55,8 +55,8 @@ protected:
     std::atomic<bool> needsRepainting;
     
     juce::Point<int> thumb;
-    const int thumbDrawRadius = 10;
-    const int thumbSensitivityRadius = 10;
+    const int thumbDrawRadius = 7;
+    const int thumbSensitivityRadius = thumbDrawRadius;
 
     juce::Rectangle<int> box;
     juce::Rectangle<int> activeZone;

@@ -96,7 +96,7 @@ void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
 void DragBox::resized()
 {
     auto side = std::min(getWidth(), getHeight());
-    box = getLocalBounds().withSizeKeepingCentre(side - 10, side - 10);
+    box = getLocalBounds().withSizeKeepingCentre(side - 2, side - 2);
     activeZone = box.withSizeKeepingCentre(box.getWidth() - thumbDrawRadius * 2,
                                                    box.getHeight() - thumbDrawRadius * 2);
 

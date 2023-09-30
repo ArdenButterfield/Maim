@@ -27,7 +27,7 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Frequency Reassignment", juce::dontSendNotification);
-    sectionName.setJustificationType(juce::Justification::centredTop);
+    sectionName.setJustificationType(juce::Justification::centred);
 
 
     addAndMakeVisible(resetButton);
@@ -210,11 +210,11 @@ void ReassignmentSection::paint (juce::Graphics& g)
 void ReassignmentSection::resized()
 {
     // Buttons overlap with each other, and with the top edge of the active area.
-    int buttonWidth = (getWidth() - 30) / 4;
+    int buttonWidth = (getWidth() - standardMargin * 2 + 6) / 4;
     int mainRectWidth = buttonWidth * 4 - 6;
-    auto mainRect = getLocalBounds().withSizeKeepingCentre(mainRectWidth, getHeight() - 30);
+    auto mainRect = getLocalBounds().withSizeKeepingCentre(mainRectWidth, getHeight()).withTrimmedBottom(standardMargin);
     const auto buttonHeight = 40;
-    const auto titleHeight = 25;
+    const auto titleHeight = headerHeight;
     sectionName.setBounds(mainRect.withHeight(titleHeight));
     mainRect = mainRect.withTrimmedTop(titleHeight);
     int buttonDeltaX = buttonWidth - 2;

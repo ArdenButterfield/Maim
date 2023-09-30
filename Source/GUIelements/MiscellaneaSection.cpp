@@ -66,17 +66,23 @@ void MiscellaneaSection::paint (juce::Graphics& g)
 
 void MiscellaneaSection::resized()
 {
-    const int titleHeight = 25;
+    const int titleHeight = headerHeight;
 
-    auto mainPart = getLocalBounds().withSizeKeepingCentre(getWidth() - 20, getHeight() - 20);
+    auto mainPart = getLocalBounds()
+                        .withTrimmedLeft(standardMargin)
+                        .withTrimmedRight(standardMargin)
+                        .withTrimmedBottom(standardMargin);
 
     sectionName.setBounds(mainPart.withHeight(titleHeight));
     mainPart = mainPart.withTrimmedTop(titleHeight);
 
-    auto buttterflyPart = mainPart.withHeight(mainPart.getHeight() / 2);
-    auto mdctPart = mainPart.withTrimmedTop(buttterflyPart.getHeight());
+    auto butterflyPart = mainPart.withHeight(mainPart.getHeight() / 2);
+    auto mdctPart = mainPart.withTrimmedTop(butterflyPart.getHeight());
 
-    butterflyDragBox.setBounds(buttterflyPart);
+    butterflyPart = butterflyPart.withTrimmedBottom(5);
+    mdctPart = mdctPart.withTrimmedTop(5);
+
+    butterflyDragBox.setBounds(butterflyPart);
     lameOnlyLabel.setBounds(mdctPart);
     mdctDragBox.setBounds(mdctPart);
 }

@@ -17,7 +17,7 @@ MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Spectral Effects", juce::dontSendNotification);
-    sectionName.setJustificationType(juce::Justification::centredTop);
+    sectionName.setJustificationType(juce::Justification::centred);
 
     feedbackName.setColour(feedbackName.textColourId, MaimColours::BEVEL_BLACK);
     feedbackName.setFont(sectionNameFont.withHeight(15));
@@ -42,12 +42,11 @@ MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
 void MDCTGraphSection::resized()
 {
     auto graphArea = getLocalBounds()
-                         .withTrimmedTop(10)
-                         .withTrimmedLeft(10)
-                         .withTrimmedBottom(10)
-                         .withTrimmedRight(10);
-    sectionName.setBounds(graphArea.withHeight(25));
-    graphArea = graphArea.withTrimmedTop( 25);
+                         .withTrimmedLeft(standardMargin)
+                         .withTrimmedRight(standardMargin)
+                         .withTrimmedBottom(standardMargin);
+    sectionName.setBounds(graphArea.withHeight(headerHeight));
+    graphArea = graphArea.withTrimmedTop( headerHeight);
 
     mdctGraph.setBounds(graphArea);
     auto feedbackSliderBounds =getLocalBounds().withWidth(70).withHeight(80).withRightX(graphArea.getRight()).withY(graphArea.getY());

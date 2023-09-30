@@ -46,6 +46,8 @@ public:
 
     void paint (juce::Graphics& g) override;
 protected:
+    const int headerHeight = 33;
+    const int standardMargin = 14;
     void setUsableBounds();
     juce::Rectangle<int> usable_bounds;
     const int LINE_WIDTH = 2; // For bevel
