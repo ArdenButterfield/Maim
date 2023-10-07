@@ -630,6 +630,9 @@ typedef struct encoder_flags_and_data_struct {
 	Header			*pHeaderChain;
 	Header			*pFreeHeaderChain;
 
+    // mdct
+    int				gr_idx[3];
+
 } encoder_flags_and_data;
 
 #if defined(__cplusplus)

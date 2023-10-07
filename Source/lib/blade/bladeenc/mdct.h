@@ -61,7 +61,7 @@ extern	int				fInit_mdct_sub;
 extern	int				fInit_mdct;
 
 
-extern	int				gr_idx[3];
+// extern	int				gr_idx[3];
 
 
 

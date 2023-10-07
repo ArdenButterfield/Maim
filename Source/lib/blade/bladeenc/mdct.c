@@ -58,13 +58,13 @@
 /*
 	This is table B.9: coefficients for aliasing reduction
 */
-static	double			c[8] = { -0.6, -0.535, -0.33, -0.185, -0.095, -0.041, -0.0142, -0.0037 };
+const	double			c[8] = { -0.6, -0.535, -0.33, -0.185, -0.095, -0.041, -0.0142, -0.0037 };
 
 
 
 
 
-int						gr_idx[3] = {0,1,2};
+// int						gr_idx[3] = {0,1,2};
 
 
 
@@ -118,8 +118,8 @@ void mdct_sub
 	flags->bends.in_short_block = 0;
 	for (gr = 0;  gr < mode_gr;  gr++)
 	{
-		int		pre_gr = gr_idx[gr  ];
-		int		cur_gr = gr_idx[gr+1];
+		int		pre_gr = flags->gr_idx[gr  ];
+		int		cur_gr = flags->gr_idx[gr+1];
 
 		for (ch = 0;  ch < stereo;  ch++)
 		{
@@ -188,10 +188,11 @@ void mdct_sub
 		Save latest granule's subband samples to be used in
 		the next mdct call
 	*/
-	j = gr_idx[mode_gr];
+	j = flags->gr_idx[mode_gr];
 	for (k = mode_gr;  k > 0;  k--)
-		gr_idx[k] = gr_idx[k-1];
-	gr_idx[0] = j;
+		flags->gr_idx[k] = flags->gr_idx[k-1];
+	flags->gr_idx[0] = j;
+    // printf("%i %i %i\n", gr_idx[0], gr_idx[1], gr_idx[2]);
 }
 
 

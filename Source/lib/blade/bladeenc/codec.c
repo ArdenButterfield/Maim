@@ -250,7 +250,7 @@ unsigned int			codecEncodeChunk
 
 	for (gr = 0;  gr < 2;  gr++)
 	{
-		int		gr_plus_1 = gr_idx[gr+1];
+		int		gr_plus_1 = flags->gr_idx[gr+1];
 
 		for (ch = 0;  ch < flags->stereo;  ch++)
 		{

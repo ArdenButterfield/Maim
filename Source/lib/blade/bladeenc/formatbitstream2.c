@@ -37,16 +37,6 @@
 #include	"formatbitstream2.h"
 
 
-
-
-
-extern	char	*pEncodedOutput;
-extern	int		outputBit;
-
-
-
-
-
 /*____ Structure Definitions _________________________________________________*/
 
 // header struct moved to common.h

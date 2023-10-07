@@ -20,6 +20,10 @@ encoder_flags_and_data* blade_init(int samplerate, int bitrate)
 	flags->codec_data.fCopyright = 0;
 	flags->codec_data.fOriginal = 1;
 
+    flags->gr_idx[0] = 0;
+    flags->gr_idx[1] = 1;
+    flags->gr_idx[2] = 2;
+
 	codecInit(flags, &(flags->codec_data)); 
 	// we don't need the return value, because its already stored in flags.
 

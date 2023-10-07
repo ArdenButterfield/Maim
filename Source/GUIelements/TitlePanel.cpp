@@ -32,7 +32,7 @@ void TitlePanel::paint (juce::Graphics& g)
 
     g.setColour (MaimColours::CONTRAST_COLOR_LIGHT);
     g.setFont(title_font);
-    g.drawText ("MAIM", textRect,
+    g.drawText ("MAIM", textRect.withTrimmedRight(4).withTrimmedTop(4),
         juce::Justification::centredTop, true);
     g.setFont(tooltip_font);
     g.setColour(MaimColours::BEVEL_BLACK);

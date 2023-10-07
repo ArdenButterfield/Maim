@@ -83,6 +83,7 @@ MaimAudioProcessor::MaimAudioProcessor()
       mp3ControllerManager(parameters),
       dryWetMixer(std::max(BLADELATENCYSAMPLES, LAMELATENCYSAMPLES))
 {
+    std::cout << this << " constructor\n";
     oldPreGain = 1;
     oldPostGain = 1;
 
@@ -230,6 +231,8 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 //==============================================================================
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
+    std::cout << this << " prepare to play\n";
+
     setLatencySamples(currentLatencySamples());
     dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});
     sampleRate = fs;
@@ -273,6 +276,8 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
+    std::cout << this << " update params\n";
+
     auto hicut = ((juce::AudioParameterFloat*)parameters.getParameter("hicut"))->get();
     auto locut = ((juce::AudioParameterFloat*)parameters.getParameter("locut"))->get();
     hicut = std::max(1.f, std::min(hicut, (float)sampleRate / 2 - 1));
@@ -333,6 +338,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
+    // std::cout << this << " process block\n";
 
     if (parametersNeedUpdating) {
         updateParameters();
@@ -368,6 +374,7 @@ juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
 //==============================================================================
 void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
+    std::cout << this << " get state\n";
 
     auto state = parameters.copyState();
     for (const juce::String parameterName : {"psychoanal", "mdct"}) {
@@ -384,7 +391,8 @@ void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 }
 void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    
+    std::cout << this << " set state\n";
+
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
     if (xmlState.get() != nullptr) {
