@@ -14,6 +14,13 @@ bool MP3Controller::init(const int sampleRate,
                          const int maxsampsperblock,
                          const int br)
 {
+#if WRITETODEBUGMP3FILE
+    juce::String fileName = "/home/arden/projects/plugins/Maim/test";
+    fileName += (long)this;
+    fileName += ".mp3";
+    debugFile = juce::File(fileName);
+    debugFile.replaceWithData(nullptr, 0);
+#endif
     deInit();
     samplerate = validate_samplerate(sampleRate);
     bitrate = validate_bitrate(br);
@@ -84,6 +91,10 @@ bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut,
         std::cout << "encoding error: " << encResult << "\n";
         return false;
     }
+
+#if WRITETODEBUGMP3FILE
+    debugFile.appendData(&mp3Buffer[0], encResult);
+#endif
 
     int decResult = hip_decode(lame_dec_handler,
         (unsigned char*)&mp3Buffer[0],

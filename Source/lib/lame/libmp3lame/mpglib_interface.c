@@ -250,7 +250,7 @@ lame_decode1_headersB(unsigned char *buffer,
                       short pcm_l[], short pcm_r[], mp3data_struct * mp3data,
                       int *enc_delay, int *enc_padding)
 {
-    static char out[OUTSIZE_CLIPPED];
+    char out[OUTSIZE_CLIPPED];
 
     return decode1_headersB_clipchoice(&mp, buffer, len, (char *) pcm_l, (char *) pcm_r, mp3data,
                                        enc_delay, enc_padding, out, OUTSIZE_CLIPPED,
@@ -351,7 +351,7 @@ int hip_decode_exit(hip_t hip)
 int
 hip_decode1_unclipped(hip_t hip, unsigned char *buffer, size_t len, sample_t pcm_l[], sample_t pcm_r[])
 {
-    static char out[OUTSIZE_UNCLIPPED];
+    char out[OUTSIZE_UNCLIPPED];
     mp3data_struct mp3data;
     int     enc_delay, enc_padding;
 
@@ -431,7 +431,7 @@ hip_decode1_headersB(hip_t hip, unsigned char *buffer,
                       short pcm_l[], short pcm_r[], mp3data_struct * mp3data,
                       int *enc_delay, int *enc_padding)
 {
-    static char out[OUTSIZE_CLIPPED];
+    char out[OUTSIZE_CLIPPED];
     if (hip) {
         return decode1_headersB_clipchoice(hip, buffer, len, (char *) pcm_l, (char *) pcm_r, mp3data,
                                            enc_delay, enc_padding, out, OUTSIZE_CLIPPED,

@@ -10,18 +10,22 @@
 
 #pragma once
 
+#define WRITETODEBUGMP3FILE false
+
 #include <limits>
 #include <vector>
 #include <array>
 #include <memory>
 #include <cstring>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
+
+#include "juce_core/juce_core.h"
 
 #include <lame.h>
 
 #include "QueueBuffer.h"
-
 
 class MP3Controller
 {
@@ -106,4 +110,8 @@ protected:
         }
         return lower;
     }
+#if WRITETODEBUGMP3FILE
+    juce::File debugFile;
+#endif
+
 };
