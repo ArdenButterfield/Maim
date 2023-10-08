@@ -292,9 +292,11 @@ void MaimAudioProcessor::updateParameters()
     auto driveDB = ((juce::AudioParameterFloat*)parameters.getParameter("drive"))->get();
     auto makeupDB = ((juce::AudioParameterFloat*)parameters.getParameter("makeupgain"))->get();
     
+/*
     if (driveDB > 0) {
         makeupDB -= driveDB / 2;
     }
+*/
 
     dryWetMixer.setWetMixProportion(((juce::AudioParameterFloat*)parameters.getParameter("mix"))->get() / 100);
 
