@@ -19,6 +19,8 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
       bitrateSlider(p, "bitrate", "Bitrate"),
       squishSlider(p, "turbo", "Turbo")
 {
+    bitrateSlider.slider.setTextValueSuffix(" kb/s");
+
     bitrateSlider.setFontSize(20.f);
     parameters.state.addListener(this);
 

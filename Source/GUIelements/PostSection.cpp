@@ -20,6 +20,12 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
         makeupSlider(p, "makeupgain", "Makeup gain"),
         mixSlider(p, "mix","Dry/Wet")
 {
+    driveSlider.slider.setTextValueSuffix(" dB");
+    hiSlider.slider.setTextValueSuffix(" Hz");
+    loSlider.slider.setTextValueSuffix(" Hz");
+    makeupSlider.slider.setTextValueSuffix(" dB");
+    mixSlider.slider.setTextValueSuffix(" %");
+
     addAndMakeVisible(driveSlider);
     addAndMakeVisible(hiSlider);
     addAndMakeVisible(loSlider);

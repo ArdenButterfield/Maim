@@ -37,6 +37,7 @@ MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
     feedbackName.setAlpha(alpha);
 
     MDCTfeedbackSlider.setLabel(&feedbackName);
+    MDCTfeedbackSlider.setTextValueSuffix(" %");
 }
 
 void MDCTGraphSection::resized()

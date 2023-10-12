@@ -63,7 +63,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID {"locut", 1}, "Low cut", juce::NormalisableRange<float>(10.f, 20000.f, 1.f, 0.30f), 10.f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"mix", 1}, "Mix", 0.f, 100.f, 100.f));
+        juce::ParameterID {"mix", 1}, "Mix", juce::NormalisableRange<float>(0.f, 100.f, 0.1f), 100.f));
 
     return {parameters.begin(), parameters.end()};
 }
@@ -83,7 +83,6 @@ MaimAudioProcessor::MaimAudioProcessor()
       mp3ControllerManager(parameters),
       dryWetMixer(std::max(BLADELATENCYSAMPLES, LAMELATENCYSAMPLES))
 {
-    std::cout << this << " constructor\n";
     oldPreGain = 1;
     oldPostGain = 1;
 
@@ -231,7 +230,6 @@ void MaimAudioProcessor::changeProgramName (int index, const juce::String& newNa
 //==============================================================================
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
-    std::cout << this << " prepare to play\n";
 
     setLatencySamples(currentLatencySamples());
     dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});
@@ -276,7 +274,6 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void MaimAudioProcessor::updateParameters()
 {
-    std::cout << this << " update params\n";
 
     auto hicut = ((juce::AudioParameterFloat*)parameters.getParameter("hicut"))->get();
     auto locut = ((juce::AudioParameterFloat*)parameters.getParameter("locut"))->get();
@@ -340,8 +337,6 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
-    // std::cout << this << " process block\n";
-
     if (parametersNeedUpdating) {
         updateParameters();
     }
@@ -376,8 +371,6 @@ juce::AudioProcessorEditor* MaimAudioProcessor::createEditor()
 //==============================================================================
 void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    std::cout << this << " get state\n";
-
     auto state = parameters.copyState();
     for (const juce::String parameterName : {"psychoanal", "mdct"}) {
         auto s = state.getChildWithName(parameterName);
@@ -393,8 +386,6 @@ void MaimAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 }
 void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    std::cout << this << " set state\n";
-
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
 
     if (xmlState.get() != nullptr) {

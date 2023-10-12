@@ -18,11 +18,11 @@ public:
     void resized() override;
     void paint(juce::Graphics &g) override;
     void setFontSize(float size);
-private:
     juce::Slider slider {
         juce::Slider::RotaryVerticalDrag,
         juce::Slider::TextBoxBelow
     };
+private:
     const juce::AudioProcessorValueTreeState::SliderAttachment attachment;
     const juce::String displayName;
     int nameHeight;
