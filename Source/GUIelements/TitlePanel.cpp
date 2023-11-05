@@ -36,7 +36,7 @@ void TitlePanel::paint (juce::Graphics& g)
         juce::Justification::centredTop, true);
     g.setFont(tooltip_font);
     g.setColour(MaimColours::BEVEL_BLACK);
-    g.drawText("Version 1.0.0alpha", textRect.withTrimmedBottom(2).withTrimmedLeft(2), juce::Justification::bottomLeft, true);
+    g.drawText("Version 1.0.0", textRect.withTrimmedBottom(2).withTrimmedLeft(2), juce::Justification::bottomLeft, true);
 }
 
 void TitlePanel::resized()

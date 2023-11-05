@@ -189,6 +189,11 @@ jobs:
         sudo hdiutil attach Packages.dmg
         sudo installer -package /Volumes/Packages\ 1.2.10/Install\ Packages.pkg -target /
         # sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
+    - name: Python 3.11 (macos)
+      uses: actions/setup-python@v4
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        python-version: '3.11'
     - name: Create and sign package (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
