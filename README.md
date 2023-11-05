@@ -26,6 +26,8 @@ On Windows or Mac, follow the instructions in the installer to install the plugi
 On Linux, you'll have to copy Maim.vst3 to your plugin folder. Often this is at ~/.vst3, 
 but if you're making music on Linux you're probably already a step ahead of me.
 
+Once the installation has finished, MAIM will show up in your DAW's plugin folder, under the manufacturer name Wildergarden.
+
 If you have any issues, please raise an issue on the issues page of this repository and describe your situation.
 
 If instead you wish to build the plugin yourself, see the [build instructions](Docs/BUILDING.md).
