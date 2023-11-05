@@ -19,7 +19,11 @@ MAIM uses real encoders to get the utmost accurate MP3 sound. However, it also h
 turn the encoding process up to 11, or break it entirely. If an MP3 is a beautiful loaf of bread, MAIM lets you turn eat
 it fresh with butter and honey... or make the baker watch as you turn it into a bread bowl
 
+<img src="images/maimgui.png" alt="screenshot of full maim gui">
+
 ## The Encoder Controls
+
+<img src="images/maimencoderpanel.png" alt="cropped screenshot of maim encoder panel">
 
 This panel controls the encoder settings, to get the full gamut of realistic MP3 encoding sounds.
 
@@ -58,9 +62,11 @@ frequency. As much as possible, MP3 encoders will only remove sounds that are be
 
 ## Frequency Reassignment
 
- After an MP3 encoder determines which frequencies should be compressed, the audio is converted to the frequency domain
- for the actual compression. (The astute reader will note that this requires two transforms where one would do just
- fine. The reasons for this are more political than mathematical. See Stephen Witt's excellent book *How Music Got Free*)
+<img src="images/maimreassignment.png" alt="cropped screenshot of maim frequency reassignment panel">
+
+After an MP3 encoder determines which frequencies should be compressed, the audio is converted to the frequency domain
+for the actual compression. (The astute reader will note that this requires two transforms where one would do just
+fine. The reasons for this are more political than mathematical. See Stephen Witt's excellent book *How Music Got Free*)
  
 In this matrix, you can change which frequency gets mapped to each line: the columns correspond to the output lines,
 and the rows correspond to the input lines. For instance, if you wanted the low frequency information to play across all
@@ -74,6 +80,8 @@ There are 4 buttons to help with more tedious tasks:
 - Shift the mapping down by one tick
 
 ## Spectral Effects
+
+<img src="images/maimspectral.png" alt="cropped screenshot of maim spectral effects panel">
 
 ### Horizontal Shift
 
@@ -95,6 +103,8 @@ the audio after.
 
 ## Miscellanea
 
+<img src="images/maimmisc.png" alt="cropped screenshot of maim miscellanea panel">
+
 These oddball effects were discovered by fishing around in the code of the MP3 encoders and trying out different "bends".
 
 The top effect, which comes from the aliasing "butterfly" step of MP3 encoding, plays with constructive or destructive 
@@ -105,6 +115,8 @@ The bottom effect, which is only available in the LAME encoder, warps the way th
 in creating the spectrum. By default, this box is set to the bottom right, which is no distortion.
 
 ## Sidebar
+
+<img src="images/maimpost.png" alt="cropped screenshot of maim sidebar panel">
 
 These are your standard tools for corralling audio effects:
 
