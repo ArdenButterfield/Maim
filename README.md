@@ -2,8 +2,20 @@
 
 *MAIM Ain't an Implementation of Mp3*
 
+<img src="Docs/images/maimgui.png" alt="screenshot of full maim gui">
+
 MAIM is an audio plugin that circuit bends an MP3 encoder in real time, 
-disrupting the control flow sending data down unexpected paths to create digital distortions. 
+disrupting the control flow sending data down unexpected paths to create digital distortions. With heavily hacked real MP3 encoders at its core, MAIM gives you the full gamut of digital distortion, from the realistic to the fantastical.
+
+- MAIM features two real MP3 encoders, captured in the wild and painstakingly incorporated into a real-time plugin.
+- We've woven mad-science circuit bending into MAIM's MP3 encoders, to give you fine control over a whole palette of spectral distortions and face-melting glitches.
+- All knobs can be smoothly dragged and automated, without pops or gaps in the sound.
+- MAIM works across DAWs, on Mac (AU/VST3), Windows (VST3), and even Linux (VST3).
+- MAIM is licensed under the GPL v3.0 license, so you are free to use and even modify it, as long as any redistribution of the software is under the same license.
+
+If you encounter any issues, or have an idea for something that would improve MAIM, please raise an issue on the GitHub page.
+
+Maim took a long time to make. If you enjoy MAIM and want to see more plugins like it in the future, [tips](https://ko-fi.com/wildergardenaudio) are always welcome.
 
 ## Installation Instructions
 
@@ -20,14 +32,4 @@ If instead you wish to build the plugin yourself, see the [build instructions](D
 
 ## Contributing
 
-### Adding more bends
-
-To add more bends to the encoder requires updating the API between the C++ frontend code and the LAME backend. The steps are as follows:
-
-- Update the `bend_flags_and_data` struct in  `Maim/lib/lame/libmp3lame/lame_global_flags.h` to include the parameter that you need for your bend. The lame global flags and lame internal flags share an instance of this struct throughout the encoder's operation.
-
-- Add a setter function to `Maim/lib/lame/include/lame.h` and `Maim/lib/lame/libmp3lame/lame.c` for the parameter.
-
-- Add a line in `lame_clear_bends` in `Maim/lib/lame/libmp3lame/lame.c` if you need to do anything to set default values.
-
-- Implement your bend, using whatever data you need from `bend_flags_and_data`. The relevant encoder and decoder functions are mostly in `Maim/lib/lame/libmp3lame`.
+You are welcome and encouraged to raise issues and create pull requests!
