@@ -2,22 +2,21 @@
 
 Few audio processes have been as celebrated and as derided as MP3 compression. From its birth in the '90s as a way to
 shrink digital audio files small enough to send over the internet, it quickly became nearly synonymous with music
-piracy. Through the 2000s and 2010s, it's reputation changed, and audiophiles and musicians bemoaned the quick and easy MP3
+piracy. Through the 2000s and 2010s, its reputation changed: audiophiles and musicians bemoaned the quick and easy MP3
 as indicative of a consumerist "McDonald's generation" of music listeners, unconcerned with audio quality. Now, as 
-internet speeds and computer storage grows exponentially, the humble MP3 sinks farther into the realm of nostalgia,
+internet speed and computer storage grows exponentially, the humble MP3 sinks farther into the realm of nostalgia,
 joining the wow and flutter of tape and the crackle of vinyl as sounds that bring listeners back to a time and place. 
 
-So what is this infamous sound of the MP3? MP3 files are able to be so much smaller than uncompressed digital audio 
-thanks to "lossy" compression: information in the sound spectrum is selectively removed, to compress a track to a
-certain number of bits per second. At high bitrates, the changes will be inaudible (though the exact bitrate at which
-they become audible is, like every other audiophile topic, fiercely debated). Bring the bitrate down a bit, and the
+So what is this infamous sound of the MP3? MP3 files are able to shrink digital audio so much 
+thanks to "lossy" compression: information in the sound spectrum is selectively removed until the track has been compressed down to the desired number of bits per second. At high bitrates, these removals will be inaudible (though the exact bitrate at which
+they become perceptible is, like every other audiophile topic, fiercely debated). Lower the bitrate a bit, and the
 audio takes on a shimmering, out-of-focus tone. Bring the bitrate down even further, and your track is fully at the
 mercy of the MP3 encoder. All bets are off in this zone: the MP3 spec lets encoders decide *which* parts of the sound
 to remove, so each encoder will have a different tone.
 
-MAIM uses real encoders to get the utmost accurate MP3 sound. However, it also has a wide palette of controls to let you
+MAIM uses real encoders to give you a completely accurate MP3 sound. However, it also has a wide palette of controls to let you
 turn the encoding process up to 11, or break it entirely. If an MP3 is a beautiful loaf of bread, MAIM lets you turn eat
-it fresh with butter and honey... or make the baker watch as you turn it into a bread bowl
+it fresh with butter and honey... or make the baker watch as you turn it into a bread bowl.
 
 <img src="images/maimgui.png" alt="screenshot of full maim gui">
 
@@ -69,10 +68,10 @@ for the actual compression. (The astute reader will note that this requires two 
 fine. The reasons for this are more political than mathematical. See Stephen Witt's excellent book *How Music Got Free*)
  
 In this matrix, you can change which frequency gets mapped to each line: the columns correspond to the output lines,
-and the rows correspond to the input lines. For instance, if you wanted the low frequency information to play across all
+and the rows correspond to the input lines. For instance, if you wanted the low frequency information to be sent to all
 frequencies, you would set the highlighted squares to all be in the bottom row.
 
-There are 4 buttons to help with more tedious tasks:
+There are 4 buttons to help with the following tedious tasks:
 
 - Reset to the standard mapping
 - Randomize the mapping
@@ -85,7 +84,7 @@ There are 4 buttons to help with more tedious tasks:
 
 ### Horizontal Shift
 
-This slider shifts the frequencies up or down, rotating around the end.
+This slider shifts the frequencies higher or lower.
 
 ### Vertical Shift
 
@@ -105,7 +104,7 @@ the audio after.
 
 <img src="images/maimmisc.png" alt="cropped screenshot of maim miscellanea panel">
 
-These oddball effects were discovered by fishing around in the code of the MP3 encoders and trying out different "bends".
+These oddball effects were discovered by fishing around in the code of the MP3 encoders and trying out different "circuit bends".
 
 The top effect, which comes from the aliasing "butterfly" step of MP3 encoding, plays with constructive or destructive 
 interference between neighboring bands in the frequency spectrum. By default, this box is set to the top right, which
@@ -118,7 +117,7 @@ in creating the spectrum. By default, this box is set to the bottom right, which
 
 <img src="images/maimpost.png" alt="cropped screenshot of maim sidebar panel">
 
-These are your standard tools for corralling audio effects:
+These are your standard tools for corralling sound through a plugin:
 
 ### Drive
 
@@ -127,7 +126,8 @@ above 0 dB after drive, there may be audible clipping.
 
 ### High / Low
 
-These are gentle biquad filters, applied after the MP3 compression.
+These are gentle biquad filters, applied after the MP3 compression. They set the cutoff frequency for high- and low-cut
+filters, respectively.
 
 ### Makeup Gain
 
@@ -136,5 +136,6 @@ the dry/wet control.
 
 ### Dry/Wet
 
-The proportion of the sound that is dry (unprocessed input audio, delay-corrected to line up with the output) versus wet
-(output from the MP3 compressor). At 0%, you will only hear the dry sound; at 100%, only the wet sound.
+This knob controls the proportion of the sound that is dry (unprocessed input audio, delay-corrected to line up with 
+the output) versus wet (output from the MP3 compressor). At 0%, you will only hear the dry sound; at 100%, only the 
+wet sound.
