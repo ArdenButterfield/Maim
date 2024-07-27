@@ -8,7 +8,7 @@ set(PROJECT_NAME "Maim")
 
 # Set the plugin formats you'll be building here.
 # Valid formats: AAX Unity VST AU AUv3 Standalone
-set(FORMATS AU VST3 AUv3)
+set(FORMATS AU VST3 AUv3 LV2)
 
 # This must be set before the project() call
 # see: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
@@ -54,6 +54,7 @@ juce_add_plugin("${PROJECT_NAME}"
     # ICON_SMALL ...
     COMPANY_NAME Wildergarden
     BUNDLE_ID com.wildergarden.wildergarden
+    LV2URI https://github.com/ArdenButterfield/Maim
     # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
     # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
