@@ -72,7 +72,7 @@ juce_add_plugin("${PROJECT_NAME}"
 # Setup & configure CLAP extension
 clap_juce_extensions_plugin(TARGET "${PROJECT_NAME}"
     CLAP_ID "com.wildergarden.${PROJECT_NAME}"
-    CLAP_FEATURES instrument "audio-effect")
+    CLAP_FEATURES "audio-effect")
 
 # C++20, please
 target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
