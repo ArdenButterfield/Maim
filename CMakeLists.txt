@@ -8,7 +8,7 @@ set(PROJECT_NAME "Maim")
 
 # Set the plugin formats you'll be building here.
 # Valid formats: AAX Unity VST AU AUv3 Standalone
-set(FORMATS AU VST3 AUv3)
+set(FORMATS AU VST3 AUv3 LV2)
 
 # This must be set before the project() call
 # see: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
@@ -47,6 +47,9 @@ option(JUCE_ENABLE_MODULE_SOURCE_GROUPS "Show all module sources in IDE projects
 # On Github Actions, it's managed by actions/checkout
 add_subdirectory(JUCE)
 
+# Load CLAP extension directly after main JUCE library
+add_subdirectory(clap-juce-extensions EXCLUDE_FROM_ALL)
+
 # Check the readme at `docs/CMake API.md` in the JUCE repo for full config
 juce_add_plugin("${PROJECT_NAME}"
     # VERSION ...                               # Set this if the plugin version is different to the project version
@@ -54,6 +57,7 @@ juce_add_plugin("${PROJECT_NAME}"
     # ICON_SMALL ...
     COMPANY_NAME Wildergarden
     BUNDLE_ID com.wildergarden.wildergarden
+    LV2URI https://github.com/ArdenButterfield/Maim
     # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
     # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
@@ -64,6 +68,11 @@ juce_add_plugin("${PROJECT_NAME}"
     PLUGIN_CODE MA01                            # A unique four-character plugin id with at least one upper-case character
     FORMATS "${FORMATS}"
     PRODUCT_NAME "${PROJECT_NAME}")        # The name of the final executable, which can differ from the target name
+
+# Setup & configure CLAP extension
+clap_juce_extensions_plugin(TARGET "${PROJECT_NAME}"
+    CLAP_ID "com.wildergarden.${PROJECT_NAME}"
+    CLAP_FEATURES "audio-effect")
 
 # C++20, please
 target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
