@@ -50,26 +50,26 @@ void MainArea::paint (juce::Graphics& g)
 
 void MainArea::resized()
 {
-    int margin = 10;
-    int postSectionWidth = 100;
-    int titleHeight = 100;
-    
+    auto scale = getWidth() / 800.;
+    auto margin = 10.0 * scale;
+    auto postSectionWidth = 100.0 * scale;
+
     auto activeArea = getLocalBounds()
-        .withTrimmedTop(margin)
-        .withTrimmedLeft(margin)
-        .withTrimmedRight(margin)
-        .withTrimmedBottom(margin);
+        .withTrimmedTop((int)margin)
+        .withTrimmedLeft((int)margin)
+        .withTrimmedRight((int)margin)
+        .withTrimmedBottom((int)margin);
 
-    auto tilesArea = activeArea.withTrimmedRight(postSectionWidth + margin);
-    postSection.setBounds(activeArea.withWidth(postSectionWidth).withRightX(activeArea.getRight()));
+    auto tilesArea = activeArea.withTrimmedRight((int)(postSectionWidth + margin));
+    postSection.setBounds(activeArea.withWidth((int)postSectionWidth).withRightX(activeArea.getRight()));
 
-    auto topRow = tilesArea.withHeight(230);
-    auto bottomRow = tilesArea.withTrimmedTop(topRow.getHeight() + margin);
+    auto topRow = tilesArea.withHeight((int)(230.0 * scale));
+    auto bottomRow = tilesArea.withTrimmedTop((int)(topRow.getHeight() + margin));
 
-    titlePanel.setBounds(topRow.withWidth(150));
-    psychoacousticSection.setBounds(topRow.withTrimmedLeft(titlePanel.getWidth() + margin));
+    titlePanel.setBounds(topRow.withWidth((int)(150.0 * scale)));
+    psychoacousticSection.setBounds(topRow.withTrimmedLeft((int)(titlePanel.getWidth() + margin)));
 
-    reassignmentSection.setBounds(bottomRow.withWidth(220));
-    mdctGraphSection.setBounds(bottomRow.withTrimmedLeft(reassignmentSection.getWidth() + margin).withWidth(290));
-    miscellaneaSection.setBounds(bottomRow.withX(mdctGraphSection.getRight() + margin).withRight(bottomRow.getRight()));
+    reassignmentSection.setBounds(bottomRow.withWidth((int)(220.0 * scale)));
+    mdctGraphSection.setBounds(bottomRow.withTrimmedLeft((int)(reassignmentSection.getWidth() + margin)).withWidth((int)(290.0 * scale)));
+    miscellaneaSection.setBounds(bottomRow.withX((int)(mdctGraphSection.getRight() + margin)).withRight(bottomRow.getRight()));
 }

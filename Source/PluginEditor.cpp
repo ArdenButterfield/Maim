@@ -19,6 +19,8 @@ MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (800, 500);
+    setResizable(true, true);
+    getConstrainer()->setFixedAspectRatio(8./5.);
     addAndMakeVisible(mainArea);
     setLookAndFeel(&maimLookAndFeel);
 }
