@@ -18,6 +18,7 @@
 
 #include "LameController.h"
 #include "BladeController.h"
+#include "OpusController.h"
 
 #define NUM_REASSIGNMENT_BANDS 20
 
@@ -30,8 +31,8 @@ class MP3ControllerManager : public juce::AudioProcessorValueTreeState::Listener
 public juce::Timer
 {
 public:
-    MP3ControllerManager(juce::AudioProcessorValueTreeState& parameters);
-    ~MP3ControllerManager();
+    explicit MP3ControllerManager(juce::AudioProcessorValueTreeState& parameters);
+    ~MP3ControllerManager() override;
 
 
     void initialize(int samplerate, int initialBitrate, int samplesPerBlock);
@@ -98,8 +99,9 @@ private:
     
     std::array<LameController, 2> lameControllers;
     std::array<BladeController, 2> bladeControllers;
-    MP3Controller* currentController;
-    MP3Controller* offController;
+    std::array<OpusController, 2> opusControllers;
+    CodecController* currentController;
+    CodecController* offController;
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;

@@ -26,48 +26,30 @@
 #include <lame.h>
 
 #include "QueueBuffer.h"
+#include "CodecController.h"
 
-class MP3Controller
+class MP3Controller : public CodecController
 {
 public:
-    virtual ~MP3Controller() { }
-    bool init(const int sampleRate,
-              const int maxSamplesPerBlock,
-              const int bitrate
-            );
-    void flushEncoder();
-    void deInit();
-    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut);
+    ~MP3Controller() override { }
+    bool init(int sampleRate,
+              int maxSamplesPerBlock,
+              int bitrate
+            ) override;
+    void deInit() override;
+    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut) override;
 
-    virtual int getBitrate() = 0;
-    virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;
-    virtual void setMDCTbandstepBends(bool invert, int step) = 0;
-    virtual void setMDCTpostshiftBends(int h_shift, float v_shift) = 0;
-    virtual void setMDCTwindowincrBends(int window_incr) = 0;
-    virtual void setMDCTBandReassignmentBends(int* order) = 0;
-    virtual void setBitrateSquishBends(float squish) = 0;
-    virtual void _setThresholdBias(float bias) = 0;
-    void setThresholdBias(float bias);
-    virtual void setMDCTfeedback(float feedback) = 0;
-    
-    virtual float* getPsychoanalThreshold() = 0;
-    virtual float* getPsychoanalEnergy() = 0;
-    virtual float* getMDCTpreBend() = 0;
-    virtual float* getMDCTpostBend() = 0;
-    virtual int getShortBlockStatus() = 0;
+    void setThresholdBias(float bias) override;
+
     std::string name;
     static const int MP3FRAMESIZE = 1152;
 protected:
-    
-    float pcmConvert (short samp) {
+    void flushEncoder();
+
+    static float pcmConvert (short samp) {
         return samp / (float)std::numeric_limits<short>::max();
     }
     float actualThresholdBias;
-
-    virtual bool init_encoder() = 0;
-    virtual void deinit_encoder() = 0;
-    virtual int validate_bitrate(int bitrate) = 0;
-    virtual int validate_samplerate(int samplerate) = 0;
 
     virtual int encodesamples(float* left, float* right) = 0;
     
@@ -85,10 +67,7 @@ protected:
     
     std::unique_ptr<QueueBuffer<float>> outputBufferL;
     std::unique_ptr<QueueBuffer<float>> outputBufferR;
-    
-    int bitrate;
-    int samplerate;
-    
+
     int input_buf_size;
     int mp3_buf_size;
 

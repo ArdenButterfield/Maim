@@ -7,3 +7,6 @@
 	path = clap-juce-extensions
 	url = https://github.com/free-audio/clap-juce-extensions.git
 	branch = main
+[submodule "opus"]
+	path = opus
+	url = https://github.com/xiph/opus.git

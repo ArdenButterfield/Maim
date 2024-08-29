@@ -41,6 +41,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS YES)
 # Create a /Modules directory in the IDE with the JUCE Module code
 option(JUCE_ENABLE_MODULE_SOURCE_GROUPS "Show all module sources in IDE projects" ON)
 
+add_subdirectory(opus)
+
 # JUCE is setup as a submodule in the /JUCE folder
 # Locally, you'll need to run `git submodule update --init --recursive` once
 # and `git submodule update --remote --merge` to keep it up to date
@@ -170,7 +172,9 @@ set(SourceFiles
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
-        Source/lib/lame/include)
+        Source/lib/lame/include
+        ${CMAKE_SOURCE_DIR}/opus/include
+)
 
 target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
 
@@ -230,6 +234,7 @@ target_link_libraries("${PROJECT_NAME}"
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
     "${LAMELIBRARYPATH}"
+    opus
     juce::juce_audio_basics
     juce::juce_audio_devices
     juce::juce_audio_formats
