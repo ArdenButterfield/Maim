@@ -87,7 +87,7 @@ void BladeController::setBitrateSquishBends(float squish)
     blade_set_bitrate_squish_bends(blade_encoder, (1 - squish) * (1 - squish) * (1 - squish));
 }
 
-void BladeController::_setThresholdBias(float bias)
+void BladeController::setThresholdBias(float bias)
 {
     blade_set_threshold_bias_bends(blade_encoder, bias);
 

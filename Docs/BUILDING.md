@@ -22,11 +22,13 @@ git clone --recurse-submodules https://github.com/ArdenButterfield/Maim
 3. so even if you have LAME installed already, you still need to do this step.
 
 ```sh
-cd Fish/Source/lib/lame/
+cd Maim/Source/lib/lame/
 ./configure CFLAGS="-fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
 make
 cd ../../..
 ```
+
+Optionally, add `--enable-debug` to the `configure` command, to compile with `-g`.
 
 3. Build the plugin. You can change `Release` to `Debug` in both lines to change the build configuration to one without optimization.
 

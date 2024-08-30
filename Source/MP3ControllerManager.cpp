@@ -131,9 +131,12 @@ void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
     if (encoder == lame) {
         desiredEncoder = lame;
         offController = &(lameControllers[offIndex]);
-    } else {
+    } else if (encoder == blade) {
         desiredEncoder = blade;
         offController = &(bladeControllers[offIndex]);
+    } else if (encoder == opus) {
+        desiredEncoder = opus;
+        offController = &(opusControllers[offIndex]);
     }
     
     offController->init(samplerate, samplesPerBlock, desiredBitrate);
@@ -304,12 +307,29 @@ void MP3ControllerManager::timerCallback()
     float* threshold = getPsychoanalThreshold();
     
     juce::var thresholdV, energyV;
-    
-    for (int i = 0; i < 22; ++i) {
-        thresholdV.append(rescalePsychoanal(threshold[i]));
-        energyV.append(rescalePsychoanal(energy[i]));
+
+    if (energy) {
+        for (int i = 0; i < 22; ++i) {
+            energyV.append(rescalePsychoanal(energy[i]));
+        }
+    } else {
+        for (int i = 0; i < 22; ++i) {
+            energyV.append(0);
+        }
+
     }
-    
+
+    if (threshold) {
+        for (int i = 0; i < 22; ++i) {
+            thresholdV.append(rescalePsychoanal(threshold[i]));
+        }
+    } else {
+        for (int i = 0; i < 22; ++i) {
+            thresholdV.append(0);
+        }
+
+    }
+
     auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
     psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
     psychoSpectrum.setProperty("energy", energyV, nullptr);
@@ -319,10 +339,25 @@ void MP3ControllerManager::timerCallback()
 
     juce::var preBendV, postBendV;
 
-    for (int i = 0; i < 576; ++i) {
-        preBendV.append(rescaleMDCT(preBend[i]));
-        postBendV.append(rescaleMDCT(postBend[i]));
+    if (preBend) {
+        for (int i = 0; i < 576; ++i) {
+            preBendV.append (rescaleMDCT (preBend[i]));
+        }
+    } else {
+        for (int i = 0; i < 576; ++i) {
+            preBendV.append (0);
+        }
     }
+    if (postBend) {
+        for (int i = 0; i < 576; ++i) {
+            postBendV.append (rescaleMDCT (postBend[i]));
+        }
+    } else {
+        for (int i = 0; i < 576; ++i) {
+            postBendV.append (0);
+        }
+    }
+
     auto mdctSamples = parameters.state.getChildWithName("mdct");
     mdctSamples.setProperty("pre", preBendV, nullptr);
     mdctSamples.setProperty("post",postBendV, nullptr);

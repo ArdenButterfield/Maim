@@ -16,15 +16,16 @@
 #include <array>
 #include <cmath>
 
-#include "LameController.h"
-#include "BladeController.h"
-#include "OpusController.h"
+#include "CodecControllers/BladeController.h"
+#include "CodecControllers/LameController.h"
+#include "CodecControllers/OpusController.h"
 
 #define NUM_REASSIGNMENT_BANDS 20
 
 enum Encoder {
     blade = 0,
-    lame = 1
+    lame = 1,
+    opus = 2
 };
 
 class MP3ControllerManager : public juce::AudioProcessorValueTreeState::Listener,

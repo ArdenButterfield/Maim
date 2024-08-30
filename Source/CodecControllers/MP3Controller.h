@@ -23,9 +23,9 @@
 
 #include "juce_core/juce_core.h"
 
-#include <lame.h>
+#include "lame.h"
 
-#include "QueueBuffer.h"
+#include "../QueueBuffer.h"
 #include "CodecController.h"
 
 class MP3Controller : public CodecController
@@ -39,7 +39,6 @@ public:
     void deInit() override;
     bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut) override;
 
-    void setThresholdBias(float bias) override;
 
     std::string name;
     static const int MP3FRAMESIZE = 1152;
@@ -71,24 +70,7 @@ protected:
     int input_buf_size;
     int mp3_buf_size;
 
-    int getClosest(const int target, const std::vector<int>& options)
-    {
-        auto lower = options[0];
-        auto upper = options[options.size() - 1];
-        for (const auto option : options)
-        {
-            if (option < target)
-            {
-                lower = option;
-            }
-            else
-            {
-                upper = option;
-                return (target - lower) < (upper - target) ? lower : upper;
-            }
-        }
-        return lower;
-    }
+    static int getClosest(int target, const std::vector<int>& options);
 #if WRITETODEBUGMP3FILE
     juce::File debugFile;
 #endif

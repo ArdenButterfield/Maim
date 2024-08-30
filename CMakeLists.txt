@@ -153,22 +153,22 @@ set(SourceFiles
     Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.h
     Source/GUIelements/MaimColours.h
     Source/MP3ControllerManager.cpp
-    Source/BladeController.h
+        Source/CodecControllers/BladeController.h
     Source/MP3ControllerManager.h
     Source/PluginProcessor.cpp
-    Source/MP3Controller.cpp
+        Source/CodecControllers/MP3Controller.cpp
     Source/QueueBuffer.h
     Source/RootMeanSquare.cpp
     Source/PluginEditor.h
     Source/RootMeanSquare.h
     Source/AutoGain.cpp
     Source/PluginEditor.cpp
-    Source/LameController.h
+        Source/CodecControllers/LameController.h
     Source/AutoGain.h
-    Source/LameController.cpp
+        Source/CodecControllers/LameController.cpp
     Source/PluginProcessor.h
-    Source/BladeController.cpp
-    Source/MP3Controller.h
+        Source/CodecControllers/BladeController.cpp
+        Source/CodecControllers/MP3Controller.h
 )
 target_include_directories("${PROJECT_NAME}"
         PRIVATE
@@ -250,6 +250,13 @@ target_link_libraries("${PROJECT_NAME}"
     juce::juce_dsp
 )
 
+add_custom_target(
+        lame_lib
+        COMMAND make
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Source/lib/lame"
+)
+
+add_dependencies("${PROJECT_NAME}" lame_lib)
 
 
 # When present, use Intel IPP for performance on Windows

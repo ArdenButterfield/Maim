@@ -25,8 +25,7 @@ public:
     virtual void setMDCTwindowincrBends(int window_incr) = 0;
     virtual void setMDCTBandReassignmentBends(int* order) = 0;
     virtual void setBitrateSquishBends(float squish) = 0;
-    virtual void _setThresholdBias(float bias) = 0;
-    virtual void setThresholdBias(float bias) { _setThresholdBias(bias); }
+    virtual void setThresholdBias(float bias) = 0;
     virtual void setMDCTfeedback(float feedback) = 0;
 
     virtual float* getPsychoanalThreshold() = 0;

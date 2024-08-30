@@ -34,7 +34,8 @@ private:
     NamedRotarySlider biasSlider;
 
     juce::ToggleButton encoderButton {"Blade Encoder|Lame Encoder"};
-    const juce::AudioProcessorValueTreeState::ButtonAttachment encoderAttachment;
+    juce::ComboBox encoderSelection;
+    const juce::AudioProcessorValueTreeState::ComboBoxAttachment encoderAttachment;
     NamedRotarySlider bitrateSlider;
     NamedRotarySlider squishSlider;
 

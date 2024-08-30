@@ -117,8 +117,21 @@ bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut,
     }
     return true;
 }
-
-void MP3Controller::setThresholdBias (float bias)
+int MP3Controller::getClosest (const int target, const std::vector<int>& options)
 {
-    _setThresholdBias(bias);
+    auto lower = options[0];
+    auto upper = options[options.size() - 1];
+    for (const auto option : options)
+    {
+        if (option < target)
+        {
+            lower = option;
+        }
+        else
+        {
+            upper = option;
+            return (target - lower) < (upper - target) ? lower : upper;
+        }
+    }
+    return lower;
 }
