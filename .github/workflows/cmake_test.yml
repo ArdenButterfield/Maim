@@ -34,17 +34,17 @@ jobs:
             os: ubuntu-22.04
             pluginval-binary: ./pluginval
             ccache: ccache
-            lame-lib: Source/lib/lame/libmp3lame/.libs/libmp3lame.a
+            lame-lib: lib/lame/libmp3lame/.libs/libmp3lame.a
           - name: macOS
             os: macos-12
             pluginval-binary: pluginval.app/Contents/MacOS/pluginval
             ccache: ccache
-            lame-lib: Source/lib/lame/libmp3lame/.libs/libmp3lame.a
+            lame-lib: lib/lame/libmp3lame/.libs/libmp3lame.a
           - name: Windows
             os: windows-latest
             pluginval-binary: ./pluginval.exe
             ccache: sccache
-            lame-lib: Source/lib/lame/output/libmp3lame-static.lib
+            lame-lib: lib/lame/output/libmp3lame-static.lib
 
 
     steps:
