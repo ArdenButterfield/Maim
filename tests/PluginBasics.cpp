@@ -9,7 +9,7 @@ TEST_CASE ("one is equal to one", "[dummy]")
 
 TEST_CASE ("Plugin instance", "[instance]")
 {
-    PluginProcessor testPlugin;
+    MaimAudioProcessor testPlugin;
 
     // This lets us use JUCE's MessageManager without leaking.
     // PluginProcessor might need this if you use the APVTS for example.
