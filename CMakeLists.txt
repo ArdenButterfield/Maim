@@ -2,279 +2,193 @@
 # 3.24.1 is also bundled in CLion as of 2023
 cmake_minimum_required(VERSION 3.24.1)
 
-# This is the name of your plugin
-# This cannot have spaces (but PRODUCT_NAME can)
+# This tells cmake we have goodies in the /cmake folder
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include (PamplejuceVersion)
+
+# Configures universal binaries and decides which version of macOS to support
+include(PamplejuceMacOS)
+
+# Change me!
+# This is the internal name of the project and the name of JUCE's shared code target
+# Note: This cannot have spaces (it may be 2024, but you can't have it all!)
+# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs display)
 set(PROJECT_NAME "Maim")
 
-# Set the plugin formats you'll be building here.
-# Valid formats: AAX Unity VST AU AUv3 Standalone
-set(FORMATS AU VST3 AUv3 LV2)
+# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
+# You can also just have it be the same thing as PROJECT_NAME
+# You may want to append the major version on the end of this (and PROJECT_NAME) ala:
+#   set(PROJECT_NAME "MyPlugin_v${MAJOR_VERSION}")
+# Doing so enables major versions to show up in IDEs and DAWs as separate plugins
+# allowing you to change parameters and behavior without breaking existing user projects
+set(PRODUCT_NAME "Maim")
 
-# This must be set before the project() call
-# see: https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
-set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13" CACHE STRING "Support macOS down to High Sierra")
+# Change me! Used for the MacOS bundle name and Installers
+set(COMPANY_NAME "Wildergarden")
 
-# Reads in our VERSION file and sticks in it CURRENT_VERSION variable
-# Be sure the file has no newlines!
-file(STRINGS VERSION CURRENT_VERSION)
+# Change me! Used for the MacOS bundle identifier (and signing)
+set(BUNDLE_ID "com.wildergarden.wildergarden")
 
-# For simplicity, the name of the project is also the name of the target
+# Change me! Set the plugin formats you want built
+# Valid choices: AAX Unity VST VST3 AU AUv3 Standalone
+set(FORMATS Standalone AU VST3 AUv3)
+
+# For simplicity, the name of the CMake project is also the name of the target
 project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
-
-# By default we don't want Xcode schemes to be made for modules, etc
-set(CMAKE_XCODE_GENERATE_SCHEME OFF)
-
-# Building universal binaries on macOS increases build time
-# This is set on CI but not during local dev
-if ((DEFINED ENV{CI}) AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
-  message("Building for Apple Silicon and x86_64")
-  set(CMAKE_OSX_ARCHITECTURES arm64 x86_64)
-endif ()
 
 set(LAMELIBRARYPATH "${CMAKE_CURRENT_SOURCE_DIR}/${LAME_LIB}")
 
-# Adds all the module sources so they appear correctly in the IDE
-# Must be set before JUCE is added as a sub-dir (or any targets are made)
-# https://github.com/juce-framework/JUCE/commit/6b1b4cf7f6b1008db44411f2c8887d71a3348889
-set_property(GLOBAL PROPERTY USE_FOLDERS YES)
-
-# Create a /Modules directory in the IDE with the JUCE Module code
-option(JUCE_ENABLE_MODULE_SOURCE_GROUPS "Show all module sources in IDE projects" ON)
-
 add_subdirectory(opus)
 
+# Couple tweaks that IMO should be JUCE defaults
+include(JUCEDefaults)
+
 # JUCE is setup as a submodule in the /JUCE folder
-# Locally, you'll need to run `git submodule update --init --recursive` once
-# and `git submodule update --remote --merge` to keep it up to date
-# On Github Actions, it's managed by actions/checkout
+# Locally, you must run `git submodule update --init --recursive` once
+# and later `git submodule update --remote --merge` to keep it up to date
+# On Github Actions, this is done as a part of actions/checkout
 add_subdirectory(JUCE)
 
-# Load CLAP extension directly after main JUCE library
-add_subdirectory(clap-juce-extensions EXCLUDE_FROM_ALL)
+# Add any other modules you want modules here, before the juce_add_plugin call
+# juce_add_module(modules/my_module)
 
-# Check the readme at `docs/CMake API.md` in the JUCE repo for full config
+# See `docs/CMake API.md` in the JUCE repo for all config options
 juce_add_plugin("${PROJECT_NAME}"
-    # VERSION ...                               # Set this if the plugin version is different to the project version
-    # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
-    # ICON_SMALL ...
-    COMPANY_NAME Wildergarden
-    BUNDLE_ID com.wildergarden.wildergarden
-    LV2URI https://github.com/ArdenButterfield/Maim
-    # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
-    # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
-    # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
-    # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
-    # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
-    COPY_PLUGIN_AFTER_BUILD TRUE # On MacOS, plugin will be copied to /Users/you/Library/Audio/Plug-Ins/
-    PLUGIN_MANUFACTURER_CODE Awbb               # This has to be one uppercase, rest lower for AU formats
-    PLUGIN_CODE MA01                            # A unique four-character plugin id with at least one upper-case character
-    FORMATS "${FORMATS}"
-    PRODUCT_NAME "${PROJECT_NAME}")        # The name of the final executable, which can differ from the target name
+        # Icons for the standalone app
+        ICON_BIG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/icon.png"
 
-# Setup & configure CLAP extension
-clap_juce_extensions_plugin(TARGET "${PROJECT_NAME}"
-    CLAP_ID "com.wildergarden.${PROJECT_NAME}"
-    CLAP_FEATURES "audio-effect")
+        # Change me!
+        COMPANY_NAME "${COMPANY_NAME}"
+        BUNDLE_ID "${BUNDLE_ID}"
+
+        IS_SYNTH FALSE                       # Is this a synth or an effect?
+        NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+        NEEDS_MIDI_OUTPUT FALSE              # Does the plugin need midi output?
+        IS_MIDI_EFFECT FALSE                 # Is this plugin a MIDI effect?
+
+        # On MacOS, plugin is copied to ~/Users/yourname/Library/Audio/Plug-Ins/
+        COPY_PLUGIN_AFTER_BUILD TRUE
+
+        # Change me!
+        # A four-character plugin id
+        # First character MUST be uppercase for AU formats
+        PLUGIN_MANUFACTURER_CODE Awbb
+
+        # Change me!
+        # A unique four-character plugin id
+        # Note: this must have at least one upper-case character
+        PLUGIN_CODE MA01
+        FORMATS "${FORMATS}"
+
+        # The name of your final executable
+        # This is how it's listed in the DAW
+        # This can be different from PROJECT_NAME and can have spaces!
+        # You might want to use v${MAJOR_VERSION} here once you go to v2...
+        PRODUCT_NAME "${PRODUCT_NAME}")
+
+
+# This lets us use our code in both the JUCE targets and our Test target
+# Without running into ODR violations
+add_library(SharedCode INTERFACE)
 
 # C++20, please
-target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
+# Use cxx_std_23 for C++23 (as of CMake v 3.20)
+target_compile_features(SharedCode INTERFACE cxx_std_20)
 
-# Manually list all .h and .cpp files for the plugin
-set(SourceFiles
-    Source/lib/blade/bladeenc/formatbitstream2.h
-    Source/lib/blade/bladeenc/l3side.h
-    Source/lib/blade/bladeenc/mdct.c
-    Source/lib/blade/bladeenc/l3psy.c
-    Source/lib/blade/bladeenc/l3bitstream.h
-    Source/lib/blade/bladeenc/system.h
-    Source/lib/blade/bladeenc/l3psy.h
-    Source/lib/blade/bladeenc/codec.h
-    Source/lib/blade/bladeenc/loop.h
-    Source/lib/blade/bladeenc/blade.h
-    Source/lib/blade/bladeenc/formatbitstream2.c
-    Source/lib/blade/bladeenc/reservoir.c
-    Source/lib/blade/bladeenc/run.sh
-    Source/lib/blade/bladeenc/l3bitstream-pvt.h
-    Source/lib/blade/bladeenc/encode.c
-    Source/lib/blade/bladeenc/common.c
-    Source/lib/blade/bladeenc/loop.c
-    Source/lib/blade/bladeenc/common.h
-    Source/lib/blade/bladeenc/tables.h
-    Source/lib/blade/bladeenc/blade.c
-    Source/lib/blade/bladeenc/reservoir.h
-    Source/lib/blade/bladeenc/mdct.h
-    Source/lib/blade/bladeenc/tables.c
-    Source/lib/blade/bladeenc/huffman.h
-    Source/lib/blade/bladeenc/loop-pvt.h
-    Source/lib/blade/bladeenc/subs.c
-    Source/lib/blade/bladeenc/codec.c
-    Source/lib/blade/bladeenc/l3bitstream.c
-    Source/lib/blade/bladeenc/encoder.h
-    Source/GUIelements/ReassignmentSection.cpp
-    Source/GUIelements/MainArea.cpp
-    Source/GUIelements/PostSection.h
-    Source/GUIelements/StageWindow.cpp
-    Source/GUIelements/EncoderBitrateSection.h
-    Source/GUIelements/StageWindow.h
-    Source/GUIelements/LineGraph.h
-    Source/GUIelements/PsychoanalGraph.cpp
-    Source/GUIelements/PostSection.cpp
-    Source/GUIelements/MiscellaneaSection.cpp
-    Source/GUIelements/MDCTGraphSection.cpp
-    Source/GUIelements/MiscellaneaSection.h
-    Source/GUIelements/MainArea.h
-    Source/GUIelements/IndicatorLight.cpp
-    Source/GUIelements/ReassignmentSection.h
-    Source/GUIelements/IndicatorLight.h
-    Source/GUIelements/PsychoanalGraph.h
-    Source/GUIelements/MDCTGraphSection.h
-    Source/GUIelements/DragBox.h
-    Source/GUIelements/DragBox.cpp
-    Source/GUIelements/SquishFlipDragBox.cpp
-    Source/GUIelements/SquishFlipDragBox.h
-    Source/GUIelements/ButterflyDragBox.cpp
-    Source/GUIelements/ButterflyDragBox.h
-    Source/GUIelements/EncoderBitrateSection.cpp
-    Source/GUIelements/TiltGraph.cpp
-    Source/GUIelements/TiltGraph.h
-    Source/GUIelements/TitlePanel.h
-    Source/GUIelements/TitlePanel.cpp
-    Source/GUIelements/MaimLookAndFeel.h
-    Source/GUIelements/MaimLookAndFeel.cpp
-    Source/GUIelements/NamedRotarySlider.h
-    Source/GUIelements/NamedRotarySlider.cpp
-    Source/GUIelements/MDCTGraph.cpp
-    Source/GUIelements/MDCTGraph.h
-    Source/GUIelements/BlockyLineGraph.cpp
-    Source/GUIelements/BlockyLineGraph.h
-    Source/GUIelements/DemureSlider.cpp
-    Source/GUIelements/DemureSlider.h
-    Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.cpp
-    Source/GUIelements/ArrayAssignerButtons/ArrayAssignerButton.h
-    Source/GUIelements/MaimColours.h
-    Source/MP3ControllerManager.cpp
-        Source/CodecControllers/BladeController.h
-    Source/MP3ControllerManager.h
-    Source/PluginProcessor.cpp
-        Source/CodecControllers/MP3Controller.cpp
-    Source/QueueBuffer.h
-    Source/RootMeanSquare.cpp
-    Source/PluginEditor.h
-    Source/RootMeanSquare.h
-    Source/AutoGain.cpp
-    Source/PluginEditor.cpp
-        Source/CodecControllers/LameController.h
-    Source/AutoGain.h
-        Source/CodecControllers/LameController.cpp
-    Source/PluginProcessor.h
-        Source/CodecControllers/BladeController.cpp
-        Source/CodecControllers/MP3Controller.h
-)
-target_include_directories("${PROJECT_NAME}"
-        PRIVATE
-        Source/lib/lame/include
+file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
+file(GLOB_RECURSE BladeFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/lib/blade/bladeenc/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/lib/blade/bladeenc/*.h")
+
+add_library(blade_library SHARED ${BladeFiles})
+
+set_target_properties(blade_library PROPERTIES LINKER_LANGUAGE CXX)
+
+target_sources(SharedCode INTERFACE ${SourceFiles})
+
+target_include_directories(SharedCode
+        INTERFACE
+        lib/lame/include
         ${CMAKE_SOURCE_DIR}/opus/include
+        lib/blade/bladeenc
 )
 
-target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
 
-# No, we don't want our source buried in extra nested folders
-set_target_properties("${PROJECT_NAME}" PROPERTIES FOLDER "")
+# Adds a BinaryData target for embedding assets into the binary
+include(Assets)
 
-# The Xcode source tree should uhhh, still look like the source tree, yo
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFiles})
+# MacOS only: Cleans up folder and target organization on Xcode.
+include(XcodePrettify)
 
-# Setup our binary data as a target
-juce_add_binary_data(fonts SOURCES
-        fonts/Gontserrat-Regular.ttf
-        fonts/bedstead/bedstead-boldsemicondensed.otf
-        fonts/bedstead/bedstead-semicondensed.otf
-        fonts/bedstead/bedstead-boldextended.otf)
+# This is where you can set preprocessor definitions for JUCE and your plugin
+target_compile_definitions(SharedCode
+        INTERFACE
 
-# Required for Linux happiness:
-# See https://forum.juce.com/t/loading-pytorch-model-using-binarydata/39997/2
-set_target_properties(fonts PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+        # JUCE_WEB_BROWSER and JUCE_USE_CURL off by default
+        JUCE_WEB_BROWSER=0  # If you set this to 1, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
+        JUCE_USE_CURL=0     # If you set this to 1, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
+        JUCE_VST3_CAN_REPLACE_VST2=0
 
+        # Uncomment if you are paying for a an Indie/Pro license or releasing under GPLv3
+        # JUCE_DISPLAY_SPLASH_SCREEN=0
 
-# Clean up folder organization on Xcode.
-# It tucks the Plugin varieties into a "Targets" folder and generate an Xcode Scheme manually
-# Xcode scheme generation is turned off globally to limit noise from other targets
-# The non-hacky way of doing this is via the global PREDEFINED_TARGETS_FOLDER property
-# However that doesn't seem to be working in Xcode
-# Not all plugin types (au, vst) available on each build type (win, macos, linux)
-foreach(target ${FORMATS} "All")
-    if(TARGET ${PROJECT_NAME}_${target})
-        set_target_properties(${PROJECT_NAME}_${target} PROPERTIES
-            # Tuck the actual plugin targets into a folder where they won't bother us
-            FOLDER "Targets"
+        # lets the app known if we're Debug or Release
+        CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
+        VERSION="${CURRENT_VERSION}"
 
-            # MacOS only: Sets the default executable that Xcode will open on build
-            # For this exact path to to work, manually build the AudioPluginHost.xcodeproj in the JUCE subdir
-            XCODE_SCHEME_EXECUTABLE "${CMAKE_CURRENT_SOURCE_DIR}/JUCE/extras/AudioPluginHost/Builds/MacOSX/build/Debug/AudioPluginHost.app"
+        # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
+        PRODUCT_NAME_WITHOUT_VERSION="Maim"
+)
 
-            # Let us build the target in Xcode
-            XCODE_GENERATE_SCHEME ON)
-    endif()
-endforeach()
-set_target_properties(fonts PROPERTIES FOLDER "Targets")
+#add_library(my_warning_flags INTERFACE)
+#target_compile_options(my_warning_flags INTERFACE
+#    -Wno-float-conversion
+#    -Wno-implicit-int-float-conversion
+#    -Wno-implicit-float-conversion
+#        )
 
 
-target_compile_definitions("${PROJECT_NAME}"
-    PUBLIC
-    # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
-    JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
-    JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
-    JUCE_VST3_CAN_REPLACE_VST2=0)
-
-target_link_libraries("${PROJECT_NAME}"
-        PUBLIC
-        fonts)
-
-# link_directories(./Source/lib/lame/libmp3lame/.libs/)
-target_link_libraries("${PROJECT_NAME}"
-    PRIVATE
-    "${LAMELIBRARYPATH}"
-    opus
-    juce::juce_audio_basics
-    juce::juce_audio_devices
-    juce::juce_audio_formats
-    juce::juce_audio_plugin_client
-    juce::juce_audio_processors
-    juce::juce_audio_utils
-    juce::juce_core
-    juce::juce_data_structures
-    juce::juce_events
-    juce::juce_graphics
-    juce::juce_gui_basics
-    juce::juce_gui_extra
-    juce::juce_dsp
+# Link to any other modules you added (with juce_add_module) here!
+# Usually JUCE modules must have PRIVATE visibility
+# See https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md#juce_add_module
+# However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
+# This allows the JUCE plugin targets and the Tests target to link against it
+target_link_libraries(SharedCode
+        INTERFACE
+        Assets
+        "${LAMELIBRARYPATH}"
+        opus
+        blade_library
+        juce_audio_utils
+        juce_audio_processors
+        juce_dsp
+        juce_gui_basics
+        juce_gui_extra
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags
+        #    my_warning_flags
 )
 
 add_custom_target(
         lame_lib
         COMMAND make
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Source/lib/lame"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/lame"
 )
 
-add_dependencies("${PROJECT_NAME}" lame_lib)
+add_dependencies(SharedCode lame_lib)
 
 
-# When present, use Intel IPP for performance on Windows
-if(WIN32) # Can't use MSVC here, as it won't catch Clang on Windows
-    find_package(IPP)
-    # target_link_libraries("${PROJECT_NAME}" PUBLIC c:/programdata/chocolatey/lib/mingw/tools/install/mingw64/x86_64-w64-mingw32/lib/libmingwex.a)
-    if(IPP_FOUND)
-        target_link_libraries("${PROJECT_NAME}" PUBLIC IPP::ipps IPP::ippcore IPP::ippi IPP::ippcv)
-        message("IPP LIBRARIES FOUND")
-        target_compile_definitions("${PROJECT_NAME}" PUBLIC PAMPLEJUCE_IPP=1)
-    else()
-        message("IPP LIBRARIES *NOT* FOUND")
-    endif()
-endif()
+# Link the JUCE plugin targets our SharedCode target
+target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode)
 
-# Color our warnings and errors
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-   add_compile_options (-fdiagnostics-color=always)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-   add_compile_options (-fcolor-diagnostics)
-endif ()
+
+# IPP support, comment out to disable
+include(PamplejuceIPP)
+
+# Everything related to the tests target
+include(Tests)
+
+# A separate target keeps the Tests target fast!
+include(Benchmarks)
+
+# Pass some config to GA (like our PRODUCT_NAME)
+include(GitHubENV)
