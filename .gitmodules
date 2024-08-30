@@ -10,6 +10,3 @@
 [submodule "opus"]
 	path = opus
 	url = https://github.com/xiph/opus.git
-[submodule "cmake-includes"]
-	path = cmake-includes
-	url = https://github.com/sudara/cmake-includes.git

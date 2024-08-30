@@ -1,3 +1,6 @@
+
+#include "helpers/test_helpers.h"
+
 #include <PluginProcessor.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
@@ -9,18 +12,25 @@ TEST_CASE ("one is equal to one", "[dummy]")
 
 TEST_CASE ("Plugin instance", "[instance]")
 {
-    MaimAudioProcessor testPlugin;
 
     // This lets us use JUCE's MessageManager without leaking.
     // PluginProcessor might need this if you use the APVTS for example.
     // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
     auto gui = juce::ScopedJuceInitialiser_GUI {};
 
+    MaimAudioProcessor testPlugin;
+
+
     SECTION ("name")
     {
         CHECK_THAT (testPlugin.getName().toStdString(),
             Catch::Matchers::Equals ("Maim"));
     }
+}
+
+TEST_CASE("opus encode/decode", "[opusencodedecode]")
+{
+
 }
 
 
