@@ -129,18 +129,21 @@ jobs:
       working-directory: lib/lame
       run: |
         cp configMS.h config.h
+        nmake libmp3lame-static.lib -f Makefile.MSVC comp=msvc asm=no
     - name: Build LAME (linux)
       if: ${{ matrix.name == 'Linux' }}
       shell: bash
       working-directory: lib/lame
       run: |
         ./configure CFLAGS="-fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
+        make
     - name: Build LAME (mac)
       if: ${{ matrix.name == 'macOS' }}
       shell: bash
       working-directory: lib/lame
       run: |
         ./configure CFLAGS="-arch x86_64 -arch arm64 -fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
+        make
     - name: Configure
       shell: bash
       run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DLAME_LIB=${{ matrix.lame-lib }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE}} -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" .
