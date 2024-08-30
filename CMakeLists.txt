@@ -168,13 +168,25 @@ target_link_libraries(SharedCode
         #    my_warning_flags
 )
 
-add_custom_target(
-        lame_lib
-        COMMAND make
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/lame"
-)
 
-add_dependencies(SharedCode lame_lib)
+if (WIN32)
+    add_custom_target(
+            lame_lib
+            COMMAND nmake libmp3lame-static.lib -f Makefile.MSVC comp=msvc asm=no
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/lame"
+    )
+
+    add_dependencies(SharedCode lame_lib)
+else()
+    add_custom_target(
+            lame_lib
+            COMMAND make
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib/lame"
+    )
+
+    add_dependencies(SharedCode lame_lib)
+endif(WIN32)
+
 
 
 # Link the JUCE plugin targets our SharedCode target

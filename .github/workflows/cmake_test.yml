@@ -13,8 +13,8 @@ env:
   PROJECT_NAME: Maim
   BUILD_TYPE: Release
   BUILD_DIR: Builds
-  SOURCE_DIR: Source
-  LAME_DIR: Source/lib/lame
+  SOURCE_DIR: source
+  LAME_DIR: lib/lame
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   DISPLAY: :0 # linux pluginval needs this
   CMAKE_BUILD_PARALLEL_LEVEL: 3 # Use up to 3 cpus to build juceaide, etc
@@ -126,25 +126,21 @@ jobs:
 
     - name: Build LAME (windows)
       if: ${{ matrix.name == 'Windows' }}
-      working-directory: Source/lib/lame
+      working-directory: lib/lame
       run: |
         cp configMS.h config.h
-        # nmake clean -f Makefile.MSVC
-        nmake libmp3lame-static.lib -f Makefile.MSVC comp=msvc asm=no
     - name: Build LAME (linux)
       if: ${{ matrix.name == 'Linux' }}
       shell: bash
-      working-directory: Source/lib/lame
+      working-directory: lib/lame
       run: |
         ./configure CFLAGS="-fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
-        make
     - name: Build LAME (mac)
       if: ${{ matrix.name == 'macOS' }}
       shell: bash
-      working-directory: Source/lib/lame
+      working-directory: lib/lame
       run: |
         ./configure CFLAGS="-arch x86_64 -arch arm64 -fPIC"  --disable-frontend --enable-expopt=full --disable-shared --enable-static
-        make
     - name: Configure
       shell: bash
       run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DLAME_LIB=${{ matrix.lame-lib }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE}} -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" .
