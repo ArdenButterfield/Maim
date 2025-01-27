@@ -1,14 +1,14 @@
 /*
   ==============================================================================
 
-    MP3ControllerManager.cpp
+    CodecControllerManager.cpp
     Created: 10 Apr 2023 5:05:43pm
     Author:  Arden Butterfield
 
   ==============================================================================
 */
 
-#include "MP3ControllerManager.h"
+#include "CodecControllerManager.h"
 
 void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int startFadeFrom) {
     // NOTE: should potentially be an equal-power crossfade, to prevent a dip in volume.
@@ -20,7 +20,7 @@ void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int sta
 }
 
 
-MP3ControllerManager::MP3ControllerManager(juce::AudioProcessorValueTreeState& p) :
+CodecControllerManager::CodecControllerManager(juce::AudioProcessorValueTreeState& p) :
     parameters(p),
     currentEncoder(lame),
     currentControllerIndex(0)
@@ -49,7 +49,7 @@ MP3ControllerManager::MP3ControllerManager(juce::AudioProcessorValueTreeState& p
     }
 }
 
-MP3ControllerManager::~MP3ControllerManager()
+CodecControllerManager::~CodecControllerManager()
 {
     parameters.removeParameterListener("butterflystandard", this);
     parameters.removeParameterListener("butterflycrossed", this);
@@ -72,7 +72,7 @@ MP3ControllerManager::~MP3ControllerManager()
     }
 }
 
-void MP3ControllerManager::initialize (int _samplerate, int _initialBitrate, int _samplesPerBlock)
+void CodecControllerManager::initialize (int _samplerate, int _initialBitrate, int _samplesPerBlock)
 {
     std::memset(previousFrames, 0, 2 * 2 * 1152 * sizeof(float));
     samplerate = _samplerate;
@@ -109,12 +109,12 @@ void MP3ControllerManager::initialize (int _samplerate, int _initialBitrate, int
     startTimerHz(30);
 }
 
-void MP3ControllerManager::parameterChanged (const juce::String &parameterID, float newValue)
+void CodecControllerManager::parameterChanged (const juce::String &parameterID, float newValue)
 {
     parametersNeedUpdating = true;
 }
 
-void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
+void CodecControllerManager::changeController(int bitrate, Encoder encoder)
 {
     if ((bitrate == currentBitrate) && (encoder == currentEncoder)) {
         wantingToSwitch = false;
@@ -144,7 +144,7 @@ void MP3ControllerManager::changeController(int bitrate, Encoder encoder)
 
 }
 
-void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
+void CodecControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
 {
     // if (parametersNeedUpdating) {
     //     updateParameters();
@@ -206,7 +206,7 @@ void MP3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     }
 }
 
-void MP3ControllerManager::updateParameters()
+void CodecControllerManager::updateParameters()
 {
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                 parameters.getParameter("encoder"))->getIndex();
@@ -261,27 +261,27 @@ void MP3ControllerManager::updateParameters()
     parametersNeedUpdating = false;
 }
 
-int MP3ControllerManager::getBitrate()
+int CodecControllerManager::getBitrate()
 {
     return currentBitrate;
 }
 
-float* MP3ControllerManager::getPsychoanalEnergy()
+float* CodecControllerManager::getPsychoanalEnergy()
 {
     return currentController->getPsychoanalEnergy();
 }
 
-float* MP3ControllerManager::getPsychoanalThreshold()
+float* CodecControllerManager::getPsychoanalThreshold()
 {
     return currentController->getPsychoanalThreshold();
 }
 
-float* MP3ControllerManager::getMDCTpreBend()
+float* CodecControllerManager::getMDCTpreBend()
 {
     return currentController->getMDCTpreBend();
 }
 
-float* MP3ControllerManager::getMDCTpostBend()
+float* CodecControllerManager::getMDCTpostBend()
 {
     return currentController->getMDCTpostBend();
 }
@@ -301,7 +301,7 @@ float rescaleMDCT(const float a) {
     }
 }
 
-void MP3ControllerManager::timerCallback()
+void CodecControllerManager::timerCallback()
 {
     float* energy = getPsychoanalEnergy();
     float* threshold = getPsychoanalThreshold();

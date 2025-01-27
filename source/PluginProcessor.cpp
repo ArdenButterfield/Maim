@@ -80,7 +80,7 @@ MaimAudioProcessor::MaimAudioProcessor()
                        ),
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters()),
-      mp3ControllerManager(parameters),
+      codecControllerManager(parameters),
       dryWetMixer(std::max(BLADELATENCYSAMPLES, LAMELATENCYSAMPLES))
 {
     oldPreGain = 1;
@@ -235,8 +235,8 @@ void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
     dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
-    int bitrate = MP3ControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
-    mp3ControllerManager.initialize((int)fs, bitrate, samplesPerBlock);
+    int bitrate = CodecControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    codecControllerManager.initialize((int)fs, bitrate, samplesPerBlock);
     parametersNeedUpdating = true;
 }
 
@@ -316,7 +316,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
     }
 
     if (buffer.getNumSamples() <= estimatedSamplesPerBlock) {
-        mp3ControllerManager.processBlock(buffer);
+        codecControllerManager.processBlock(buffer);
     }
 
     for (int i = 0; i < 2; ++i) {
@@ -325,7 +325,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
         postFilterLo[i].processSamples(samples, buffer.getNumSamples());
     }
 
-    if (oldPostGain != postGain) {
+    if (!juce::approximatelyEqual(oldPostGain, postGain)) {
         buffer.applyGainRamp(0, buffer.getNumSamples(), oldPostGain, postGain);
         oldPostGain = postGain;
     } else {

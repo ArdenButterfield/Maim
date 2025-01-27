@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    MP3ControllerManager.h
+    CodecControllerManager.h
     Created: 10 Apr 2023 5:05:43pm
     Author:  Arden Butterfield
 
@@ -28,12 +28,12 @@ enum Encoder {
     opus = 2
 };
 
-class MP3ControllerManager : public juce::AudioProcessorValueTreeState::Listener,
+class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener,
 public juce::Timer
 {
 public:
-    explicit MP3ControllerManager(juce::AudioProcessorValueTreeState& parameters);
-    ~MP3ControllerManager() override;
+    explicit CodecControllerManager(juce::AudioProcessorValueTreeState& parameters);
+    ~CodecControllerManager() override;
 
 
     void initialize(int samplerate, int initialBitrate, int samplesPerBlock);
