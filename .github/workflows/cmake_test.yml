@@ -152,6 +152,10 @@ jobs:
       shell: bash
       run: cmake --build ${{ env.BUILD_DIR }} --config ${{ env.BUILD_TYPE }} --parallel 4
 
+    - name: Test & Benchmarks
+      working-directory: ${{ env.BUILD_DIR }}
+      run: ctest --verbose --output-on-failure
+
     - name: Pluginval
       working-directory: ${{ env.BUILD_DIR }}
       shell: bash
