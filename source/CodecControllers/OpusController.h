@@ -10,7 +10,7 @@
 #include "opus.h"
 #include <array>
 #include <vector>
-#include "QueueBuffer.h"
+#include "../QueueBuffer.h"
 
 class OpusController : public CodecController {
 public:
