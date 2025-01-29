@@ -169,6 +169,7 @@ target_link_libraries(SharedCode
 )
 
 set_property(TARGET opus PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET blade_library PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if (WIN32)
     add_custom_target(
