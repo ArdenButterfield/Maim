@@ -98,7 +98,7 @@ target_compile_features(SharedCode INTERFACE cxx_std_20)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
 file(GLOB_RECURSE BladeFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/lib/blade/bladeenc/*.c" "${CMAKE_CURRENT_SOURCE_DIR}/lib/blade/bladeenc/*.h")
 
-add_library(blade_library SHARED ${BladeFiles})
+add_library(blade_library STATIC ${BladeFiles})
 
 set_target_properties(blade_library PROPERTIES LINKER_LANGUAGE CXX)
 

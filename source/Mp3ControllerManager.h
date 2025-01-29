@@ -21,7 +21,7 @@
 #include "CodecControllers/OpusController.h"
 
 #define NUM_REASSIGNMENT_BANDS 20
-
+#define MP3FRAMESIZE 1152
 enum Encoder {
     blade = 0,
     lame = 1,
@@ -105,6 +105,4 @@ private:
     
     std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
     juce::AudioProcessorValueTreeState& parameters;
-
-    const int MP3FRAMESIZE = 1152;
 };
