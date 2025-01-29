@@ -4,6 +4,7 @@
 
 #ifndef MAIM_CODECCONTROLLER_H
 #define MAIM_CODECCONTROLLER_H
+#include <vector>
 
 class CodecController
 {
@@ -38,9 +39,12 @@ protected:
     virtual void deinit_encoder() = 0;
     virtual int validate_bitrate(int bitrate) = 0;
     virtual int validate_samplerate(int samplerate) = 0;
+    static int getClosest(int target, const std::vector<int>& options);
 
     int bitrate;
     int samplerate;
+
+    static const int MP3FRAMESIZE = 1152;
 };
 
 #endif //MAIM_CODECCONTROLLER_H

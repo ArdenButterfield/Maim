@@ -41,7 +41,6 @@ public:
 
 
     std::string name;
-    static const int MP3FRAMESIZE = 1152;
 protected:
     void flushEncoder();
 
@@ -70,7 +69,6 @@ protected:
     int input_buf_size;
     int mp3_buf_size;
 
-    static int getClosest(int target, const std::vector<int>& options);
 #if WRITETODEBUGMP3FILE
     juce::File debugFile;
 #endif

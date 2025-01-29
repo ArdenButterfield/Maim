@@ -15,7 +15,7 @@
 #include <atomic>
 #include <string>
 
-#include "CodecControllerManager.h"
+#include "Mp3ControllerManager.h"
 
 //==============================================================================
 
@@ -86,7 +86,7 @@ private:
     std::atomic<bool> parametersNeedUpdating;
     juce::AudioProcessorValueTreeState parameters;
     
-    CodecControllerManager codecControllerManager;
+    Mp3ControllerManager mp3ControllerManager;
         
     std::array<juce::IIRFilter, 2> postFilterLo;
     std::array<juce::IIRFilter, 2> postFilterHi;

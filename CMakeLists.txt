@@ -168,6 +168,7 @@ target_link_libraries(SharedCode
         #    my_warning_flags
 )
 
+set_property(TARGET opus PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if (WIN32)
     add_custom_target(

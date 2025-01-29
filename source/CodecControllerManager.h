@@ -1,111 +1,56 @@
-/*
-  ==============================================================================
+//
+// Created by arden on 1/28/25.
+//
 
-    CodecControllerManager.h
-    Created: 10 Apr 2023 5:05:43pm
-    Author:  Arden Butterfield
+#ifndef MAIM_CODECCONTROLLERMANAGER_H
+#define MAIM_CODECCONTROLLERMANAGER_H
 
-  ==============================================================================
-*/
-
-#pragma once
-
-#include <juce_audio_processors/juce_audio_processors.h>
-#include <juce_graphics/juce_graphics.h>
-
-#include <array>
-#include <cmath>
-
-#include "CodecControllers/BladeController.h"
-#include "CodecControllers/LameController.h"
+#include "juce_audio_basics/juce_audio_basics.h"
+#include "Mp3ControllerManager.h"
 #include "CodecControllers/OpusController.h"
-
-#define NUM_REASSIGNMENT_BANDS 20
-
-enum Encoder {
-    blade = 0,
-    lame = 1,
-    opus = 2
-};
-
-class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener,
-public juce::Timer
+class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    explicit CodecControllerManager(juce::AudioProcessorValueTreeState& parameters);
-    ~CodecControllerManager() override;
-
-
-    void initialize(int samplerate, int initialBitrate, int samplesPerBlock);
-
-    void processBlock(juce::AudioBuffer<float>& buffer);
+    CodecControllerManager(juce::AudioProcessorValueTreeState& parameters) : mp3ControllerManager(parameters), params(parameters) {
+        auto encoder = ((juce::AudioParameterChoice*)
+                        parameters.getParameter("encoder"))->getIndex();
+        if (encoder == 2 /* opus */ ) {
+            encoderType = use_opus;
+        } else {
+            encoderType = use_mp3;
+        }
+    }
+    ~CodecControllerManager();
+    void initialize(int samplerate, int initialBitrate, int samplesPerBlock) {
+        opusController.init(samplerate, samplesPerBlock, initialBitrate);
+        mp3ControllerManager.initialize(samplerate, initialBitrate, samplesPerBlock);
+    }
     
-    int getBitrate();
-    
-    float* getPsychoanalEnergy();
-    float* getPsychoanalThreshold();
-    float* getMDCTpreBend();
-    float* getMDCTpostBend();
-    
-    static constexpr std::array<int, 17> bitrates {
-        8,
-        16,
-        24,
-        32,
-        40,
-        48,
-        56,
-        64,
-        80,
-        96,
-        112,
-        128,
-        160,
-        192,
-        224,
-        256,
-        320
-    };
-
-    
+    void processBlock(juce::AudioBuffer<float>& block);
+    void releaseResources();
+    void parameterChanged(const juce::String &parameterID, float newValue) override {
+        if (parameterID == "encoder") {
+            auto encoder = ((juce::AudioParameterChoice*)
+                                params.getParameter("encoder"))->getIndex();
+            if (encoder == 2 /* opus */ ) {
+                encoderType = use_opus;
+            } else {
+                encoderType = use_mp3;
+            }
+            switchingEncoderType = true;
+        }
+    }
 private:
-    void timerCallback() override;
-    
-    std::atomic<bool> parametersNeedUpdating;
-    void parameterChanged (const juce::String &parameterID, float newValue) override;
-    void updateParameters();
-    void changeController(int bitrate, Encoder encoder);
-    bool wantingToSwitch;
-    
-    int currentBitrate;
-    int desiredBitrate;
-    Encoder currentEncoder;
-    Encoder desiredEncoder;
-    
-    int currentControllerIndex;
-    
-    int samplerate;
-    int samplesPerBlock;
-    
-    int blocksBeforeSwitch;
-    int switchCountdown;
-
-    std::unique_ptr<QueueBuffer<float>> inputBufferL;
-    std::unique_ptr<QueueBuffer<float>> inputBufferR;
-
-    std::unique_ptr<QueueBuffer<float>> outputBufferL;
-    std::unique_ptr<QueueBuffer<float>> outputBufferR;
-
-    float previousFrames[2][2][1152];
-    
-    std::array<LameController, 2> lameControllers;
-    std::array<BladeController, 2> bladeControllers;
-    std::array<OpusController, 2> opusControllers;
-    CodecController* currentController;
-    CodecController* offController;
-    
-    std::array<juce::AudioParameterInt*, 20> bandReassignmentParameters;
-    juce::AudioProcessorValueTreeState& parameters;
-
-    const int MP3FRAMESIZE = 1152;
+    bool parametersNeedUpdating;
+    Mp3ControllerManager mp3ControllerManager;
+    OpusController opusController;
+    enum EncoderType {
+        use_mp3,
+        use_opus
+    };
+    EncoderType encoderType;
+    bool switchingEncoderType;
+    juce::AudioProcessorValueTreeState& params;
 };
+
+#endif //MAIM_CODECCONTROLLERMANAGER_H
