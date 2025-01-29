@@ -36,7 +36,7 @@ jobs:
             ccache: ccache
             lame-lib: lib/lame/libmp3lame/.libs/libmp3lame.a
           - name: macOS
-            os: macos-12
+            os: macos-14
             pluginval-binary: pluginval.app/Contents/MacOS/pluginval
             ccache: ccache
             lame-lib: lib/lame/libmp3lame/.libs/libmp3lame.a
