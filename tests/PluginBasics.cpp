@@ -29,6 +29,31 @@ TEST_CASE ("Plugin instance", "[instance]")
     }
 }
 
+TEST_CASE("process audio", "[process]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    MaimAudioProcessor testPlugin;
+    testPlugin.prepareToPlay(44100, 512);
+    auto& apvts = testPlugin.getValueTreeState();
+    for (int i = 0; i < 3; ++i) {
+        *((juce::AudioParameterChoice*)apvts.getParameter("encoder")) = i;
+
+        juce::AudioBuffer<float> samples(2,512);
+        for (int i = 0; i < 10; ++i) {
+            for (int samp = 0; samp < 512; ++samp) {
+                samples.setSample(0, i, sin(static_cast<float>(samp) / 100.f));
+                samples.setSample(1, i, sin(static_cast<float>(samp) / 100.f));
+            }
+            auto midiBuffer = juce::MidiBuffer();
+            testPlugin.processBlock(samples, midiBuffer);
+        }
+    }
+}
+
 juce::AudioBuffer<float> makeTestAudioBuffer() {
     auto inputStream = new juce::MemoryInputStream(BinaryData::kyoto10sec_wav, BinaryData::kyoto10sec_wavSize, false);
     juce::WavAudioFormat wavFormat;

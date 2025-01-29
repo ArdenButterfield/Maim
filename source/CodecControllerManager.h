@@ -12,7 +12,7 @@
 class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    CodecControllerManager(juce::AudioProcessorValueTreeState& parameters) : mp3ControllerManager(parameters), params(parameters) {
+    explicit CodecControllerManager(juce::AudioProcessorValueTreeState& parameters) : mp3ControllerManager(parameters), params(parameters) {
         auto encoder = ((juce::AudioParameterChoice*)
                         parameters.getParameter("encoder"))->getIndex();
         if (encoder == 2 /* opus */ ) {
@@ -21,14 +21,24 @@ public:
             encoderType = use_mp3;
         }
     }
-    ~CodecControllerManager();
-    void initialize(int samplerate, int initialBitrate, int samplesPerBlock) {
+    ~CodecControllerManager() override = default;
+    void initialize(int _samplerate, int _initialBitrate, int _samplesPerBlock) {
+        samplerate = _samplerate;
+        initialBitrate = _initialBitrate;
+        samplesPerBlock = _samplesPerBlock;
         opusController.init(samplerate, samplesPerBlock, initialBitrate);
         mp3ControllerManager.initialize(samplerate, initialBitrate, samplesPerBlock);
     }
     
-    void processBlock(juce::AudioBuffer<float>& block);
-    void releaseResources();
+    void processBlock(juce::AudioBuffer<float>& block) {
+        if (encoderType == use_opus) {
+            opusController.processBlock(block);
+        } else {
+            mp3ControllerManager.processBlock(block);
+        }
+    }
+    void releaseResources() {}
+
     void parameterChanged(const juce::String &parameterID, float newValue) override {
         if (parameterID == "encoder") {
             auto encoder = ((juce::AudioParameterChoice*)
@@ -38,11 +48,9 @@ public:
             } else {
                 encoderType = use_mp3;
             }
-            switchingEncoderType = true;
         }
     }
 private:
-    bool parametersNeedUpdating;
     Mp3ControllerManager mp3ControllerManager;
     OpusController opusController;
     enum EncoderType {
@@ -50,8 +58,10 @@ private:
         use_opus
     };
     EncoderType encoderType;
-    bool switchingEncoderType;
     juce::AudioProcessorValueTreeState& params;
+    int samplerate{};
+    int initialBitrate{};
+    int samplesPerBlock{};
 };
 
 #endif //MAIM_CODECCONTROLLERMANAGER_H

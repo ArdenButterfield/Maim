@@ -15,7 +15,7 @@
 #include <atomic>
 #include <string>
 
-#include "Mp3ControllerManager.h"
+#include "CodecControllerManager.h"
 
 //==============================================================================
 
@@ -67,8 +67,9 @@ public:
 
     juce::AudioProcessorValueTreeState& getValueTreeState();
     void parameterChanged (const juce::String &parameterID, float newValue) override;
-    
+
 private:
+    juce::AudioProcessorValueTreeState parameters;
     void processBlockStereo(juce::AudioBuffer<float>& buffer);
     void addPsychoanalStateToParameters();
     void addMdctSamplesToParameters();
@@ -84,9 +85,8 @@ private:
     
     void updateParameters();
     std::atomic<bool> parametersNeedUpdating;
-    juce::AudioProcessorValueTreeState parameters;
-    
-    Mp3ControllerManager mp3ControllerManager;
+
+    CodecControllerManager codecControllerManager;
         
     std::array<juce::IIRFilter, 2> postFilterLo;
     std::array<juce::IIRFilter, 2> postFilterHi;

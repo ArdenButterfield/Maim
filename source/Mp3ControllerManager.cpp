@@ -137,10 +137,10 @@ void Mp3ControllerManager::changeController(int bitrate, Encoder encoder)
     } else if (encoder == opus) {
         desiredEncoder = opus;
     }
-    
-    offController->init(samplerate, samplesPerBlock, desiredBitrate);
-    wantingToSwitch = true;
-
+    if (offController) {
+        offController->init(samplerate, samplesPerBlock, desiredBitrate);
+        wantingToSwitch = true;
+    }
 }
 
 void Mp3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
@@ -148,8 +148,10 @@ void Mp3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
     // if (parametersNeedUpdating) {
     //     updateParameters();
     // }
+    if (desiredEncoder == opus) {
+        return;
+    }
     updateParameters();
-
     auto samplesL = buffer.getWritePointer(0);
     auto samplesR = buffer.getWritePointer(1);
 
