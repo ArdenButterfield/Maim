@@ -15,6 +15,7 @@ packaging/plugins
 **/*.wav
 **/*.mp3
 **/*.flac
+!assets/*.wav
 
 # Prerequisites
 *.d
