@@ -76,14 +76,15 @@ TEST_CASE("base opus", "[baseopus]")
     for (int i = 0; i < input.getNumSamples() - samples_per_frame; i += samples_per_frame) {
         for (int samp = 0; samp < samples_per_frame; ++samp) {
             interlacedInput[samp * 2] = input.getSample(0, i + samp);
-            interlacedInput[samp * 2 + 1] = input.getSample(0, i + samp + 1);
+            interlacedInput[samp * 2 + 1] = input.getSample(1, i + samp);
         }
         auto encodeResult = opus_encode_float(opus_encoder, &interlacedInput[0], samples_per_frame, &encoded[0], 10000);
         REQUIRE(encodeResult > 0);
-        opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
+        auto decodeResult = opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
+        REQUIRE(decodeResult == samples_per_frame);
         for (int samp = 0; samp < samples_per_frame; ++samp) {
             output.setSample(0, samp + i, interlacedOutput[samp * 2]);
-            output.setSample(1, samp + i + 1, interlacedOutput[samp * 2 + 1]);
+            output.setSample(1, samp + i, interlacedOutput[samp * 2 + 1]);
         }
     }
     writeOut(output, "50k_opus.wav");
@@ -198,14 +199,14 @@ TEST_CASE("opus encode/decode", "[opusencodedecode]")
     juce::AudioBuffer<float> samples(2,512);
     for (int i = 0; i < 10; ++i) {
         for (int samp = 0; samp < 512; ++samp) {
-            samples.setSample(0, i, sin(static_cast<float>(i) / 100.f));
-            samples.setSample(1, i, sin(static_cast<float>(i) / 100.f));
+            samples.setSample(0, i, sin(static_cast<float>(samp) / 100.f));
+            samples.setSample(1, i, sin(static_cast<float>(samp) / 100.f));
         }
         opusController.processBlock(samples);
     }
     samples.clear();
     opusController.processBlock(samples);
-    // REQUIRE(samples.findMinMax(0, 0, 512).getEnd() > 0);
+    REQUIRE(samples.findMinMax(0, 0, 512).getEnd() > 0);
 }
 
 

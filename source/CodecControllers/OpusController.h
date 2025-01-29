@@ -24,9 +24,24 @@ public:
         ) override {
         deInit();
         auto error = 0;
-        opusEncoder = opus_encoder_create(validate_samplerate(sampleRate), 2, OPUS_APPLICATION_VOIP, &error);
+        auto validatedSamplerate = validate_samplerate(sampleRate);
+        opusEncoder = opus_encoder_create(validatedSamplerate, 2, OPUS_APPLICATION_VOIP, &error);
+        if (error) {
+            return false;
+        }
+        error = 0;
+        opusDecoder = opus_decoder_create(validatedSamplerate, 2, &error);
+        if (error) {
+            return false;
+        }
+        samplesPerFrame = validatedSamplerate * 20 / 1000;
 
-        return error == 0;
+        input.resize(samplesPerFrame * 2);
+        output.resize(samplesPerFrame * 2);
+
+        sampleCounter = 0;
+
+        return true;
     }
 
     void deInit() override {
@@ -37,12 +52,21 @@ public:
     }
 
     void processBlock(juce::AudioBuffer<float>& buffer) {
-
-    }
-
-    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut) override {
-
-        // opus_encode_float(opusEncoder, interleavedInputFrames, encodedData)
+        for (auto s = 0; s < buffer.getNumSamples(); ++s) {
+            input[sampleCounter * 2] = buffer.getSample(0, s);
+            input[sampleCounter * 2 + 1] = buffer.getSample(1, s);
+            buffer.setSample(0, s, output[sampleCounter * 2]);
+            buffer.setSample(1, s, output[sampleCounter * 2 + 1]);
+            sampleCounter++;
+            if (sampleCounter == samplesPerFrame) {
+                auto encodeResult = opus_encode_float(opusEncoder, &input[0], samplesPerFrame, &encoded[0], encoded.size());
+                jassert(encodeResult > 0);
+                jassert(encodeResult < encoded.size());
+                auto decodeResult = opus_decode_float(opusDecoder, &encoded[0], encodeResult, &output[0], samplesPerFrame, 0);
+                jassert(decodeResult == samplesPerFrame);
+                sampleCounter = 0;
+            }
+        }
     }
 
     int getBitrate() override { return bitrate; }
@@ -82,11 +106,19 @@ protected:
         return getClosest(samplerate,allowed_samplerates);
     }
 
+    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut) override {
+
+        // unused
+        return false;
+    }
+
+
     bool bInitialized;
     OpusEncoder* opusEncoder;
+    OpusDecoder* opusDecoder;
 
     std::array<float, MP3FRAMESIZE * 2> interleavedInputFrames;
-    std::array<unsigned char, 10000> encodedData;
+    std::array<unsigned char, 100000> encodedData;
     const std::vector<float> frameSizeOptionsMs {
         2.5, 5, 10, 20, 40, 60
     };
@@ -96,6 +128,11 @@ protected:
     };
 
     std::vector<float> inputBuffer;
+    int samplesPerFrame;
+    std::vector<float> input;
+    std::vector<float> output;
+    std::array<unsigned char, 10000> encoded;
+    int sampleCounter;
 };
 
 #endif //MAIM_OPUSCONTROLLER_H

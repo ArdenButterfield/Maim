@@ -8,6 +8,7 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "Mp3ControllerManager.h"
 #include "CodecControllers/OpusController.h"
+
 class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
