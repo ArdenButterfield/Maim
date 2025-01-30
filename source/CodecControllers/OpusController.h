@@ -17,7 +17,7 @@ class OpusController : public CodecController, public juce::AudioProcessorValueT
 public:
     explicit OpusController(juce::AudioProcessorValueTreeState& _parameters);;
 
-    ~OpusController() override = default;
+    ~OpusController() override;
 
     bool init(int sampleRate,
         int maxSamplesPerBlock,
@@ -81,6 +81,7 @@ protected:
     const std::vector<float> frameSizeOptionsMs {
         2.5, 5, 10, 20, 40, 60
     };
+    float turbo;
 
     const std::vector<int> allowed_samplerates {
         8000, 12000, 16000, 24000, 48000
@@ -96,6 +97,7 @@ protected:
     bool parametersNeedUpdating;
     void parameterChanged(const juce::String &parameterID, float newValue) override;
     void updateParameters();
+    juce::Random random;
 };
 
 #endif //MAIM_OPUSCONTROLLER_H

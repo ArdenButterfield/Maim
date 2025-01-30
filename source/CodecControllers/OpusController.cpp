@@ -13,8 +13,16 @@ OpusController::OpusController (juce::AudioProcessorValueTreeState& _parameters)
       sampleCounter(0),
       parameters(_parameters) {
     parameters.addParameterListener(BITRATE_PARAM_ID, this);
+    parameters.addParameterListener(TURBO_PARAM_ID, this);
     parametersNeedUpdating = true;
 }
+
+OpusController::~OpusController()
+{
+    parameters.removeParameterListener(BITRATE_PARAM_ID, this);
+    parameters.removeParameterListener(TURBO_PARAM_ID, this);
+}
+
 
 bool OpusController::init (int sampleRate, int maxSamplesPerBlock, int bitrate)
 {
@@ -61,11 +69,19 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
         buffer.setSample(1, s, output[sampleCounter * 2 + 1]);
         sampleCounter++;
         if (sampleCounter == samplesPerFrame) {
-            auto encodeResult = opus_encode_float(opusEncoder, &input[0], samplesPerFrame, &encoded[0], encoded.size());
-            jassert(encodeResult > 0);
-            jassert(encodeResult < encoded.size());
-            auto decodeResult = opus_decode_float(opusDecoder, &encoded[0], encodeResult, &output[0], samplesPerFrame, 0);
-            jassert(decodeResult == samplesPerFrame);
+            int framesizeDownscaleFactor = std::round(random.nextFloat() * turbo * 3);
+            framesizeDownscaleFactor = 1 << std::min(std::max(0, framesizeDownscaleFactor), 2);
+            auto subframeSize = samplesPerFrame / framesizeDownscaleFactor;
+            for (int subframe = 0; subframe < framesizeDownscaleFactor; ++subframe) {
+                auto encodeResult = opus_encode_float(
+                    opusEncoder, &input[0] + subframe * subframeSize,
+                    subframeSize, &encoded[0], encoded.size());
+                jassert(encodeResult > 0);
+                jassert(encodeResult < encoded.size());
+                auto decodeResult = opus_decode_float(
+                    opusDecoder, &encoded[0], encodeResult, &output[0] + subframe * subframeSize, subframeSize, 0);
+                jassert(decodeResult == samplesPerFrame / framesizeDownscaleFactor);
+            }
             sampleCounter = 0;
         }
     }
@@ -78,9 +94,10 @@ void OpusController::parameterChanged (const juce::String& parameterID, float ne
 
 void OpusController::updateParameters()
 {
+    turbo = parameters.getParameter(TURBO_PARAM_ID)->getValue();
     int bitrate = Mp3ControllerManager::bitrates[((juce::AudioParameterChoice*)
                                 parameters.getParameter(BITRATE_PARAM_ID))->getIndex()];
-    opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(bitrate * 1000));
+    opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(bitrate * 500));
     DBG("Opus bitrate set to " << bitrate << " ");
     parametersNeedUpdating = false;
 }
