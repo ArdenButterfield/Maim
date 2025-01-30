@@ -9,11 +9,12 @@
 */
 
 #include "MiscellaneaSection.h"
+#include "../parameterIds.h"
 
 MiscellaneaSection::MiscellaneaSection (juce::AudioProcessorValueTreeState& p)
         : StageWindow(p),
-            butterflyDragBox(p, "butterflystandard", "butterflycrossed"),
-      mdctDragBox(p, "mdctstep", "mdctwindowincr")
+            butterflyDragBox(p, BUTTERFLY_STANDARD_PARAM_ID, BUTTERFLY_CROSSED_PARAM_ID),
+      mdctDragBox(p, MDCT_STEP_PARAM_ID, MDCT_WINDOW_INCREMENT_PARAM_ID)
 {
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
@@ -32,15 +33,15 @@ MiscellaneaSection::MiscellaneaSection (juce::AudioProcessorValueTreeState& p)
     addAndMakeVisible(butterflyLabel);
     addAndMakeVisible(sectionName);
     addAndMakeVisible(lameOnlyLabel);
-    parameters.addParameterListener("encoder", this);
-    bool isLame = (((juce::AudioParameterChoice*)parameters.getParameter("encoder"))->getIndex() == 1);
+    parameters.addParameterListener(ENCODER_PARAM_ID, this);
+    bool isLame = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 1);
     mdctDragBox.setVisible(isLame);
     lameOnlyLabel.setVisible(!isLame);
 }
 
 MiscellaneaSection::~MiscellaneaSection()
 {
-    parameters.removeParameterListener("encoder",this);
+    parameters.removeParameterListener(ENCODER_PARAM_ID,this);
 }
 
 void MiscellaneaSection::mouseMove (const juce::MouseEvent& event)

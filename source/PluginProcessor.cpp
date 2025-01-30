@@ -8,62 +8,62 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "parameterIds.h"
 
 //==============================================================================
 juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"drive", 1}, "drive", -36.f, 36.f, 0.f));
+        juce::ParameterID {DRIVE_PARAM_ID, 1}, "drive", -36.f, 36.f, 0.f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"makeupgain", 1}, "makeup gain", -36.f, 36.f, 0.f));
+        juce::ParameterID {MAKEUP_GAIN_PARAM_ID, 1}, "makeup gain", -36.f, 36.f, 0.f));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"butterflystandard", 1}, "MDCT Butterfly standard", 0.0f, 1.0f, 1.0f));
+        juce::ParameterID {BUTTERFLY_STANDARD_PARAM_ID, 1}, "MDCT Butterfly standard", 0.0f, 1.0f, 1.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"butterflycrossed", 1}, "MDCT Butterfly crossed", 0.0f, 1.0f, 0.0f));
+        juce::ParameterID {BUTTERFLY_CROSSED_PARAM_ID, 1}, "MDCT Butterfly crossed", 0.0f, 1.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
-        juce::ParameterID {"mdctstep", 1},"MDCT band step", 8, 18, 18));
+        juce::ParameterID {MDCT_STEP_PARAM_ID, 1},"MDCT band step", 8, 18, 18));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-        juce::ParameterID {"mdctinvert", 1}, "MDCT band invert", false));
+        juce::ParameterID {MDCT_INVERT_PARAM_ID, 1}, "MDCT band invert", false));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
-        juce::ParameterID {"mdctposthshift", 1}, "MDCT pitch shift", -100, 100, 0));
+        juce::ParameterID {MDCT_PITCH_SHIFT_PARAM_ID, 1}, "MDCT pitch shift", -100, 100, 0));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"mdctpostvshift", 1}, "MDCT amplitude shift", -1.f, 1.f, 0.f));
+        juce::ParameterID {MDCT_AMPLITUDE_SHIFT_PARAM_ID, 1}, "MDCT amplitude shift", -1.f, 1.f, 0.f));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>(
-        juce::ParameterID {"mdctwindowincr", 1}, "MDCT window increment", -64, 64, 64));
+        juce::ParameterID {MDCT_WINDOW_INCREMENT_PARAM_ID, 1}, "MDCT window increment", -64, 64, 64));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"mdctfeedback", 1}, "MDCT feedback", 0, 1, 0));
+        juce::ParameterID {MDCT_FEEDBACK_PARAM_ID, 1}, "MDCT feedback", 0, 1, 0));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"turbo", 1}, "Turbo", 0, 1, 0));
+        juce::ParameterID {TURBO_PARAM_ID, 1}, "Turbo", 0, 1, 0));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"thresholdbias", 1}, "Threshold bias", -1, 1, 0));
+        juce::ParameterID {THRESHOLD_BIAS_PARAM_ID, 1}, "Threshold bias", -1, 1, 0));
     
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id, name;
-        id << "bandorder" << i;
         name << "Band order " << i;
-        parameters.push_back(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{id.str(), 1,},name.str(),0,31,i));
+        parameters.push_back(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{BAND_ORDER_PARAM_IDS[i], 1,},name.str(),0,31,i));
     }
     
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
-        juce::ParameterID {"bitrate", 1}, "Bitrate", juce::StringArray {
+        juce::ParameterID {BITRATE_PARAM_ID, 1}, "Bitrate", juce::StringArray {
             "8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},
         10));
     
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
-        juce::ParameterID {"encoder", 1}, "Encoder", juce::StringArray {"Blade", "Lame", "Opus"}, 1));
+        juce::ParameterID {ENCODER_PARAM_ID, 1}, "Encoder", juce::StringArray {"Blade", "Lame", "Opus"}, 1));
     
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"hicut", 1}, "High cut", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.30f), 18000.f));
+        juce::ParameterID {HI_CUT_PARAM_ID, 1}, "High cut", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.30f), 18000.f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"locut", 1}, "Low cut", juce::NormalisableRange<float>(10.f, 20000.f, 1.f, 0.30f), 10.f));
+        juce::ParameterID {LO_CUT_PARAM_ID, 1}, "Low cut", juce::NormalisableRange<float>(10.f, 20000.f, 1.f, 0.30f), 10.f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID {"mix", 1}, "Mix", juce::NormalisableRange<float>(0.f, 100.f, 0.1f), 100.f));
+        juce::ParameterID {MIX_PARAM_ID, 1}, "Mix", juce::NormalisableRange<float>(0.f, 100.f, 0.1f), 100.f));
 
     return {parameters.begin(), parameters.end()};
 }
@@ -90,22 +90,22 @@ MaimAudioProcessor::MaimAudioProcessor()
     
     addPsychoanalStateToParameters();
     
-    parameters.addParameterListener("hicut", this);
-    parameters.addParameterListener("locut", this);
-    parameters.addParameterListener("drive", this);
-    parameters.addParameterListener("makeupgain", this);
-    parameters.addParameterListener("mix", this);
-    parameters.addParameterListener("encoder", this);
+    parameters.addParameterListener(HI_CUT_PARAM_ID, this);
+    parameters.addParameterListener(LO_CUT_PARAM_ID, this);
+    parameters.addParameterListener(DRIVE_PARAM_ID, this);
+    parameters.addParameterListener(MAKEUP_GAIN_PARAM_ID, this);
+    parameters.addParameterListener(MIX_PARAM_ID, this);
+    parameters.addParameterListener(ENCODER_PARAM_ID, this);
 }
 
 MaimAudioProcessor::~MaimAudioProcessor()
 {
-    parameters.removeParameterListener("hicut", this);
-    parameters.removeParameterListener("locut", this);
-    parameters.removeParameterListener("drive", this);
-    parameters.removeParameterListener("makeupgain", this);
-    parameters.removeParameterListener("mix", this);
-    parameters.removeParameterListener("encoder", this);
+    parameters.removeParameterListener(HI_CUT_PARAM_ID, this);
+    parameters.removeParameterListener(LO_CUT_PARAM_ID, this);
+    parameters.removeParameterListener(DRIVE_PARAM_ID, this);
+    parameters.removeParameterListener(MAKEUP_GAIN_PARAM_ID, this);
+    parameters.removeParameterListener(MIX_PARAM_ID, this);
+    parameters.removeParameterListener(ENCODER_PARAM_ID, this);
 }
 
 void MaimAudioProcessor::addMdctSamplesToParameters()
@@ -275,8 +275,8 @@ bool MaimAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 void MaimAudioProcessor::updateParameters()
 {
 
-    auto hicut = ((juce::AudioParameterFloat*)parameters.getParameter("hicut"))->get();
-    auto locut = ((juce::AudioParameterFloat*)parameters.getParameter("locut"))->get();
+    auto hicut = ((juce::AudioParameterFloat*)parameters.getParameter(HI_CUT_PARAM_ID))->get();
+    auto locut = ((juce::AudioParameterFloat*)parameters.getParameter(LO_CUT_PARAM_ID))->get();
     hicut = std::max(1.f, std::min(hicut, (float)sampleRate / 2 - 1));
     locut = std::max(1.f, std::min(locut, (float)sampleRate / 2 - 1));
     for (auto &f: postFilterLo) {
@@ -286,8 +286,8 @@ void MaimAudioProcessor::updateParameters()
         f.setCoefficients(juce::IIRCoefficients::makeHighPass(sampleRate, locut));
     }
 
-    auto driveDB = ((juce::AudioParameterFloat*)parameters.getParameter("drive"))->get();
-    auto makeupDB = ((juce::AudioParameterFloat*)parameters.getParameter("makeupgain"))->get();
+    auto driveDB = ((juce::AudioParameterFloat*)parameters.getParameter(DRIVE_PARAM_ID))->get();
+    auto makeupDB = ((juce::AudioParameterFloat*)parameters.getParameter(MAKEUP_GAIN_PARAM_ID))->get();
     
 /*
     if (driveDB > 0) {
@@ -295,7 +295,7 @@ void MaimAudioProcessor::updateParameters()
     }
 */
 
-    dryWetMixer.setWetMixProportion(((juce::AudioParameterFloat*)parameters.getParameter("mix"))->get() / 100);
+    dryWetMixer.setWetMixProportion(((juce::AudioParameterFloat*)parameters.getParameter(MIX_PARAM_ID))->get() / 100);
 
     preGain = juce::Decibels::decibelsToGain(driveDB);
     postGain = juce::Decibels::decibelsToGain(makeupDB);
@@ -407,7 +407,7 @@ int MaimAudioProcessor::currentLatencySamples()
      * determining it experimentally.
      */
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
-                                  parameters.getParameter("encoder"))->getIndex();
+                                  parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
     int latencySamples;
     if (encoder == 0) {
         // Blade

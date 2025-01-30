@@ -17,7 +17,7 @@
 #include "MDCTGraph.h"
 #include "ReassignmentSection.h"
 #include "StageWindow.h"
-
+#include "../parameterIds.h"
 //==============================================================================
 /*
 */
@@ -40,7 +40,7 @@ private:
     };
     juce::AudioProcessorValueTreeState::SliderAttachment MDCTfeedbackAttachment {
         parameters,
-        "mdctfeedback",
+        MDCT_FEEDBACK_PARAM_ID,
         MDCTfeedbackSlider
     };
 
@@ -51,7 +51,7 @@ private:
 
     juce::AudioProcessorValueTreeState::SliderAttachment mdctPostPitchShiftAttachment {
         parameters,
-        "mdctposthshift",
+        MDCT_PITCH_SHIFT_PARAM_ID,
         mdctPostPitchShiftSlider
     };
 
@@ -61,7 +61,7 @@ private:
     };
     juce::AudioProcessorValueTreeState::SliderAttachment mdctPostAmpShiftAttachment {
         parameters,
-        "mdctpostvshift",
+        MDCT_AMPLITUDE_SHIFT_PARAM_ID,
         mdctPostAmpShiftSlider
     };
 

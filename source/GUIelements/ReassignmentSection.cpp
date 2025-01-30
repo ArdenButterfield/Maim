@@ -10,7 +10,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_graphics/juce_graphics.h>
-
+#include "../parameterIds.h"
 #include <cmath>
 
 #include "ReassignmentSection.h"
@@ -42,15 +42,13 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
     downButton.addListener(this);
     
     parameters.resize(numItems);
-    for (int i = 0; i < numItems; ++i) {
-        std::stringstream id;
-        id << "bandorder" << i;
-        pTree.addParameterListener(id.str(), this);
-        parameters[i] = (juce::AudioParameterInt*)pTree.getParameter(id.str());
+    for (unsigned i = 0; i < numItems; ++i) {
+        pTree.addParameterListener(BAND_ORDER_PARAM_IDS[i], this);
+        parameters[i] = (juce::AudioParameterInt*)pTree.getParameter(BAND_ORDER_PARAM_IDS[i]);
     }
     itemVals.resize(numItems);
     
-    for (int i = 0; i < numItems; ++i) {
+    for (unsigned i = 0; i < numItems; ++i) {
         itemVals[i] = parameters[i]->get();
     }
     steps = s;
@@ -62,10 +60,8 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
 
 ReassignmentSection::~ReassignmentSection()
 {
-    for (int i = 0; i < 32; ++i) {
-        std::stringstream id;
-        id << "bandorder" << i;
-        pTree.removeParameterListener(id.str(), this);
+    for (const auto & i : BAND_ORDER_PARAM_IDS) {
+        pTree.removeParameterListener(i, this);
     }
     
     resetButton.removeListener(this);

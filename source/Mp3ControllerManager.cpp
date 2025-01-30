@@ -9,6 +9,7 @@
 */
 
 #include "Mp3ControllerManager.h"
+#include "parameterIds.h"
 
 void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int startFadeFrom) {
     // NOTE: should potentially be an equal-power crossfade, to prevent a dip in volume.
@@ -27,48 +28,42 @@ Mp3ControllerManager::Mp3ControllerManager(juce::AudioProcessorValueTreeState& p
 {
     parametersNeedUpdating = false;
     
-    parameters.addParameterListener("butterflystandard", this);
-    parameters.addParameterListener("butterflycrossed", this);
-    parameters.addParameterListener("mdctstep", this);
-    parameters.addParameterListener("mdctinvert", this);
-    parameters.addParameterListener("mdctposthshift", this);
-    parameters.addParameterListener("mdctpostvshift", this);
-    parameters.addParameterListener("mdctwindowincr", this);
-    parameters.addParameterListener("mdctsampincr", this);
-    parameters.addParameterListener("bitrate", this);
-    parameters.addParameterListener("turbo", this);
-    parameters.addParameterListener("thresholdbias", this);
-    parameters.addParameterListener("mdctfeedback", this);
-    parameters.addParameterListener("encoder", this);
+    parameters.addParameterListener(BUTTERFLY_STANDARD_PARAM_ID, this);
+    parameters.addParameterListener(BUTTERFLY_CROSSED_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_STEP_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_INVERT_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_PITCH_SHIFT_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_AMPLITUDE_SHIFT_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_WINDOW_INCREMENT_PARAM_ID, this);
+    parameters.addParameterListener(BITRATE_PARAM_ID, this);
+    parameters.addParameterListener(TURBO_PARAM_ID, this);
+    parameters.addParameterListener(THRESHOLD_BIAS_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_FEEDBACK_PARAM_ID, this);
+    parameters.addParameterListener(ENCODER_PARAM_ID, this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        std::stringstream id;
-        id << "bandorder" << i;
-        parameters.addParameterListener(id.str(), this);
-        bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(id.str());
+        parameters.addParameterListener(BAND_ORDER_PARAM_IDS[i], this);
+        bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(BAND_ORDER_PARAM_IDS[i]);
     }
 }
 
 Mp3ControllerManager::~Mp3ControllerManager()
 {
-    parameters.removeParameterListener("butterflystandard", this);
-    parameters.removeParameterListener("butterflycrossed", this);
-    parameters.removeParameterListener("mdctstep", this);
-    parameters.removeParameterListener("mdctinvert", this);
-    parameters.removeParameterListener("mdctposthshift", this);
-    parameters.removeParameterListener("mdctpostvshift", this);
-    parameters.removeParameterListener("mdctwindowincr", this);
-    parameters.removeParameterListener("mdctsampincr", this);
-    parameters.removeParameterListener("bitrate", this);
-    parameters.removeParameterListener("turbo", this);
-    parameters.removeParameterListener("thresholdbias", this);
-    parameters.removeParameterListener("mdctfeedback", this);
-    parameters.removeParameterListener("encoder", this);
+    parameters.removeParameterListener(BUTTERFLY_STANDARD_PARAM_ID, this);
+    parameters.removeParameterListener(BUTTERFLY_CROSSED_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_STEP_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_INVERT_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_PITCH_SHIFT_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_AMPLITUDE_SHIFT_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_WINDOW_INCREMENT_PARAM_ID, this);
+    parameters.removeParameterListener(BITRATE_PARAM_ID, this);
+    parameters.removeParameterListener(TURBO_PARAM_ID, this);
+    parameters.removeParameterListener(THRESHOLD_BIAS_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_FEEDBACK_PARAM_ID, this);
+    parameters.removeParameterListener(ENCODER_PARAM_ID, this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        std::stringstream id;
-        id << "bandorder" << i;
-        parameters.removeParameterListener(id.str(), this);
+        parameters.removeParameterListener(BAND_ORDER_PARAM_IDS[i], this);
     }
 }
 
@@ -210,9 +205,9 @@ void Mp3ControllerManager::processBlock(juce::AudioBuffer<float>& buffer)
 void Mp3ControllerManager::updateParameters()
 {
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
-                                parameters.getParameter("encoder"))->getIndex();
+                                parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
     int bitrate = bitrates[((juce::AudioParameterChoice*)
-                            parameters.getParameter("bitrate"))->getIndex()];
+                            parameters.getParameter(BITRATE_PARAM_ID))->getIndex()];
     changeController(bitrate, encoder);
 
     for (auto controller : {offController, currentController}) {
@@ -220,33 +215,33 @@ void Mp3ControllerManager::updateParameters()
             continue;
         }
         controller->setButterflyBends(
-            ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get(),
-            ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-            ((juce::AudioParameterFloat*) parameters.getParameter("butterflycrossed"))->get(),
-            ((juce::AudioParameterFloat*) parameters.getParameter("butterflystandard"))->get()
+            ((juce::AudioParameterFloat*) parameters.getParameter(BUTTERFLY_STANDARD_PARAM_ID))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter(BUTTERFLY_CROSSED_PARAM_ID))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter(BUTTERFLY_CROSSED_PARAM_ID))->get(),
+            ((juce::AudioParameterFloat*) parameters.getParameter(BUTTERFLY_STANDARD_PARAM_ID))->get()
         );
 
         controller->setMDCTbandstepBends(
-            ((juce::AudioParameterBool*) parameters.getParameter("mdctinvert"))->get(),
-            ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get()
+            ((juce::AudioParameterBool*) parameters.getParameter(MDCT_INVERT_PARAM_ID))->get(),
+            ((juce::AudioParameterInt*) parameters.getParameter(MDCT_STEP_PARAM_ID))->get()
         );
 
         controller->setMDCTfeedback(
-            ((juce::AudioParameterFloat*) parameters.getParameter("mdctfeedback"))->get()
+            ((juce::AudioParameterFloat*) parameters.getParameter(MDCT_FEEDBACK_PARAM_ID))->get()
         );
 
         controller->setMDCTpostshiftBends(
-            ((juce::AudioParameterInt*) parameters.getParameter("mdctposthshift"))->get(),
-           ((juce::AudioParameterFloat*) parameters.getParameter("mdctpostvshift"))->get()
+            ((juce::AudioParameterInt*) parameters.getParameter(MDCT_PITCH_SHIFT_PARAM_ID))->get(),
+           ((juce::AudioParameterFloat*) parameters.getParameter(MDCT_AMPLITUDE_SHIFT_PARAM_ID))->get()
         );
         controller->setMDCTwindowincrBends(
-            ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get()
+            ((juce::AudioParameterInt*) parameters.getParameter(MDCT_WINDOW_INCREMENT_PARAM_ID))->get()
         );
         controller->setBitrateSquishBends(
-            ((juce::AudioParameterFloat*) parameters.getParameter("turbo"))->get()
+            ((juce::AudioParameterFloat*) parameters.getParameter(TURBO_PARAM_ID))->get()
         );
 
-         controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter("thresholdbias"))->get()
+         controller->setThresholdBias(((juce::AudioParameterFloat*) parameters.getParameter(THRESHOLD_BIAS_PARAM_ID))->get()
         );
 
         int bandReassign[32];

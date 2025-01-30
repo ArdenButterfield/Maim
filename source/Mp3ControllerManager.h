@@ -19,8 +19,8 @@
 #include "CodecControllers/BladeController.h"
 #include "CodecControllers/LameController.h"
 #include "CodecControllers/OpusController.h"
+#include "parameterIds.h"
 
-#define NUM_REASSIGNMENT_BANDS 20
 #define MP3FRAMESIZE 1152
 enum Encoder {
     blade = 0,

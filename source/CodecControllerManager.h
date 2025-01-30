@@ -8,13 +8,14 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "Mp3ControllerManager.h"
 #include "CodecControllers/OpusController.h"
+#include "parameterIds.h"
 
 class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     explicit CodecControllerManager(juce::AudioProcessorValueTreeState& parameters) : mp3ControllerManager(parameters), params(parameters) {
         auto encoder = ((juce::AudioParameterChoice*)
-                        parameters.getParameter("encoder"))->getIndex();
+                        parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
         if (encoder == 2 /* opus */ ) {
             encoderType = use_opus;
         } else {
@@ -40,9 +41,9 @@ public:
     void releaseResources() {}
 
     void parameterChanged(const juce::String &parameterID, float newValue) override {
-        if (parameterID == "encoder") {
+        if (parameterID == ENCODER_PARAM_ID) {
             auto encoder = ((juce::AudioParameterChoice*)
-                                params.getParameter("encoder"))->getIndex();
+                                params.getParameter(ENCODER_PARAM_ID))->getIndex();
             if (encoder == 2 /* opus */ ) {
                 encoderType = use_opus;
             } else {

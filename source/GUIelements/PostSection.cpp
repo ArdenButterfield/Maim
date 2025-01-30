@@ -9,16 +9,17 @@
 */
 
 #include "PostSection.h"
+#include "../parameterIds.h"
 
 //==============================================================================
 
 PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
         StageWindow(p),
-        driveSlider(p, "drive", "Drive"),
-        hiSlider(p, "hicut", "High"),
-        loSlider(p, "locut", "Low"),
-        makeupSlider(p, "makeupgain", "Makeup gain"),
-        mixSlider(p, "mix","Dry/Wet")
+        driveSlider(p, DRIVE_PARAM_ID, "Drive"),
+        hiSlider(p, HI_CUT_PARAM_ID, "High"),
+        loSlider(p, LO_CUT_PARAM_ID, "Low"),
+        makeupSlider(p, MAKEUP_GAIN_PARAM_ID, "Makeup gain"),
+        mixSlider(p, MIX_PARAM_ID,"Dry/Wet")
 {
     driveSlider.slider.setTextValueSuffix(" dB");
     hiSlider.slider.setTextValueSuffix(" Hz");
