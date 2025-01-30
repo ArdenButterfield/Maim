@@ -80,7 +80,7 @@ void OpusController::updateParameters()
 {
     int bitrate = Mp3ControllerManager::bitrates[((juce::AudioParameterChoice*)
                                 parameters.getParameter(BITRATE_PARAM_ID))->getIndex()];
-    opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(bitrate));
+    opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(bitrate * 1000));
     DBG("Opus bitrate set to " << bitrate << " ");
     parametersNeedUpdating = false;
 }
