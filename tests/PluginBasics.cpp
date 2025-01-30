@@ -51,6 +51,7 @@ TEST_CASE("process audio", "[process]")
             auto midiBuffer = juce::MidiBuffer();
             testPlugin.processBlock(samples, midiBuffer);
         }
+        REQUIRE(samples.findMinMax(0,0,samples.getNumSamples()).getEnd() > 0.1f);
     }
 }
 
@@ -217,7 +218,13 @@ TEST_CASE("corrupt opus", "[corruptopus]")
 
 TEST_CASE("opus encode/decode", "[opusencodedecode]")
 {
-    OpusController opusController;
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    MaimAudioProcessor testPlugin;
+    testPlugin.prepareToPlay(44100, 512);
+    auto& apvts = testPlugin.getValueTreeState();
+
+    OpusController opusController(apvts);
     auto initResult = opusController.init(44100, 512, 100);
     REQUIRE(initResult == true);
 

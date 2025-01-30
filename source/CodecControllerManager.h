@@ -13,7 +13,7 @@
 class CodecControllerManager : public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    explicit CodecControllerManager(juce::AudioProcessorValueTreeState& parameters) : mp3ControllerManager(parameters), params(parameters) {
+    explicit CodecControllerManager(juce::AudioProcessorValueTreeState& parameters) : mp3ControllerManager(parameters), opusController(parameters), params(parameters) {
         auto encoder = ((juce::AudioParameterChoice*)
                         parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
         if (encoder == 2 /* opus */ ) {
@@ -21,8 +21,11 @@ public:
         } else {
             encoderType = use_mp3;
         }
+        params.addParameterListener(ENCODER_PARAM_ID, this);
     }
-    ~CodecControllerManager() override = default;
+    ~CodecControllerManager() override {
+        params.removeParameterListener(ENCODER_PARAM_ID, this);
+    }
     void initialize(int _samplerate, int _initialBitrate, int _samplesPerBlock) {
         samplerate = _samplerate;
         initialBitrate = _initialBitrate;
@@ -45,8 +48,10 @@ public:
             auto encoder = ((juce::AudioParameterChoice*)
                                 params.getParameter(ENCODER_PARAM_ID))->getIndex();
             if (encoder == 2 /* opus */ ) {
+                DBG("codec set to opus");
                 encoderType = use_opus;
             } else {
+                DBG("codec set to mp3");
                 encoderType = use_mp3;
             }
         }
