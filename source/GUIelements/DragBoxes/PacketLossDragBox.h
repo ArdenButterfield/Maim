@@ -7,12 +7,14 @@
 
 #include "DragBox.h"
 
+
 class PacketLossDragBox : public DragBox
 {
 public:
     PacketLossDragBox(juce::AudioProcessorValueTreeState& p,
         const juce::String& xParamID,
-        const juce::String& yParamID) : DragBox(p, xParamID, yParamID) {}
+        const juce::String& yParamID);
+    ~PacketLossDragBox() override;
 private:
     void drawBackground(juce::Graphics& g, int x, int y) override;
     juce::Colour getThumbFillColour(int x, int y) override;
