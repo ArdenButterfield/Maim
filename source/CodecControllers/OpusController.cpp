@@ -111,7 +111,7 @@ void OpusController::updateParameters()
     float packetLossPulseWidth = *((juce::AudioParameterFloat*)parameters.getParameter(PACKET_LOSS_PULSE_WIDTH_PARAM_ID));
     float packetLossJitter = *((juce::AudioParameterFloat*)parameters.getParameter(PACKET_LOSS_JITTER_PARAM_ID));
 
-    packetLossLength = (packetLossLength * packetLossLength * packetLossLength) * 2;
+    packetLossLength = (packetLossLength * packetLossLength * packetLossLength) * 2 + 0.05;
 
     packetLossModel->setParameters(packetLossLength, packetLossPulseWidth, packetLossJitter);
 

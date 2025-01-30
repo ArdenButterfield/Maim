@@ -10,7 +10,7 @@
 class PacketLossModel
 {
 public:
-    PacketLossModel(int sampleRate) : fs(sampleRate), counter(0) {}
+    PacketLossModel(int sampleRate) : fs(sampleRate), counter(0), nextOneMustBeOn(false) {}
 
     void setParameters(float length, float pulseWidth, float _jitter) {
         onLength = length * fs * pulseWidth;
@@ -20,12 +20,14 @@ public:
     }
 
     bool processPacket(int lengthInSamples) {
-        bool result = (counter < onLengthWithJitter);
+        bool result = (counter < onLengthWithJitter) || nextOneMustBeOn;
+        nextOneMustBeOn = false;
         auto totalLength = onLengthWithJitter + offLengthWithJitter;
         counter += lengthInSamples;
         if (counter > totalLength) {
             counter -= (totalLength);
             setJitteredLengths();
+            nextOneMustBeOn = true;
         }
         return result;
     }
@@ -51,6 +53,7 @@ private:
     int offLengthWithJitter;
     float jitter;
     juce::Random random;
+    bool nextOneMustBeOn;
 };
 
 #endif //MAIM_PACKETLOSSMODEL_H
