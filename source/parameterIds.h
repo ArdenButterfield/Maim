@@ -43,6 +43,12 @@ const std::array<juce::String, NUM_REASSIGNMENT_BANDS> BAND_ORDER_PARAM_IDS = {
     "bandorder18",
     "bandorder19",
 };
+
+const juce::String PACKET_LOSS_RATE_PARAM_ID = "plossrate";
+const juce::String PACKET_LOSS_PULSE_WIDTH_PARAM_ID = "plosswidth";
+const juce::String PACKET_LOSS_JITTER_PARAM_ID = "plossjitter";
+const juce::String PACKET_LOSS_BEAT_SYNC_PARAM_ID = "beatsync";
+
 const juce::String BITRATE_PARAM_ID = "bitrate";
 const juce::String ENCODER_PARAM_ID = "encoder";
 const juce::String HI_CUT_PARAM_ID = "hicut";

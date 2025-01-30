@@ -13,11 +13,12 @@
 //==============================================================================
 MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
     psychoacousticSection(p),
-                                                             miscellaneaSection (p),
-                                                             mdctGraphSection (p),
-                                                             reassignmentSection (p, 20, 20),
+    miscellaneaSection (p),
+    mdctGraphSection (p),
     postSection(p),
     titlePanel (p),
+    reassignmentSection (p, 20, 20),
+    opusPacketLossSection(p),
     parameters(p)
 
 {
@@ -27,10 +28,20 @@ MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
     addAndMakeVisible(reassignmentSection);
     addAndMakeVisible(postSection);
     addAndMakeVisible(titlePanel);
+    addAndMakeVisible(opusPacketLossSection);
+
+    parameters.addParameterListener(ENCODER_PARAM_ID, this);
+
+    bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
+    opusPacketLossSection.setVisible(isOpus);
+    miscellaneaSection.setVisible(!isOpus);
+
 }
 
 MainArea::~MainArea()
 {
+    parameters.removeParameterListener(ENCODER_PARAM_ID, this);
+
 }
 
 void MainArea::paint (juce::Graphics& g)
@@ -72,4 +83,12 @@ void MainArea::resized()
     reassignmentSection.setBounds(bottomRow.withWidth(220));
     mdctGraphSection.setBounds(bottomRow.withTrimmedLeft(reassignmentSection.getWidth() + margin).withWidth(290));
     miscellaneaSection.setBounds(bottomRow.withX(mdctGraphSection.getRight() + margin).withRight(bottomRow.getRight()));
+    opusPacketLossSection.setBounds(miscellaneaSection.getBounds());
+}
+void MainArea::parameterChanged (const juce::String& parameterID, float newValue)
+{
+    bool isOpus = (newValue == 2);
+    opusPacketLossSection.setVisible(isOpus);
+    miscellaneaSection.setVisible(!isOpus);
+
 }

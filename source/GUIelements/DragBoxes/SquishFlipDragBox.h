@@ -6,7 +6,6 @@
 #define MAIM_SQUISHFLIPDRAGBOX_H
 
 #include "DragBox.h"
-#include "TiltGraph.h"
 
 class SquishFlipDragBox : public DragBox
 {

@@ -47,7 +47,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         name << "Band order " << i;
         parameters.push_back(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{BAND_ORDER_PARAM_IDS[i], 1,},name.str(),0,31,i));
     }
-    
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{PACKET_LOSS_RATE_PARAM_ID, 1}, "Packet loss rate", 0, 1, 1
+        ));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{PACKET_LOSS_PULSE_WIDTH_PARAM_ID, 1}, "Packet loss pulse width", 0, 1, 1
+        ));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{PACKET_LOSS_JITTER_PARAM_ID, 1}, "Packet loss jitter", 0, 1, 0
+        ));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID{PACKET_LOSS_BEAT_SYNC_PARAM_ID, 1}, "Packet loss beat sync", false
+        ));
+
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID {BITRATE_PARAM_ID, 1}, "Bitrate", juce::StringArray {
             "8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},

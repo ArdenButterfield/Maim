@@ -9,7 +9,7 @@
 */
 
 #include "DragBox.h"
-#include "MaimLookAndFeel.h"
+#include "../MaimLookAndFeel.h"
 
 //==============================================================================
 DragBox::DragBox(juce::AudioProcessorValueTreeState& p,

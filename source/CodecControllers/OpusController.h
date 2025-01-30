@@ -12,6 +12,7 @@
 #include <array>
 #include <vector>
 #include "../QueueBuffer.h"
+#include "PacketLossModel.h"
 
 class OpusController : public CodecController, public juce::AudioProcessorValueTreeState::Listener {
 public:
@@ -98,6 +99,7 @@ protected:
     void parameterChanged(const juce::String &parameterID, float newValue) override;
     void updateParameters();
     juce::Random random;
+    std::unique_ptr<PacketLossModel> packetLossModel;
 };
 
 #endif //MAIM_OPUSCONTROLLER_H

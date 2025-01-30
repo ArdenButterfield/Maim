@@ -3,26 +3,27 @@
 //
 
 #include "TiltGraph.h"
+#include "../parameterIds.h"
 
 TiltGraph::TiltGraph(juce::AudioProcessorValueTreeState& p) : parameters(p)
 {
-    parameters.addParameterListener("mdctstep", this);
-    parameters.addParameterListener("mdctwindowincr", this);
-    tiltAmount = ((juce::AudioParameterInt*) parameters.getParameter("mdctwindowincr"))->get() / 64.f;
-    shapeWidth = ((juce::AudioParameterInt*) parameters.getParameter("mdctstep"))->get() / 18.f;
+    parameters.addParameterListener(MDCT_STEP_PARAM_ID, this);
+    parameters.addParameterListener(MDCT_WINDOW_INCREMENT_PARAM_ID, this);
+    tiltAmount = ((juce::AudioParameterInt*) parameters.getParameter(MDCT_WINDOW_INCREMENT_PARAM_ID))->get() / 64.f;
+    shapeWidth = ((juce::AudioParameterInt*) parameters.getParameter(MDCT_STEP_PARAM_ID))->get() / 18.f;
 }
 
 TiltGraph::~TiltGraph()
 {
-    parameters.removeParameterListener("mdctstep", this);
-    parameters.removeParameterListener("mdctwindowincr", this);
+    parameters.removeParameterListener(MDCT_STEP_PARAM_ID, this);
+    parameters.removeParameterListener(MDCT_WINDOW_INCREMENT_PARAM_ID, this);
 }
 
 void TiltGraph::parameterChanged (const juce::String &parameterID, float newValue)
 {
-    if (parameterID == "mdctwindowincr") {
+    if (parameterID == MDCT_WINDOW_INCREMENT_PARAM_ID) {
         tiltAmount = newValue / 64;
-    } else if (parameterID == "mdctstep") {
+    } else if (parameterID == MDCT_STEP_PARAM_ID) {
         shapeWidth = newValue / 18;
     }
     repaint();

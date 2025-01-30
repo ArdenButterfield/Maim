@@ -3,7 +3,7 @@
 //
 
 #include "SquishFlipDragBox.h"
-#include "MaimLookAndFeel.h"
+#include "../MaimLookAndFeel.h"
 
 void SquishFlipDragBox::drawBackground (juce::Graphics& g, int x, int y)
 {

@@ -3,7 +3,7 @@
 //
 
 #include "ButterflyDragBox.h"
-#include "MaimLookAndFeel.h"
+#include "../MaimLookAndFeel.h"
 
 
 void ButterflyDragBox::calculateGridLines(const float minVal,

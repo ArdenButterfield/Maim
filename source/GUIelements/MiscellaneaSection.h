@@ -14,8 +14,8 @@
 #include <juce_graphics/juce_graphics.h>
 
 #include "StageWindow.h"
-#include "ButterflyDragBox.h"
-#include "SquishFlipDragBox.h"
+#include "DragBoxes/ButterflyDragBox.h"
+#include "DragBoxes/SquishFlipDragBox.h"
 #include "NamedRotarySlider.h"
 #include "TiltGraph.h"
 
