@@ -48,6 +48,7 @@ const juce::String PACKET_LOSS_RATE_PARAM_ID = "plossrate";
 const juce::String PACKET_LOSS_PULSE_WIDTH_PARAM_ID = "plosswidth";
 const juce::String PACKET_LOSS_JITTER_PARAM_ID = "plossjitter";
 const juce::String PACKET_LOSS_BEAT_SYNC_PARAM_ID = "beatsync";
+const juce::String PACKET_LOSS_STICK_PARAM_ID = "lossstick";
 
 const juce::String BITRATE_PARAM_ID = "bitrate";
 const juce::String ENCODER_PARAM_ID = "encoder";

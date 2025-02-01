@@ -216,6 +216,47 @@ TEST_CASE("corrupt opus", "[corruptopus]")
     writeOut(output, "50k_corrupt_opus.wav");
 }
 
+TEST_CASE("opus keep decoding same packet" "[opuskeepdecoding]")
+{
+    auto input = makeTestAudioBuffer();
+    writeOut(input, "original.wav");
+    auto error = 0;
+    auto opus_encoder = opus_encoder_create(48000, 2, OPUS_APPLICATION_VOIP, &error);
+    REQUIRE(error == 0);
+    auto opus_decoder = opus_decoder_create(48000, 2, &error);
+    REQUIRE(error == 0);
+    int samples_per_frame = 10 /* ms / frame */ * 48 /* samples / ms */;
+    REQUIRE(input.getNumChannels() == 2);
+    auto buf = juce::AudioBuffer<float>(input.getNumChannels(), samples_per_frame);
+    auto output = juce::AudioBuffer<float>(input);
+    output.clear();
+    opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(50000));
+    std::vector<float> interlacedInput;
+    std::vector<float> interlacedOutput;
+    interlacedInput.resize(samples_per_frame * 2);
+    interlacedOutput.resize(samples_per_frame * 2);
+    std::array<unsigned char, 10000> encoded{};
+    auto encodeResult = 0;
+    for (int i = 0; i < input.getNumSamples() - samples_per_frame; i += samples_per_frame) {
+        if ((i / samples_per_frame) % 20 < 10) {
+            for (int samp = 0; samp < samples_per_frame; ++samp) {
+                interlacedInput[samp * 2] = input.getSample(0, i + samp);
+                interlacedInput[samp * 2 + 1] = input.getSample(1, i + samp);
+            }
+            encodeResult = opus_encode_float(opus_encoder, &interlacedInput[0], samples_per_frame, &encoded[0], 10000);
+            REQUIRE(encodeResult > 0);
+        }
+        auto decodeResult = opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
+        REQUIRE(decodeResult == samples_per_frame);
+        for (int samp = 0; samp < samples_per_frame; ++samp) {
+            output.setSample(0, samp + i, interlacedOutput[samp * 2]);
+            output.setSample(1, samp + i, interlacedOutput[samp * 2 + 1]);
+        }
+    }
+    writeOut(output, "opusStuck.wav");
+
+}
+
 TEST_CASE("opus encode/decode", "[opusencodedecode]")
 {
     auto gui = juce::ScopedJuceInitialiser_GUI {};
@@ -240,7 +281,6 @@ TEST_CASE("opus encode/decode", "[opusencodedecode]")
     opusController.processBlock(samples);
     REQUIRE(samples.findMinMax(0, 0, 512).getEnd() > 0);
 }
-
 
 #ifdef PAMPLEJUCE_IPP
     #include <ipp.h>
