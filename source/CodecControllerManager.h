@@ -48,10 +48,8 @@ public:
             auto encoder = ((juce::AudioParameterChoice*)
                                 params.getParameter(ENCODER_PARAM_ID))->getIndex();
             if (encoder == 2 /* opus */ ) {
-                DBG("codec set to opus");
                 encoderType = use_opus;
             } else {
-                DBG("codec set to mp3");
                 encoderType = use_mp3;
             }
         }

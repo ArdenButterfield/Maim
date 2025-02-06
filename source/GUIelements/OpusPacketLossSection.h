@@ -24,6 +24,9 @@ private:
     juce::Label sectionName;
     PacketLossDragBox packetLossDragBox;
     NamedRotarySlider jitterSlider;
+
+    juce::ToggleButton lossStickToggle;
+    juce::AudioProcessorValueTreeState::ButtonAttachment lossStickAttachment;
 };
 
 #endif //MAIM_OPUSPACKETLOSSSECTION_H

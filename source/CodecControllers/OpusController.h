@@ -82,7 +82,7 @@ protected:
     const std::vector<float> frameSizeOptionsMs {
         2.5, 5, 10, 20, 40, 60
     };
-    float turbo;
+    float turbo{};
 
     const std::vector<int> allowed_samplerates {
         8000, 12000, 16000, 24000, 48000
@@ -100,6 +100,9 @@ protected:
     void updateParameters();
     juce::Random random;
     std::unique_ptr<PacketLossModel> packetLossModel;
+    bool stickMode{};
+    int encodeResult{};
+    float error{};
 };
 
 #endif //MAIM_OPUSCONTROLLER_H

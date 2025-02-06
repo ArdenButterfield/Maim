@@ -9,15 +9,17 @@
 */
 
 #include "EncoderBitrateSection.h"
+#include "../parameterIds.h"
 
 //==============================================================================
 EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState& p)
     : StageWindow(p),
       psychoanalGraph(p),
-      biasSlider(p, "thresholdbias", "Tilt"),
-      encoderAttachment(p, "encoder", encoderSelection),
-      bitrateSlider(p, "bitrate", "Bitrate"),
-      squishSlider(p, "turbo", "Turbo")
+      biasSlider(p, THRESHOLD_BIAS_PARAM_ID, "Tilt"),
+      encoderAttachment(p, ENCODER_PARAM_ID, encoderSelection),
+      bitrateSlider(p, BITRATE_PARAM_ID, "Bitrate"),
+      squishSlider(p, TURBO_PARAM_ID, "Turbo"),
+      errorSlider(p, ERROR_PARAM_ID, "Error")
 {
     bitrateSlider.slider.setTextValueSuffix(" kb/s");
 
@@ -34,6 +36,7 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
 
     addAndMakeVisible(bitrateSlider);
     addAndMakeVisible(squishSlider);
+    addAndMakeVisible(errorSlider);
 }
 
 EncoderBitrateSection::~EncoderBitrateSection()
@@ -56,7 +59,7 @@ void EncoderBitrateSection::valueTreePropertyChanged(juce::ValueTree &treeWhoseP
 void EncoderBitrateSection::resized()
 {
     setUsableBounds();
-    const auto bigKnobWidth = usable_bounds.getWidth() * 0.45;
+    const auto bigKnobWidth = usable_bounds.getWidth() * 0.4;
 
     bitrateSlider.setBounds(usable_bounds.withSizeKeepingCentre(bigKnobWidth, usable_bounds.getHeight()));
     const auto leftPanel = usable_bounds.withRight(bitrateSlider.getX()).withTrimmedTop(10);
@@ -64,7 +67,9 @@ void EncoderBitrateSection::resized()
 
 //    encoderButton.setBounds(leftPanel.withHeight(leftPanel.getHeight() * 0.4).withTrimmedLeft(10).withTrimmedRight(10));
     encoderSelection.setBounds(leftPanel.withHeight(leftPanel.getHeight() * 0.4).withTrimmedLeft(10).withTrimmedRight(10));
-    squishSlider.setBounds(leftPanel.withTop(encoderSelection.getBottom() + 10));
+    auto belowEncoder = leftPanel.withTop(encoderSelection.getBottom() + 10);
+    squishSlider.setBounds(belowEncoder.withWidth(belowEncoder.getWidth() / 2));
+    errorSlider.setBounds(belowEncoder.withLeft(squishSlider.getRight()));
 
     psychoanalGraph.setBounds(rightPanel.withHeight(leftPanel.getHeight() * 0.4).withTrimmedLeft(10).withTrimmedRight(10));
     biasSlider.setBounds(rightPanel.withTop(psychoanalGraph.getBottom() + 10));

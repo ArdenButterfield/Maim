@@ -55,6 +55,9 @@ TEST_CASE("process audio", "[process]")
     }
 }
 
+
+
+
 juce::AudioBuffer<float> makeTestAudioBuffer() {
     auto inputStream = new juce::MemoryInputStream(BinaryData::kyoto10sec_wav, BinaryData::kyoto10sec_wavSize, false);
     juce::WavAudioFormat wavFormat;
@@ -281,6 +284,34 @@ TEST_CASE("opus encode/decode", "[opusencodedecode]")
     opusController.processBlock(samples);
     REQUIRE(samples.findMinMax(0, 0, 512).getEnd() > 0);
 }
+
+TEST_CASE("turbo and packet repeat", "[turboandpacketrepeat]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    // PluginProcessor might need this if you use the APVTS for example.
+    // You'll also need it for tests that rely on juce::Graphics, juce::Timer, etc.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    MaimAudioProcessor testPlugin;
+    testPlugin.prepareToPlay(44100, 512);
+    auto& apvts = testPlugin.getValueTreeState();
+    *((juce::AudioParameterChoice*)apvts.getParameter(ENCODER_PARAM_ID)) = 2; // opus
+    *((juce::AudioParameterFloat*)apvts.getParameter(TURBO_PARAM_ID)) = 0.8f;
+    *((juce::AudioParameterBool*)apvts.getParameter(PACKET_LOSS_STICK_PARAM_ID)) = true;
+    *((juce::AudioParameterFloat*)apvts.getParameter(PACKET_LOSS_PULSE_WIDTH_PARAM_ID)) = 0.2;
+    *((juce::AudioParameterFloat*)apvts.getParameter(PACKET_LOSS_RATE_PARAM_ID)) = 0.4;
+
+    juce::AudioBuffer<float> samples(2,512);
+    for (int i = 0; i < 100; ++i) {
+        for (int samp = 0; samp < 512; ++samp) {
+            samples.setSample(0, i, sin(static_cast<float>(samp) / 100.f));
+            samples.setSample(1, i, sin(static_cast<float>(samp) / 100.f));
+        }
+        auto midiBuffer = juce::MidiBuffer();
+        testPlugin.processBlock(samples, midiBuffer);
+    }
+}
+
 
 #ifdef PAMPLEJUCE_IPP
     #include <ipp.h>

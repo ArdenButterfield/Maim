@@ -11,7 +11,8 @@ OpusController::OpusController (juce::AudioProcessorValueTreeState& _parameters)
       opusDecoder(nullptr),
       samplesPerFrame(0),
       sampleCounter(0),
-      parameters(_parameters) {
+      parameters(_parameters),
+      encodeResult(0) {
     parameters.addParameterListener(BITRATE_PARAM_ID, this);
     parameters.addParameterListener(TURBO_PARAM_ID, this);
 
@@ -19,7 +20,8 @@ OpusController::OpusController (juce::AudioProcessorValueTreeState& _parameters)
     parameters.addParameterListener(PACKET_LOSS_PULSE_WIDTH_PARAM_ID, this);
     parameters.addParameterListener(PACKET_LOSS_BEAT_SYNC_PARAM_ID, this);
     parameters.addParameterListener(PACKET_LOSS_JITTER_PARAM_ID, this);
-
+    parameters.addParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+    parameters.addParameterListener(ERROR_PARAM_ID, this);
     parametersNeedUpdating = true;
 }
 
@@ -32,6 +34,8 @@ OpusController::~OpusController()
     parameters.removeParameterListener(PACKET_LOSS_PULSE_WIDTH_PARAM_ID, this);
     parameters.removeParameterListener(PACKET_LOSS_BEAT_SYNC_PARAM_ID, this);
     parameters.removeParameterListener(PACKET_LOSS_JITTER_PARAM_ID, this);
+    parameters.removeParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+    parameters.removeParameterListener(ERROR_PARAM_ID, this);
 }
 
 bool OpusController::init (int sampleRate, int maxSamplesPerBlock, int bitrate)
@@ -79,21 +83,47 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
         input[sampleCounter * 2 + 1] = buffer.getSample(1, s);
         buffer.setSample(0, s, output[sampleCounter * 2]);
         buffer.setSample(1, s, output[sampleCounter * 2 + 1]);
+        output[sampleCounter * 2] = 0;
+        output[sampleCounter * 2 + 1] = 0;
         sampleCounter++;
         if (sampleCounter == samplesPerFrame) {
             int framesizeDownscaleFactor = std::round(random.nextFloat() * turbo * 3);
             framesizeDownscaleFactor = 1 << std::min(std::max(0, framesizeDownscaleFactor), 2);
             auto subframeSize = samplesPerFrame / framesizeDownscaleFactor;
             for (int subframe = 0; subframe < framesizeDownscaleFactor; ++subframe) {
-                auto encodeResult = opus_encode_float(
-                    opusEncoder, &input[0] + subframe * subframeSize,
-                    subframeSize, &encoded[0], encoded.size());
-                jassert(encodeResult > 0);
-                jassert(encodeResult < encoded.size());
-                auto encodeResultWithLoss = packetLossModel->processPacket(subframeSize) ? encodeResult : 0;
+                float maxVolume = 0;
+                for (auto samp = subframe * subframeSize; samp < subframe * subframeSize + subframeSize; ++samp) {
+                    maxVolume = std::max(std::abs(input[samp]), maxVolume);
+                }
+                auto encodeResultWithLoss = encodeResult;
+                if (stickMode && !packetLossModel->processPacket(subframeSize)) {
+                    // do not encode.
+                } else {
+
+                    encodeResult = opus_encode_float(
+                        opusEncoder, &input[0] + subframe * subframeSize,
+                        subframeSize, &encoded[0], encoded.size());
+                    if (error > 0) {
+                        for (auto bit = 0; bit < encodeResult; ++bit) {
+                            encoded[bit] ^= random.nextFloat() < error ? 1 << random.nextInt(8) : 0;
+                        }
+                    }
+                    encodeResultWithLoss = packetLossModel->processPacket(subframeSize) ? encodeResult : 0;
+                }
                 auto decodeResult = opus_decode_float(
                     opusDecoder, &encoded[0], encodeResultWithLoss, &output[0] + subframe * subframeSize, subframeSize, 0);
-                jassert(decodeResult == samplesPerFrame / framesizeDownscaleFactor);
+                float maxOutputVolume = 0;
+                for (auto samp = subframe * subframeSize; samp < subframe * subframeSize + subframeSize; ++samp) {
+                    maxOutputVolume = std::max(std::abs(output[samp]), maxOutputVolume);
+                }
+                auto outputThreshold = std::min(1.0f, maxVolume * 1.5f);
+                if (maxOutputVolume > outputThreshold && maxOutputVolume > 0.0001) {
+                    auto gain = outputThreshold / maxOutputVolume;
+                    for (auto samp = subframe * subframeSize; samp < subframe * subframeSize + subframeSize; ++samp) {
+                        output[samp] *= gain;
+                    }
+                }
+                // jassert(decodeResult == samplesPerFrame / framesizeDownscaleFactor);
             }
             sampleCounter = 0;
         }
@@ -119,8 +149,9 @@ void OpusController::updateParameters()
     int bitrate = Mp3ControllerManager::bitrates[((juce::AudioParameterChoice*)
                                 parameters.getParameter(BITRATE_PARAM_ID))->getIndex()];
     opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(bitrate * 500));
-    DBG("pack loss len " << packetLossLength << " ");
+    stickMode = *((juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
     parametersNeedUpdating = false;
 
-
+    error = *((juce::AudioParameterFloat*)parameters.getParameter(ERROR_PARAM_ID));
+    error = std::pow(error, 3);
 }

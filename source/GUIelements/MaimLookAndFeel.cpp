@@ -241,17 +241,13 @@ void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& bu
     const auto fillColour = bottomOptionSelected ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::CONTRAST_COLOR_LIGHT;
     const auto topName = button.getName().upToFirstOccurrenceOf("|", false, false);
     const auto bottomName = button.getName().fromLastOccurrenceOf("|", false, false);
-
-
-
-
     g.setColour(fillColour);
     g.fillRect(activeRect);
     g.setColour(MaimColours::BEVEL_LIGHT);
     g.fillRect(inactiveRect);
     g.setColour(MaimColours::BEVEL_BLACK);
     g.drawRect(button.getLocalBounds(), 2);
-    g.setFont(juce::Font(main_font).withHeight(15));
+    g.setFont(juce::Font(main_font).withHeight(button.getHeight() * 0.4));
     g.setColour(bottomOptionSelected ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
     g.drawText(topName, topRect, juce::Justification::centred, false);
     g.setColour(bottomOptionSelected ? MaimColours::BEVEL_BLACK : MaimColours::BEVEL_DARK);

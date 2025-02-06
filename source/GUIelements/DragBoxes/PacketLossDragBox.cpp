@@ -17,8 +17,12 @@ PacketLossDragBox::~PacketLossDragBox()
 
 void PacketLossDragBox::drawBackground (juce::Graphics& g, int x, int y)
 {
+    if (isMouseOverOrDragging()) {
+        g.setColour(MaimColours::CONTRAST_COLOR_DARK.withAlpha(0.7f));
+    } else {
+        g.setColour(MaimColours::CONTRAST_COLOR_DARK);
+    }
     auto jitter = parameters.getParameter(PACKET_LOSS_JITTER_PARAM_ID)->getValue();
-    g.setColour(MaimColours::CONTRAST_COLOR_DARK);
     auto radius = rescaleRange(xSlider->getValue(),
         xSlider->getMinimum(),
         xSlider->getMaximum(),

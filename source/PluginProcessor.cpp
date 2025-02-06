@@ -65,6 +65,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID{PACKET_LOSS_STICK_PARAM_ID, 1}, "Packet loss/stick", false
         ));
 
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ERROR_PARAM_ID, 1}, "Error", 0, 1, 0
+        ));
+
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
         juce::ParameterID {BITRATE_PARAM_ID, 1}, "Bitrate", juce::StringArray {
             "8", "16", "24", "32", "40", "48", "56", "64", "80", "96", "112", "128", "160", "192", "224", "256", "320"},

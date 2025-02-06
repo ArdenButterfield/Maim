@@ -38,6 +38,7 @@ private:
     const juce::AudioProcessorValueTreeState::ComboBoxAttachment encoderAttachment;
     NamedRotarySlider bitrateSlider;
     NamedRotarySlider squishSlider;
+    NamedRotarySlider errorSlider;
 
     PsychoanalGraph psychoanalGraph;
     IndicatorLight shortFrameIndicator;
