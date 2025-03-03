@@ -153,5 +153,5 @@ void OpusController::updateParameters()
     parametersNeedUpdating = false;
 
     error = *((juce::AudioParameterFloat*)parameters.getParameter(ERROR_PARAM_ID));
-    error = std::pow(error, 3);
+    error = std::pow(error, 3.f);
 }

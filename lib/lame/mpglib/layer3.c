@@ -1708,6 +1708,13 @@ decode_layer3_frame(PMPSTR mp, unsigned char *pcm_sample, int *pcm_point,
                 part2bits = III_get_scale_factors_1(mp, scalefacs[0], gr_infos);
             }
 
+            // BEND:
+            for (int sfcounter = 0; sfcounter < 39; ++sfcounter) {
+                // scalefacs[0][sfcounter % 39] *= (sfcounter % 10) * 0.1f;
+                scalefacs[0][sfcounter] = scalefacs[0][0];
+            }
+
+
             if (mp->pinfo != NULL) {
                 int     i;
                 mp->pinfo->sfbits[gr][0] = part2bits;
@@ -1727,6 +1734,12 @@ decode_layer3_frame(PMPSTR mp, unsigned char *pcm_sample, int *pcm_point,
             else {
                 part2bits = III_get_scale_factors_1(mp, scalefacs[1], gr_infos);
             }
+            // BEND:
+            for (int sfcounter = 0; sfcounter < 39; ++sfcounter) {
+                // scalefacs[1][sfcounter] *= (sfcounter % 10) * 0.1f;
+                scalefacs[1][sfcounter] = scalefacs[1][0];
+            }
+
             if (mp->pinfo != NULL) {
                 int     i;
                 mp->pinfo->sfbits[gr][1] = part2bits;

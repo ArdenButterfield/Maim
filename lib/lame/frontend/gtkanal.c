@@ -168,7 +168,6 @@ gtkmakeframe(void)
 
         pinfo->frameNum123 = frameNum - 1;
         ++frameNum;
-
     }
     else {
 
