@@ -20,10 +20,16 @@ OpusPacketLossSection::OpusPacketLossSection (juce::AudioProcessorValueTreeState
     addAndMakeVisible(packetLossDragBox);
     addAndMakeVisible(jitterSlider);
     addAndMakeVisible(lossStickToggle);
+
+    parameters.addParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+
+    packetLossDragBox.setColourScheme(!*(juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
 }
 
-OpusPacketLossSection::~OpusPacketLossSection()
-= default;
+OpusPacketLossSection::~OpusPacketLossSection() {
+    parameters.removeParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+
+}
 
 void OpusPacketLossSection::resized()
 {
@@ -40,7 +46,7 @@ void OpusPacketLossSection::resized()
     auto dragboxPart = mainPart.withHeight(mainPart.getHeight() / 2);
     packetLossDragBox.setBounds(dragboxPart);
     jitterSlider.setBounds(mainPart.withTop(dragboxPart.getBottom()).withWidth(mainPart.getWidth() / 2));
-    lossStickToggle.setBounds(jitterSlider.getBounds().withRightX(mainPart.getRight()).withHeight(40));
+    lossStickToggle.setBounds(jitterSlider.getBounds().withRightX(mainPart.getRight()).withTrimmedTop(10).withHeight(40));
 }
 
 void OpusPacketLossSection::paint (juce::Graphics& g)
@@ -51,4 +57,5 @@ void OpusPacketLossSection::paint (juce::Graphics& g)
 
 void OpusPacketLossSection::parameterChanged (const juce::String& parameterID, float newValue)
 {
+    packetLossDragBox.setColourScheme(!*(juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
 }

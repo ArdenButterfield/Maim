@@ -242,7 +242,7 @@ void ReassignmentSection::resized()
                      .withTrimmedRight(10)
                      .withTrimmedBottom(10);
 
-    mp3OnlyLabel.setBounds(activeArea);
+    mp3OnlyLabel.setBounds(getLocalBounds().withTrimmedTop(20));
 
 }
 

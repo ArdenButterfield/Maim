@@ -15,6 +15,10 @@ public:
         const juce::String& xParamID,
         const juce::String& yParamID);
     ~PacketLossDragBox() override;
+    void setColourScheme(bool orange) {
+        isOrange = orange;
+        repaint();
+    }
 private:
     void drawBackground(juce::Graphics& g, int x, int y) override;
     juce::Colour getThumbFillColour(int x, int y) override;
@@ -27,6 +31,8 @@ private:
     void mouseExit(const juce::MouseEvent &event) override {
         repaint();
     }
+    
+    bool isOrange;
 
 };
 

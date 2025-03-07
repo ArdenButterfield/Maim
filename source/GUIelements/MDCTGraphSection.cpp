@@ -59,7 +59,7 @@ void MDCTGraphSection::resized()
                          .withTrimmedBottom(standardMargin);
     sectionName.setBounds(graphArea.withHeight(headerHeight));
     graphArea = graphArea.withTrimmedTop( headerHeight);
-    mp3OnlyLabel.setBounds(graphArea);
+    mp3OnlyLabel.setBounds(getLocalBounds().withTrimmedTop(20));
 
     mdctGraph.setBounds(graphArea);
     auto feedbackSliderBounds =getLocalBounds().withWidth(70).withHeight(80).withRightX(graphArea.getRight()).withY(graphArea.getY());

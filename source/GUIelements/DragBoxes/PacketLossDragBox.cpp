@@ -18,9 +18,9 @@ PacketLossDragBox::~PacketLossDragBox()
 void PacketLossDragBox::drawBackground (juce::Graphics& g, int x, int y)
 {
     if (isMouseOverOrDragging()) {
-        g.setColour(MaimColours::CONTRAST_COLOR_DARK.withAlpha(0.7f));
+        g.setColour(getOutlineColour(x,y).withAlpha(0.7f));
     } else {
-        g.setColour(MaimColours::CONTRAST_COLOR_DARK);
+        g.setColour(getOutlineColour(x,y));
     }
     auto jitter = parameters.getParameter(PACKET_LOSS_JITTER_PARAM_ID)->getValue();
     auto radius = rescaleRange(xSlider->getValue(),
@@ -55,12 +55,12 @@ void PacketLossDragBox::drawBackground (juce::Graphics& g, int x, int y)
 
 juce::Colour PacketLossDragBox::getThumbFillColour (int x, int y)
 {
-    return MaimColours::CONTRAST_COLOR_LIGHT;
+    return isOrange ? MaimColours::CONTRAST_COLOR_DARK : MaimColours::SPLASH_COLOR_DARK;
 }
 
 juce::Colour PacketLossDragBox::getOutlineColour (int x, int y)
 {
-    return MaimColours::CONTRAST_COLOR_DARK;
+    return isOrange ? MaimColours::CONTRAST_COLOR_LIGHT : MaimColours::SPLASH_COLOR_LIGHT;
 }
 
 juce::Colour PacketLossDragBox::getBackgroundColour (int x, int y)
