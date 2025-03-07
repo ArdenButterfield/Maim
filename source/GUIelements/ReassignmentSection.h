@@ -19,6 +19,7 @@
 #include "StageWindow.h"
 
 #include "ArrayAssignerButtons/ArrayAssignerButton.h"
+#include "Mp3OnlyLabel.h"
 
 //==============================================================================
 /*
@@ -50,7 +51,9 @@ private:
     ArrayAssignerButton randomButton;
     ArrayAssignerButton upButton;
     ArrayAssignerButton downButton;
-    
+
+    Mp3OnlyLabel mp3OnlyLabel;
+
     juce::Random random;
     
     void resetGraph();
@@ -73,7 +76,8 @@ private:
     int getValIndex(const float screenY);
     void setValue(const int index, const int newVal);
     std::vector<int> itemVals;
-    
+
+
     std::atomic<bool> needsRepainting;
     int steps;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReassignmentSection)

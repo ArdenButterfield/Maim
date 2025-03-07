@@ -12,7 +12,7 @@
 
 //==============================================================================
 MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
-: StageWindow(p), mdctGraph(p)
+: StageWindow(p), mdctGraph(p), parameters(p)
 {
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
@@ -30,6 +30,17 @@ MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
     addAndMakeVisible(MDCTfeedbackSlider);
     addAndMakeVisible(sectionName);
     addAndMakeVisible(feedbackName);
+    addAndMakeVisible(mp3OnlyLabel);
+
+    parameters.addParameterListener(ENCODER_PARAM_ID, this);
+    bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
+    mdctGraph.setVisible(!isOpus);
+    mdctPostPitchShiftSlider.setVisible(!isOpus);
+    mdctPostAmpShiftSlider.setVisible(!isOpus);
+    MDCTfeedbackSlider.setVisible(!isOpus);
+    feedbackName.setVisible(!isOpus);
+    mp3OnlyLabel.setVisible(isOpus);
+
     float alpha = 0.3f;
     mdctPostAmpShiftSlider.setAlpha(alpha);
     mdctPostPitchShiftSlider.setAlpha(alpha);
@@ -48,6 +59,7 @@ void MDCTGraphSection::resized()
                          .withTrimmedBottom(standardMargin);
     sectionName.setBounds(graphArea.withHeight(headerHeight));
     graphArea = graphArea.withTrimmedTop( headerHeight);
+    mp3OnlyLabel.setBounds(graphArea);
 
     mdctGraph.setBounds(graphArea);
     auto feedbackSliderBounds =getLocalBounds().withWidth(70).withHeight(80).withRightX(graphArea.getRight()).withY(graphArea.getY());
@@ -63,4 +75,14 @@ void MDCTGraphSection::mouseEnter(const juce::MouseEvent& e) {
 }
 void MDCTGraphSection::mouseExit(const juce::MouseEvent& e) {
 
+}
+void MDCTGraphSection::parameterChanged (const juce::String& parameterID, float newValue)
+{
+    bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
+    mdctGraph.setVisible(!isOpus);
+    mdctPostPitchShiftSlider.setVisible(!isOpus);
+    mdctPostAmpShiftSlider.setVisible(!isOpus);
+    MDCTfeedbackSlider.setVisible(!isOpus);
+    feedbackName.setVisible(!isOpus);
+    mp3OnlyLabel.setVisible(isOpus);
 }

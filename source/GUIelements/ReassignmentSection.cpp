@@ -24,17 +24,25 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
     downButton("down", SHIFT_DOWN),
     pTree(p)
 {
-    sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
+    sectionName.setColour(juce::Label::textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Frequency Reassignment", juce::dontSendNotification);
     sectionName.setJustificationType(juce::Justification::centred);
 
-
+    addAndMakeVisible(mp3OnlyLabel);
     addAndMakeVisible(resetButton);
     addAndMakeVisible(randomButton);
     addAndMakeVisible(upButton);
     addAndMakeVisible(downButton);
     addAndMakeVisible(sectionName);
+
+    pTree.addParameterListener(ENCODER_PARAM_ID, this);
+    bool isOpus = (((juce::AudioParameterChoice*)pTree.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
+    resetButton.setVisible(!isOpus);
+    randomButton.setVisible(!isOpus);
+    upButton.setVisible(!isOpus);
+    downButton.setVisible(!isOpus);
+    mp3OnlyLabel.setVisible(isOpus);
 
     resetButton.addListener(this);
     randomButton.addListener(this);
@@ -68,6 +76,8 @@ ReassignmentSection::~ReassignmentSection()
     randomButton.removeListener(this);
     upButton.removeListener(this);
     downButton.removeListener(this);
+
+    pTree.removeParameterListener(ENCODER_PARAM_ID, this);
 }
 
 void ReassignmentSection::setValue(const int index, const int newVal)
@@ -171,6 +181,10 @@ int ReassignmentSection::getValIndex(const float screenY)
 void ReassignmentSection::paint (juce::Graphics& g)
 {
     StageWindow::paint(g);
+
+    if (mp3OnlyLabel.isVisible()) {
+        return;
+    }
     g.setColour(MaimColours::BEVEL_LIGHT);
     g.fillRect(activeAreaBorder);
     g.setColour(MaimColours::BEVEL_BLACK);
@@ -227,12 +241,23 @@ void ReassignmentSection::resized()
                      .withTrimmedLeft(10)
                      .withTrimmedRight(10)
                      .withTrimmedBottom(10);
+
+    mp3OnlyLabel.setBounds(activeArea);
+
 }
 
 void ReassignmentSection::parameterChanged (const juce::String &parameterID, float newValue)
 {
     buildItemValsFromParams();
-    
+
+    bool isOpus = (((juce::AudioParameterChoice*)pTree.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
+    resetButton.setVisible(!isOpus);
+    randomButton.setVisible(!isOpus);
+    upButton.setVisible(!isOpus);
+    downButton.setVisible(!isOpus);
+    mp3OnlyLabel.setVisible(isOpus);
+
+
     needsRepainting = true;
 }
 
