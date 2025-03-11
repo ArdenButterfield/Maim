@@ -319,6 +319,8 @@ unsigned int			codecEncodeChunk
     float wet = flags->bends.mdct_feedback;
     float dry = 1 - wet;
     float m;
+    float error = flags->bends.error;
+
     for (int gr = 0; gr < 2; ++gr) {
         for (int ch = 0; ch < 2; ++ch) {
             for (int s = 0; s < 576; ++s) {
@@ -331,14 +333,35 @@ unsigned int			codecEncodeChunk
                 flags->bends.feedback_data[gr][ch][s] = (isnan(fed) || isinf(fed)) ? 0 :
                     dry * m + 
                     wet * flags->bends.feedback_data[gr][ch][s];
-
-                xr[gr][ch][s] = (xr[gr][ch][s] > 0) ? 
-                	flags->bends.feedback_data[gr][ch][s] : 
-                	-flags->bends.feedback_data[gr][ch][s];
-
             }
         }
     }
+
+    if (flags->bends.error > 0) {
+        int numSwaps = flags->bends.error * 1000;
+        for (int swap = 0; swap < numSwaps; ++swap) {
+            int gr1 = rand() % 2;
+            int ch1 = rand() % 2;
+            int s1 = rand() % 576;
+            int gr2 = rand() % 2;
+            int ch2 = rand() % 2;
+            int s2 = rand() % 576;
+            float temp = flags->bends.feedback_data[gr1][ch1][s1];
+            flags->bends.feedback_data[gr1][ch1][s1] = flags->bends.feedback_data[gr2][ch2][s2];
+            flags->bends.feedback_data[gr2][ch2][s2] = temp;
+        }
+    }
+
+    for (int gr = 0; gr < 2; ++gr) {
+        for (int ch = 0; ch < 2; ++ch) {
+            for (int s = 0; s < 576; ++s) {
+                xr[gr][ch][s] = (xr[gr][ch][s] > 0) ?
+                    flags->bends.feedback_data[gr][ch][s] :
+                    -flags->bends.feedback_data[gr][ch][s];
+            }
+        }
+    }
+
 
     for (int i = 0; i < 576; ++i) {
         post_bend[i] = 0;

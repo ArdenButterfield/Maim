@@ -459,6 +459,8 @@ typedef struct loop_flags_and_data_struct {
 } loop_flags_and_data;
 
 typedef struct blade_bend_flags_struct {
+    float error;
+
 	float butterfly_bubu;
     float butterfly_bubd;
     float butterfly_bdbu;

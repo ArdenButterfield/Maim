@@ -30,6 +30,7 @@ public:
     void processBlock(juce::AudioBuffer<float>& buffer);
 
     int getBitrate() override { return bitrate; }
+    void setError(float error) override {}
     void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) override {}
     void setMDCTbandstepBends(bool invert, int step) override {}
     void setMDCTpostshiftBends(int h_shift, float v_shift) override {}

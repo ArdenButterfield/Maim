@@ -20,6 +20,7 @@ public:
     virtual bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut) = 0;
 
     virtual int getBitrate() = 0;
+    virtual void setError(float error) = 0;
     virtual void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) = 0;
     virtual void setMDCTbandstepBends(bool invert, int step) = 0;
     virtual void setMDCTpostshiftBends(int h_shift, float v_shift) = 0;

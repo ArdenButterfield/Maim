@@ -71,6 +71,9 @@ void blade_deinit(encoder_flags_and_data* flags)
 
 // Bends
 
+void blade_set_error_bends(encoder_flags_and_data* flags, float error) {
+    flags->bends.error = error;
+}
 void blade_set_butterfly_bends(encoder_flags_and_data* flags, float buinbu, float buinbd, float bdinbu, float bdinbd)
 {
 	flags->bends.butterfly_bubu = buinbu;

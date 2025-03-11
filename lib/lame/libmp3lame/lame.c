@@ -124,6 +124,10 @@ void lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias)
     }
 }
 
+void lame_set_error_bends(lame_global_flags* gfp, float error) {
+    gfp->bendFlagsAndData->error = error;
+}
+
 void lame_set_mdct_feedback_bends(lame_global_flags* gfp, float feedback)
 {
     gfp->bendFlagsAndData->mdct_feedback = feedback;

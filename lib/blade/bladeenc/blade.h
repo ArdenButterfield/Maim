@@ -11,6 +11,7 @@ int blade_encode_chunk(encoder_flags_and_data* flags, float* left, float* right,
 
 void blade_deinit(encoder_flags_and_data* flags);
 
+void blade_set_error_bends(encoder_flags_and_data* flags, float error);
 void blade_set_butterfly_bends(encoder_flags_and_data* flags, float buinbu, float buinbd, float bdinbu, float bdinbd);
 void blade_set_mdct_step_bends(encoder_flags_and_data* flags, int invert, int step);
 void blade_set_mdct_post_shift_bends(encoder_flags_and_data* flags, int h_shift, float v_shift);

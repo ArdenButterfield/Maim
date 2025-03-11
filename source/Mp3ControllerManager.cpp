@@ -40,6 +40,7 @@ Mp3ControllerManager::Mp3ControllerManager(juce::AudioProcessorValueTreeState& p
     parameters.addParameterListener(THRESHOLD_BIAS_PARAM_ID, this);
     parameters.addParameterListener(MDCT_FEEDBACK_PARAM_ID, this);
     parameters.addParameterListener(ENCODER_PARAM_ID, this);
+    parameters.addParameterListener(ERROR_PARAM_ID, this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         parameters.addParameterListener(BAND_ORDER_PARAM_IDS[i], this);
@@ -61,6 +62,7 @@ Mp3ControllerManager::~Mp3ControllerManager()
     parameters.removeParameterListener(THRESHOLD_BIAS_PARAM_ID, this);
     parameters.removeParameterListener(MDCT_FEEDBACK_PARAM_ID, this);
     parameters.removeParameterListener(ENCODER_PARAM_ID, this);
+    parameters.removeParameterListener(ERROR_PARAM_ID, this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         parameters.removeParameterListener(BAND_ORDER_PARAM_IDS[i], this);
@@ -214,6 +216,8 @@ void Mp3ControllerManager::updateParameters()
         if (controller == nullptr) {
             continue;
         }
+        controller->setError(((juce::AudioParameterFloat*)parameters.getParameter(ERROR_PARAM_ID))->get());
+
         controller->setButterflyBends(
             ((juce::AudioParameterFloat*) parameters.getParameter(BUTTERFLY_STANDARD_PARAM_ID))->get(),
             ((juce::AudioParameterFloat*) parameters.getParameter(BUTTERFLY_CROSSED_PARAM_ID))->get(),

@@ -68,6 +68,10 @@ int LameController::getBitrate()
     return bitrate;
 }
 
+void LameController::setError (float error) {
+    lame_set_error_bends(lame_enc_handler, error);
+}
+
 void LameController::setButterflyBends(float uu, float ud, float du, float dd)
 {
     lame_set_butterfly_bends(lame_enc_handler, uu, ud, du, dd);

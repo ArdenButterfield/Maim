@@ -157,6 +157,7 @@ void lame_set_mdct_band_reassignment_bends(lame_global_flags* gfp, int* band_rea
 void lame_set_mdct_feedback_bends(lame_global_flags* gfp, float feedback);
 void lame_set_bitrate_squish_bends(lame_global_flags* gfp, float squish);
 void lame_set_threshold_bias_bends(lame_global_flags* gfp, float bias);
+void lame_set_error_bends(lame_global_flags* gfp, float error);
 
 float* lame_get_psychoanal_energy(lame_global_flags* gfp);
 float* lame_get_psychoanal_threshold(lame_global_flags* gfp);

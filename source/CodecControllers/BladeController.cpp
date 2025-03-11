@@ -50,6 +50,10 @@ int BladeController::getBitrate()
     return bitrate;
 }
 
+void BladeController::setError (float error) {
+    blade_set_error_bends(blade_encoder, error);
+}
+
 void BladeController::setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd)
 {
     blade_set_butterfly_bends(blade_encoder, buinbu, buinbd, bdinbu, bdinbd);

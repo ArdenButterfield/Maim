@@ -26,6 +26,8 @@ typedef enum short_block_e {
 ***********************************************************************/
 typedef struct bend_flags_and_data {
     // Butterfly flags, for mdct_sub48() in newmdct.c
+    float error;
+
     float butterfly_bubu;
     float butterfly_bubd;
     float butterfly_bdbu;
