@@ -264,16 +264,16 @@ jobs:
     needs: build_and_test
 
     steps:
-    - name: Get Artifacts
-      uses: actions/download-artifact@v3
+      - name: Get Artifacts
+        uses: actions/download-artifact@v4
 
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        prerelease: true
-        # download-artifact puts these files in their own dirs...
-        # Using globs sidesteps having to pass the version around
-        files: |
-          */*.exe
-          */*.zip
-          */*.dmg
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
+          # download-artifact puts these files in their own dirs...
+          # Using globs sidesteps having to pass the version around
+          files: |
+            */*.exe
+            */*.zip
+            */*.dmg

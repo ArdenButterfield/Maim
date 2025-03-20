@@ -1,5 +1,9 @@
 CHANGELOG
 
+1.1.1
+
+Update release step on github actions
+
 1.1.0
 
 Add OPUS encoder
