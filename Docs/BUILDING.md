@@ -15,16 +15,17 @@ We figured out the steps, so you don't have to.
 
 ```sh
 git clone --recurse-submodules https://github.com/ArdenButterfield/Maim
+cd Maim
 ```
 
 2. Build Lame. This project includes a quirked up version of [LAME](https://lame.sourceforge.io/), 
 so even if you have LAME installed already, you still need to do this step.
 
 ```sh
-cd Maim/lib/lame/
+cd lib/lame/
 ./configure CFLAGS="-fPIC" --disable-frontend --enable-expopt=full --disable-shared --enable-static
 make
-cd ../../..
+cd ../..
 ```
 
 If `./configure` fails to detect your system type, add an explicit build triplet:
@@ -58,6 +59,7 @@ Note that the configure command when building Lame is slightly different from in
 
 ```sh
 git clone --recurse-submodules https://github.com/ArdenButterfield/Maim
+cd Maim
 ```
 
 2. Build Lame. This project includes a quirked up version of [LAME](https://lame.sourceforge.io/), so even if you have LAME installed already, you still need to do this step.
@@ -65,11 +67,11 @@ git clone --recurse-submodules https://github.com/ArdenButterfield/Maim
 For an Apple Silicon-only build:
 
 ```sh
-cd Maim/lib/lame/
+cd lib/lame/
 ./configure CFLAGS="-fPIC -mmacosx-version-min=11.0" \
   --disable-frontend --enable-expopt=full --disable-shared --enable-static
 make
-cd ../../..
+cd ../..
 ```
 
 If you want a universal binary for both `arm64` and `x86_64`, build LAME with universal flags instead:
