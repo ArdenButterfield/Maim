@@ -1,73 +1,69 @@
-# Juce stuff
-Maim/Builds
-Maim/JuceLibraryCode
-Maim/maim\ audiohost\ setup.filtergraph
+# Build outputs
+Builds/
+cmake-build-*/
+packaging/build/
+packaging/plugins/
 
+# IDE
+.idea/
 
-cmake-build-*
-Packages.dmg
-.idea
-packaging/build
-packaging/plugins
-**.dmg
+# Packaging artifacts
+*.dmg
 
-# Audio stuff
+# Audio assets (except bundled assets)
 **/*.wav
 **/*.mp3
 **/*.flac
 !assets/*.wav
 
-# Prerequisites
+# Compiled files
 *.d
-
-# Compiled Object files
-*.slo
-*.lo
-**/*.o
-**/*.a
+*.o
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
+*.lo
+*.slo
+*.la
+*.lai
+*.a
+*.lib
 *.so
 *.dylib
 *.dll
+*.exe
+*.out
+*.app
+
+# Precompiled headers
+*.gch
+*.pch
 
 # Fortran module files
 *.mod
 *.smod
 
-# Compiled Static libraries
-*.lai
-**/*.la
-**/*.a
-*.lib
+# Debug symbols
+*.dSYM
 
-# Executables
-*.exe
-*.out
-*.app
-Maim/lib/lame/frontend/lame
-Maim/lib/blade/bladeenc/bladeenc
+# LAME generated build artifacts
+lib/lame/**/Makefile
+lib/lame/**/*.Po
+lib/lame/**/*.Plo
+lib/lame/**/*.deps
+lib/lame/config.h
+lib/lame/config.log
+lib/lame/config.status
+lib/lame/libtool
+lib/lame/stamp-h1
+lib/lame/lame.spec
+lib/lame/frontend/lame
 
-# misc
-**/.DS_Store
-**/*.asd
-**/*.dSYM
-Maim/lib/blade/test
+# Blade generated build artifacts
+lib/blade/bladeenc/bladeenc
+lib/blade/test
 
-# lame stuff
-/Source/lib/lame/**/Makefile
-/Source/lib/lame/**/*.Po
-/Source/lib/lame/**/*.Plo
-Source/lib/lame/config.log
-Source/lib/lame/config.h
-Source/lib/lame/config.status
-Source/lib/lame/libtool
+# Python virtual environments
+venv/
 
-venv
-Source/lib/lame/stamp-h1
-Source/lib/lame/lame.spec
+# OS / editor noise
+.DS_Store
+*.asd
