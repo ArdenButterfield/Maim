@@ -27,7 +27,10 @@ make
 cd ../../..
 ```
 
-If `./configure` fails to detect your system type (for example on very old LAME tarballs), add an explicit build triplet such as `--build=x86_64-pc-linux-gnu`.
+If `./configure` fails to detect your system type, add an explicit build triplet:
+
+- x86_64: `--build=x86_64-linux-gnu`
+- ARM64: `--build=aarch64-linux-gnu`
 
 Optionally, add `--enable-debug` to the `configure` command, to compile with `-g`.
 
@@ -64,13 +67,10 @@ For an Apple Silicon-only build:
 ```sh
 cd Maim/lib/lame/
 ./configure CFLAGS="-fPIC -mmacosx-version-min=11.0" \
-  --build=arm-apple-darwin$(uname -r) \
   --disable-frontend --enable-expopt=full --disable-shared --enable-static
 make
 cd ../../..
 ```
-
-The bundled LAME `config.guess` is too old to recognize modern Apple Silicon Macs, so the explicit `--build` triplet is required. `$(uname -r)` produces the Darwin kernel version (for example `25.5.0`).
 
 If you want a universal binary for both `arm64` and `x86_64`, build LAME with universal flags instead:
 
