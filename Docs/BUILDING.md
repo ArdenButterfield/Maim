@@ -8,6 +8,7 @@ We figured out the steps, so you don't have to.
 ### Prerequisites:
 * [CMake version >= 3.24.1](https://cmake.org/download/) (This link actually takes you to the latest version)
 * ninja
+* pkg-config (`sudo apt-get install pkg-config`)
 
 ### Steps:
 
