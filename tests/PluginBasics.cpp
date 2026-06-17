@@ -6,6 +6,8 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 #include "BinaryData.h"
 
+#include <juce_audio_formats/juce_audio_formats.h>
+
 TEST_CASE ("one is equal to one", "[dummy]")
 {
     REQUIRE (1 == 1);

@@ -127,9 +127,6 @@ target_compile_definitions(SharedCode
         JUCE_USE_CURL=0     # If you set this to 1, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
         JUCE_VST3_CAN_REPLACE_VST2=0
 
-        # Uncomment if you are paying for a an Indie/Pro license or releasing under GPLv3
-        JUCE_DISPLAY_SPLASH_SCREEN=0
-
         # lets the app known if we're Debug or Release
         CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
         VERSION="${CURRENT_VERSION}"
@@ -157,6 +154,7 @@ target_link_libraries(SharedCode
         "${LAMELIBRARYPATH}"
         opus
         blade_library
+        juce_audio_formats
         juce_audio_utils
         juce_audio_processors
         juce_dsp
