@@ -38,7 +38,7 @@ project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
 
 set(LAMELIBRARYPATH "${CMAKE_CURRENT_SOURCE_DIR}/${LAME_LIB}")
 
-add_subdirectory(opus)
+add_subdirectory(lib/opus)
 
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)
@@ -107,7 +107,7 @@ target_sources(SharedCode INTERFACE ${SourceFiles})
 target_include_directories(SharedCode
         INTERFACE
         lib/lame/include
-        ${CMAKE_SOURCE_DIR}/opus/include
+        ${CMAKE_SOURCE_DIR}/lib/opus/include
         lib/blade/bladeenc
 )
 
