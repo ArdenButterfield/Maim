@@ -9,6 +9,12 @@ We figured out the steps, so you don't have to.
 * [CMake version >= 3.24.1](https://cmake.org/download/) (This link actually takes you to the latest version)
 * ninja
 * pkg-config (`sudo apt-get install pkg-config`)
+* JUCE's Linux dependencies:
+  ```sh
+  sudo apt-get install libasound2-dev libfontconfig1-dev libfreetype6-dev \
+    libx11-dev libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev \
+    libgl1-mesa-dev
+  ```
 
 ### Steps:
 
