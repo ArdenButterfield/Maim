@@ -331,8 +331,10 @@ void Mp3ControllerManager::timerCallback()
     }
 
     auto psychoSpectrum = parameters.state.getChildWithName("psychoanal");
-    psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
-    psychoSpectrum.setProperty("energy", energyV, nullptr);
+    if (psychoSpectrum.isValid()) {
+        psychoSpectrum.setProperty("threshold", thresholdV, nullptr);
+        psychoSpectrum.setProperty("energy", energyV, nullptr);
+    }
 
     float* preBend = getMDCTpreBend();
     float* postBend = getMDCTpostBend();
@@ -359,6 +361,8 @@ void Mp3ControllerManager::timerCallback()
     }
 
     auto mdctSamples = parameters.state.getChildWithName("mdct");
-    mdctSamples.setProperty("pre", preBendV, nullptr);
-    mdctSamples.setProperty("post",postBendV, nullptr);
+    if (mdctSamples.isValid()) {
+        mdctSamples.setProperty("pre", preBendV, nullptr);
+        mdctSamples.setProperty("post", postBendV, nullptr);
+    }
 }

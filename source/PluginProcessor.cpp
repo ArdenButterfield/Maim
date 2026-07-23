@@ -110,7 +110,8 @@ MaimAudioProcessor::MaimAudioProcessor()
     dryWetMixer.setMixingRule(juce::dsp::DryWetMixingRule::linear);
     
     addPsychoanalStateToParameters();
-    
+    addMdctSamplesToParameters();
+
     parameters.addParameterListener(HI_CUT_PARAM_ID, this);
     parameters.addParameterListener(LO_CUT_PARAM_ID, this);
     parameters.addParameterListener(DRIVE_PARAM_ID, this);
