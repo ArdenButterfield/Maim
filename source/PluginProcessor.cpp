@@ -146,8 +146,8 @@ void MaimAudioProcessor::addMdctSamplesToParameters()
     parameters.state.appendChild(juce::ValueTree(
                                       "mdct",
                                       {
-                                          juce::NamedValueSet::NamedValue("pre", pre),
-                                          juce::NamedValueSet::NamedValue("post", post),
+                                          {"pre", pre},
+                                          {"post", post},
                                       }),
         nullptr);
 
@@ -170,9 +170,9 @@ void MaimAudioProcessor::addPsychoanalStateToParameters()
     parameters.state.appendChild(juce::ValueTree(
         "psychoanal",
         {
-            juce::NamedValueSet::NamedValue("threshold", threshold),
-            juce::NamedValueSet::NamedValue("energy", energy),
-            juce::NamedValueSet::NamedValue("shortblockindicator", juce::var(false))
+            {"threshold", threshold},
+            {"energy", energy},
+            {"shortblockindicator", juce::var(false)}
         }),
         nullptr);
 }
