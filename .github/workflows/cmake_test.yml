@@ -61,28 +61,11 @@ jobs:
         sudo apt-get update && sudo apt install libasound2-dev libx11-dev libxinerama-dev libxext-dev libfreetype6-dev libwebkit2gtk-4.0-dev libglu1-mesa-dev xvfb ninja-build
         sudo /usr/bin/Xvfb $DISPLAY &
 
-    - name: Cache IPP (Windows)
-      if: runner.os == 'Windows'
-      id: cache-ipp
-      uses: actions/cache@v3
-      with:
-        key: ipp-v1
-        path: C:\Program Files (x86)\Intel\oneAPI\ipp
 
     - name: Install IPP (Windows)
-      if: (runner.os == 'Windows') && (steps.cache-ipp.outputs.cache-hit != 'true')
-      shell: bash
+      if: (runner.os == 'Windows')
       run: |
-        curl --output oneapi.exe https://registrationcenter-download.intel.com/akdlm/irc_nas/19078/w_BaseKit_p_2023.0.0.25940_offline.exe
-        ./oneapi.exe -s -x -f oneapi
-        ./oneapi/bootstrapper.exe -s -c --action install --components=intel.oneapi.win.ipp.devel --eula=accept -p=NEED_VS2022_INTEGRATION=1 --log-dir=.
-
-    - name: Save IPP cache even on job fail
-      if: runner.os == 'Windows' && (steps.cache-ipp.outputs.cache-hit != 'true')
-      uses: actions/cache/save@v3
-      with:
-        path: C:\Program Files (x86)\Intel\oneAPI\ipp
-        key: ipp-v1
+        nuget install intelipp.static.win-x64 -Version 2026.0.0.712
 
     # This lets us use sscache on Windows
     # We need to install ccache here for Windows to grab the right version
