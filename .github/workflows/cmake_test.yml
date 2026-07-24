@@ -172,9 +172,9 @@ jobs:
       if: ${{ matrix.name == 'macOS' }}
       run: |
         curl http://s.sudre.free.fr/Software/files/Packages.dmg -o Packages.dmg
-        sudo hdiutil attach Packages.dmg
-        sudo installer -package /Volumes/Packages\ 1.2.10/Install\ Packages.pkg -target /
-        # sudo hdiutil detach /Volumes/Packages\ 1.2.10/Install\ Packages.pkg
+        sudo hdiutil attach Packages.dmg -mountpoint /Volumes/Packages -nobrowse
+        sudo installer -package "/Volumes/Packages/Install Packages.pkg" -target /
+        sudo hdiutil detach /Volumes/Packages
     - name: Python 3.11 (macos)
       uses: actions/setup-python@v4
       if: ${{ matrix.name == 'macOS' }}
