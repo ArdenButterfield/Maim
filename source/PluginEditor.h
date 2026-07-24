@@ -35,10 +35,14 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     MaimAudioProcessor& audioProcessor;
-    
+
     MainArea mainArea;
 
     MaimLookAndFeel maimLookAndFeel;
-    
+
+    static constexpr int nativeWidth = 800;
+    static constexpr int nativeHeight = 500;
+    juce::ComponentBoundsConstrainer constrainer;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MaimAudioProcessorEditor)
 };

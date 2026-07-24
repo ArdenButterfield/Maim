@@ -15,11 +15,17 @@ MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
         audioProcessor (p),
         mainArea(p.getValueTreeState())
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (800, 500);
     addAndMakeVisible(mainArea);
     setLookAndFeel(&maimLookAndFeel);
+
+    setResizable(true, true);
+    constrainer.setFixedAspectRatio((double) nativeWidth / (double) nativeHeight);
+    constrainer.setSizeLimits(nativeWidth / 2, nativeHeight / 2, nativeWidth * 2, nativeHeight * 2);
+    setConstrainer(&constrainer);
+
+    // Make sure that before the constructor has finished, you've set the
+    // editor's size to whatever you need it to be.
+    setSize (nativeWidth, nativeHeight);
 }
 
 MaimAudioProcessorEditor::~MaimAudioProcessorEditor()
@@ -36,7 +42,9 @@ void MaimAudioProcessorEditor::paint (juce::Graphics& g)
 
 void MaimAudioProcessorEditor::resized()
 {
-    mainArea.setBounds(getLocalBounds());
+    const auto scale = (float) getWidth() / (float) nativeWidth;
+    mainArea.setTransform(juce::AffineTransform::scale(scale));
+    mainArea.setBounds(0, 0, nativeWidth, nativeHeight);
 }
 
 MaimAudioProcessor* MaimAudioProcessorEditor::getAudioProcessor()
