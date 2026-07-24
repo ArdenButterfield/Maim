@@ -16,7 +16,6 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
     : StageWindow(p),
       psychoanalGraph(p),
       biasSlider(p, THRESHOLD_BIAS_PARAM_ID, "Tilt"),
-      encoderAttachment(p, ENCODER_PARAM_ID, encoderSelection),
       bitrateSlider(p, BITRATE_PARAM_ID, "Bitrate"),
       squishSlider(p, TURBO_PARAM_ID, "Turbo"),
       errorSlider(p, ERROR_PARAM_ID, "Error")
@@ -33,6 +32,8 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
     encoderSelection.addItem("blade", 1);
     encoderSelection.addItem("lame", 2);
     encoderSelection.addItem("opus", 3);
+    encoderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        p, ENCODER_PARAM_ID, encoderSelection);
 
     addAndMakeVisible(bitrateSlider);
     addAndMakeVisible(squishSlider);

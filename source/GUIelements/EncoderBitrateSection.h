@@ -35,7 +35,7 @@ private:
 
     juce::ToggleButton encoderButton {"Blade Encoder|Lame Encoder"};
     juce::ComboBox encoderSelection;
-    const juce::AudioProcessorValueTreeState::ComboBoxAttachment encoderAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> encoderAttachment;
     NamedRotarySlider bitrateSlider;
     NamedRotarySlider squishSlider;
     NamedRotarySlider errorSlider;
