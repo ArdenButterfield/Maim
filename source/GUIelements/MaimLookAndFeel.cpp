@@ -3,6 +3,7 @@
 //
 
 #include "MaimLookAndFeel.h"
+#include "EncoderSelector.h"
 
 MaimLookAndFeel::MaimLookAndFeel() :
                                      main_font (juce::Typeface::createSystemTypefaceFor(BinaryData::bedsteadsemicondensed_otf, BinaryData::bedsteadsemicondensed_otfSize)),
@@ -252,6 +253,31 @@ void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& bu
     g.drawText(topName, topRect, juce::Justification::centred, false);
     g.setColour(bottomOptionSelected ? MaimColours::BEVEL_BLACK : MaimColours::BEVEL_DARK);
     g.drawText(bottomName, bottomRect, juce::Justification::centred, false);
+}
+
+void MaimLookAndFeel::drawEncoderSelector(juce::Graphics& g, EncoderSelector& selector)
+{
+    const auto& optionNames = selector.optionNames;
+    const auto selectedIndex = selector.getSelectedIndex();
+    const auto bounds = selector.getLocalBounds();
+    const auto numOptions = optionNames.size();
+
+    g.setFont(juce::Font(main_font).withHeight(bounds.getHeight() / (float) numOptions * 0.7f));
+
+    for (int i = 0; i < numOptions; ++i) {
+        const auto rowTop = bounds.getY() + bounds.getHeight() * i / numOptions;
+        const auto rowBottom = bounds.getY() + bounds.getHeight() * (i + 1) / numOptions;
+        const auto row = bounds.withY(rowTop).withBottom(rowBottom);
+        const auto selected = (i == selectedIndex);
+
+        g.setColour(selected ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::BEVEL_LIGHT);
+        g.fillRect(row);
+        g.setColour(selected ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
+        g.drawText(optionNames[i], row, juce::Justification::centred, false);
+    }
+
+    g.setColour(MaimColours::BEVEL_BLACK);
+    g.drawRect(bounds, 2);
 }
 
 #if false

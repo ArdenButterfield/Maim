@@ -17,6 +17,7 @@
 #include "PsychoanalGraph.h"
 #include "IndicatorLight.h"
 #include "NamedRotarySlider.h"
+#include "EncoderSelector.h"
 
 //==============================================================================
 /*
@@ -33,9 +34,7 @@ private:
                                   const juce::Identifier &property) override;
     NamedRotarySlider biasSlider;
 
-    juce::ToggleButton encoderButton {"Blade Encoder|Lame Encoder"};
-    juce::ComboBox encoderSelection;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> encoderAttachment;
+    EncoderSelector encoderSelector;
     NamedRotarySlider bitrateSlider;
     NamedRotarySlider squishSlider;
     NamedRotarySlider errorSlider;

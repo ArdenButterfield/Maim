@@ -12,6 +12,8 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "MaimColours.h"
 
+class EncoderSelector;
+
 // BEDSTEAD FONT
 // https://www.1001fonts.com/bedstead-font.html
 // Bedtead by Ben Harris.
@@ -48,6 +50,8 @@ public:
         ) override;
 
     void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override;
+
+    void drawEncoderSelector(juce::Graphics& g, EncoderSelector& selector);
 #if 0
     void drawComboBox (juce::Graphics& g,
                        int width,

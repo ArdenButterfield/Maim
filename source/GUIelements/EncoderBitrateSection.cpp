@@ -16,6 +16,7 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
     : StageWindow(p),
       psychoanalGraph(p),
       biasSlider(p, THRESHOLD_BIAS_PARAM_ID, "Tilt"),
+      encoderSelector(p, ENCODER_PARAM_ID),
       bitrateSlider(p, BITRATE_PARAM_ID, "Bitrate"),
       squishSlider(p, TURBO_PARAM_ID, "Turbo"),
       errorSlider(p, ERROR_PARAM_ID, "Error")
@@ -27,13 +28,7 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
 
     addAndMakeVisible(biasSlider);
     addAndMakeVisible(psychoanalGraph);
-//    addAndMakeVisible(encoderButton);
-    addAndMakeVisible(encoderSelection);
-    encoderSelection.addItem("blade", 1);
-    encoderSelection.addItem("lame", 2);
-    encoderSelection.addItem("opus", 3);
-    encoderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
-        p, ENCODER_PARAM_ID, encoderSelection);
+    addAndMakeVisible(encoderSelector);
 
     addAndMakeVisible(bitrateSlider);
     addAndMakeVisible(squishSlider);
@@ -66,9 +61,8 @@ void EncoderBitrateSection::resized()
     const auto leftPanel = usable_bounds.withRight(bitrateSlider.getX()).withTrimmedTop(10);
     const auto rightPanel = usable_bounds.withLeft(bitrateSlider.getRight()).withTrimmedTop(10);
 
-//    encoderButton.setBounds(leftPanel.withHeight(leftPanel.getHeight() * 0.4).withTrimmedLeft(10).withTrimmedRight(10));
-    encoderSelection.setBounds(leftPanel.withHeight(leftPanel.getHeight() * 0.4).withTrimmedLeft(10).withTrimmedRight(10));
-    auto belowEncoder = leftPanel.withTop(encoderSelection.getBottom() + 10);
+    encoderSelector.setBounds(leftPanel.withHeight(leftPanel.getHeight() * 0.4).withTrimmedLeft(10).withTrimmedRight(10));
+    auto belowEncoder = leftPanel.withTop(encoderSelector.getBottom() + 10);
     squishSlider.setBounds(belowEncoder.withWidth(belowEncoder.getWidth() / 2));
     errorSlider.setBounds(belowEncoder.withLeft(squishSlider.getRight()));
 
