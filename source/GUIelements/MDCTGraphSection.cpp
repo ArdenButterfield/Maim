@@ -49,6 +49,7 @@ MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
 
     MDCTfeedbackSlider.setLabel(&feedbackName);
     MDCTfeedbackSlider.setTextValueSuffix(" %");
+    MDCTfeedbackSlider.getProperties().set("drawGrayArc", true);
 }
 
 void MDCTGraphSection::resized()

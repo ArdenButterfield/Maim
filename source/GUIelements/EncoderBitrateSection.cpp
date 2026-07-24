@@ -22,6 +22,14 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
       errorSlider(p, ERROR_PARAM_ID, "Error")
 {
     bitrateSlider.slider.setTextValueSuffix(" kb/s");
+    bitrateSlider.slider.getProperties().set("drawTickMarks", true);
+
+    squishSlider.slider.getProperties().set("drawGrayArc", true);
+    squishSlider.slider.setRepaintsOnMouseActivity(true);
+    errorSlider.slider.getProperties().set("drawGrayArc", true);
+    errorSlider.slider.setRepaintsOnMouseActivity(true);
+    biasSlider.slider.getProperties().set("drawSymmetricGrayArc", true);
+    biasSlider.slider.setRepaintsOnMouseActivity(true);
 
     bitrateSlider.setFontSize(20.f);
     parameters.state.addListener(this);

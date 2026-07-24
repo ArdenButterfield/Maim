@@ -120,6 +120,61 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
     g.setColour(outline);
     g.drawEllipse(centerx - radius,centery - radius,radius*2,radius*2, 1);
 
+    const auto drawTaperedArc = [&] (float fromAngle, float toAngle)
+    {
+        const auto centre = juce::Point<float>(centerx, centery);
+        const auto maxArcWidth = radius / 3.0f;
+        const int numSegments = 100;
+
+        juce::Path arc;
+        for (int i = 0; i <= numSegments; ++i)
+        {
+            const auto t = (float) i / (float) numSegments;
+            const auto tickAngle = fromAngle + t * (toAngle - fromAngle);
+            const auto outerPoint = centre.getPointOnCircumference(radius, tickAngle);
+            if (i == 0)
+                arc.startNewSubPath(outerPoint);
+            else
+                arc.lineTo(outerPoint);
+        }
+        for (int i = numSegments; i >= 0; --i)
+        {
+            const auto t = (float) i / (float) numSegments;
+            const auto tickAngle = fromAngle + t * (toAngle - fromAngle);
+            arc.lineTo(centre.getPointOnCircumference(radius - maxArcWidth * t, tickAngle));
+        }
+        arc.closeSubPath();
+
+        g.setColour(juce::Colours::grey.withAlpha(0.25f));
+        g.fillPath(arc);
+    };
+
+    if (s.isMouseOver() && (bool) s.getProperties().getWithDefault("drawGrayArc", false))
+    {
+        drawTaperedArc(rotaryStartAngle, rotaryEndAngle);
+    }
+
+    if (s.isMouseOver() && (bool) s.getProperties().getWithDefault("drawSymmetricGrayArc", false))
+    {
+        const auto topAngle = (rotaryStartAngle + rotaryEndAngle) / 2.0f;
+        drawTaperedArc(topAngle, rotaryStartAngle);
+        drawTaperedArc(topAngle, rotaryEndAngle);
+    }
+
+    if ((bool) s.getProperties().getWithDefault("drawTickMarks", false) && s.getInterval() > 0.0)
+    {
+        const auto centre = juce::Point<float>(centerx, centery);
+        const auto numSteps = juce::roundToInt((s.getMaximum() - s.getMinimum()) / s.getInterval());
+
+        g.setColour(outline);
+        for (int i = 0; i <= numSteps; ++i)
+        {
+            const auto tickAngle = rotaryStartAngle + (float) i / (float) numSteps * (rotaryEndAngle - rotaryStartAngle);
+            g.drawLine ({centre.getPointOnCircumference(radius - 1.0f, tickAngle),
+                          centre.getPointOnCircumference(radius - 4.0f, tickAngle)}, 1.0f);
+        }
+    }
+
     auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
     g.setColour (notch);
