@@ -23,6 +23,9 @@ EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState
 {
     bitrateSlider.slider.setTextValueSuffix(" kb/s");
     bitrateSlider.slider.getProperties().set("drawTickMarks", true);
+    bitrateSlider.slider.getProperties().set("drawGrayArc", true);
+    bitrateSlider.slider.getProperties().set("invertGrayArc", true);
+    bitrateSlider.slider.setRepaintsOnMouseActivity(true);
 
     squishSlider.slider.getProperties().set("drawGrayArc", true);
     squishSlider.slider.setRepaintsOnMouseActivity(true);

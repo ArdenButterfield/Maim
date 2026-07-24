@@ -27,6 +27,13 @@ PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
     makeupSlider.slider.setTextValueSuffix(" dB");
     mixSlider.slider.setTextValueSuffix(" %");
 
+    for (const auto slider : sliders)
+    {
+        slider->slider.getProperties().set("drawGrayArc", true);
+        slider->slider.setRepaintsOnMouseActivity(true);
+    }
+    hiSlider.slider.getProperties().set("invertGrayArc", true);
+
     addAndMakeVisible(driveSlider);
     addAndMakeVisible(hiSlider);
     addAndMakeVisible(loSlider);

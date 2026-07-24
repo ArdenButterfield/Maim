@@ -149,12 +149,15 @@ void MaimLookAndFeel::drawRotarySlider (juce::Graphics& g,
         g.fillPath(arc);
     };
 
-    if (s.isMouseOver() && (bool) s.getProperties().getWithDefault("drawGrayArc", false))
+    if (s.isMouseOverOrDragging() && (bool) s.getProperties().getWithDefault("drawGrayArc", false))
     {
-        drawTaperedArc(rotaryStartAngle, rotaryEndAngle);
+        if ((bool) s.getProperties().getWithDefault("invertGrayArc", false))
+            drawTaperedArc(rotaryEndAngle, rotaryStartAngle);
+        else
+            drawTaperedArc(rotaryStartAngle, rotaryEndAngle);
     }
 
-    if (s.isMouseOver() && (bool) s.getProperties().getWithDefault("drawSymmetricGrayArc", false))
+    if (s.isMouseOverOrDragging() && (bool) s.getProperties().getWithDefault("drawSymmetricGrayArc", false))
     {
         const auto topAngle = (rotaryStartAngle + rotaryEndAngle) / 2.0f;
         drawTaperedArc(topAngle, rotaryStartAngle);

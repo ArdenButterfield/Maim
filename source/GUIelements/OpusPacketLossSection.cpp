@@ -10,6 +10,9 @@ OpusPacketLossSection::OpusPacketLossSection (juce::AudioProcessorValueTreeState
       jitterSlider(p, PACKET_LOSS_JITTER_PARAM_ID, "Jitter"), lossStickToggle("LOSS|STICK"),
       lossStickAttachment(p, PACKET_LOSS_STICK_PARAM_ID, lossStickToggle)
 {
+    jitterSlider.slider.getProperties().set("drawGrayArc", true);
+    jitterSlider.slider.setRepaintsOnMouseActivity(true);
+
     lossStickToggle.setButtonText("LOSS|STICK");
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
