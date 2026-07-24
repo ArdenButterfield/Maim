@@ -24,11 +24,11 @@ void BlockyLineGraph::paint (juce::Graphics& g)
         yPixels.resize(0);
         minYval = getHeight();
         maxYval = 0;
-        for (; (valIndex < numPoints) && (xVals[valIndex] < x + pixelSize); ++valIndex) {
+        for (; (valIndex < numPoints) && (xVals[static_cast<size_t>(valIndex)] < x + pixelSize); ++valIndex) {
             // if (yVals[valIndex] == getHeight()) { continue }
-            int yPixel = (int)yVals[valIndex];
+            int yPixel = (int)yVals[static_cast<size_t>(valIndex)];
             yPixel -= yPixel % pixelSize;
-            if (yVals[valIndex] < getHeight()) {
+            if (yVals[static_cast<size_t>(valIndex)] < getHeight()) {
 
                 maxYval = yPixel > maxYval ? yPixel : maxYval;
             }

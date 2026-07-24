@@ -25,10 +25,10 @@ private:
     juce::Colour getOutlineColour(int x, int y) override;
     juce::Colour getBackgroundColour(int x, int y) override;
     void calculationsOnResize() override;
-    void mouseEnter(const juce::MouseEvent &event) override {
+    void mouseEnter(const juce::MouseEvent &) override {
         repaint();
     }
-    void mouseExit(const juce::MouseEvent &event) override {
+    void mouseExit(const juce::MouseEvent &) override {
         repaint();
     }
     

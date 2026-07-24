@@ -63,8 +63,7 @@ void MainArea::resized()
 {
     int margin = 10;
     int postSectionWidth = 100;
-    int titleHeight = 100;
-    
+
     auto activeArea = getLocalBounds()
         .withTrimmedTop(margin)
         .withTrimmedLeft(margin)
@@ -85,9 +84,9 @@ void MainArea::resized()
     miscellaneaSection.setBounds(bottomRow.withX(mdctGraphSection.getRight() + margin).withRight(bottomRow.getRight()));
     opusPacketLossSection.setBounds(miscellaneaSection.getBounds());
 }
-void MainArea::parameterChanged (const juce::String& parameterID, float newValue)
+void MainArea::parameterChanged (const juce::String&, float newValue)
 {
-    bool isOpus = (newValue == 2);
+    bool isOpus = juce::exactlyEqual(newValue, 2.0f);
     opusPacketLossSection.setVisible(isOpus);
     miscellaneaSection.setVisible(!isOpus);
 

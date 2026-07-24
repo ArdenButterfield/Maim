@@ -58,7 +58,7 @@ void OpusPacketLossSection::paint (juce::Graphics& g)
     
 }
 
-void OpusPacketLossSection::parameterChanged (const juce::String& parameterID, float newValue)
+void OpusPacketLossSection::parameterChanged (const juce::String&, float)
 {
     packetLossDragBox.setColourScheme(!*(juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
 }

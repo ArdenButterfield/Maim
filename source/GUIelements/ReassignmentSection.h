@@ -44,7 +44,7 @@ public:
     void resized() override;
 
 private:
-    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    const juce::Font sectionNameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(20.f);
     juce::Label sectionName;
 
     ArrayAssignerButton resetButton;

@@ -66,13 +66,13 @@ juce::Colour ButterflyDragBox::overlayFilm(const juce::Colour light, const juce:
     );
 }
 
-void ButterflyDragBox::drawBackground(juce::Graphics& g, int x, int y)
+void ButterflyDragBox::drawBackground(juce::Graphics& g, int, int)
 {
     drawGradients(g);
     drawGridlines(g);
 }
 
-juce::Colour ButterflyDragBox::getThumbFillColour(int x, int y)
+juce::Colour ButterflyDragBox::getThumbFillColour(int, int)
 {
     auto fillColour = MaimColours::BEVEL_LIGHT;
     float amountX = (xSlider->getValue() - xSlider->getMinimum()) / (xSlider->getMaximum() - xSlider->getMinimum());
@@ -82,12 +82,12 @@ juce::Colour ButterflyDragBox::getThumbFillColour(int x, int y)
     return fillColour;
 }
 
-juce::Colour ButterflyDragBox::getOutlineColour (int x, int y)
+juce::Colour ButterflyDragBox::getOutlineColour (int, int)
 {
     return MaimColours::BEVEL_BLACK;
 }
 
-juce::Colour ButterflyDragBox::getBackgroundColour (int x, int y)
+juce::Colour ButterflyDragBox::getBackgroundColour (int, int)
 {
     return MaimColours::BEVEL_LIGHT;
 }

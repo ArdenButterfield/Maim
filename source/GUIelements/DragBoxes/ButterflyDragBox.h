@@ -11,8 +11,8 @@ class ButterflyDragBox : public DragBox
 {
 public:
     ButterflyDragBox(juce::AudioProcessorValueTreeState& p,
-        const juce::String& xParamID,
-        const juce::String& yParamID) : DragBox(p, xParamID, yParamID) {}
+        const juce::String& _xParamID,
+        const juce::String& _yParamID) : DragBox(p, _xParamID, _yParamID) {}
 private:
     void drawBackground(juce::Graphics& g, int x, int y) override;
     juce::Colour getThumbFillColour(int x, int y) override;

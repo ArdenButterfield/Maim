@@ -35,14 +35,14 @@ void BladeController::deinit_encoder()
     blade_encoder = nullptr;
 }
 
-int BladeController::validate_samplerate(const int samplerate)
+int BladeController::validate_samplerate(const int newSamplerate)
 {
-    return getClosest(samplerate, allowed_samplerates);
+    return getClosest(newSamplerate, allowed_samplerates);
 }
 
-int BladeController::validate_bitrate(int bitrate)
+int BladeController::validate_bitrate(int newBitrate)
 {
-    return getClosest(bitrate, allowed_bitrates);
+    return getClosest(newBitrate, allowed_bitrates);
 }
 
 int BladeController::getBitrate()
@@ -59,9 +59,9 @@ void BladeController::setButterflyBends(float buinbu, float buinbd, float bdinbu
     blade_set_butterfly_bends(blade_encoder, buinbu, buinbd, bdinbu, bdinbd);
 }
 
-void BladeController::setMDCTbandstepBends(bool invert, int step)
+void BladeController::setMDCTbandstepBends(bool, int)
 {
-    
+
 }
 
 void BladeController::setMDCTpostshiftBends(int h_shift, float v_shift)
@@ -76,9 +76,9 @@ void BladeController::setMDCTpostshiftBends(int h_shift, float v_shift)
     blade_set_mdct_post_shift_bends(blade_encoder, h_shift, actual_v_shift);
 }
 
-void BladeController::setMDCTwindowincrBends(int window_incr)
+void BladeController::setMDCTwindowincrBends(int)
 {
-    
+
 }
 
 void BladeController::setMDCTBandReassignmentBends(int* order)

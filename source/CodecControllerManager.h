@@ -43,7 +43,7 @@ public:
     }
     void releaseResources() {}
 
-    void parameterChanged(const juce::String &parameterID, float newValue) override {
+    void parameterChanged(const juce::String &parameterID, float) override {
         if (parameterID == ENCODER_PARAM_ID) {
             auto encoder = ((juce::AudioParameterChoice*)
                                 params.getParameter(ENCODER_PARAM_ID))->getIndex();

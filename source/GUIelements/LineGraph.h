@@ -27,8 +27,8 @@ public:
         ymax(y_max),
         lineColour(c)
     {
-        xVals.resize(numPoints);
-        yVals.resize(numPoints);
+        xVals.resize(static_cast<size_t>(numPoints));
+        yVals.resize(static_cast<size_t>(numPoints));
         std::fill (yVals.begin(), yVals.end(), ymin);
         
         CalculateXValues();
@@ -42,7 +42,7 @@ public:
         }
         for (int i = 0; i < numPoints; ++i) {
             auto d = std::max(ymin, std::min(data[i], ymax));
-            yVals[i] = getHeight() - (d - ymin) / (ymax - ymin) * getHeight();
+            yVals[static_cast<size_t>(i)] = getHeight() - (d - ymin) / (ymax - ymin) * getHeight();
         }
         triggerAsyncUpdate();
     }
@@ -53,7 +53,7 @@ public:
     
     void CalculateXValues() {
         for (int i = 0; i < numPoints; ++i) {
-            xVals[i] = getWidth() * ((float)i) / ((float)numPoints - 1);
+            xVals[static_cast<size_t>(i)] = getWidth() * ((float)i) / ((float)numPoints - 1);
         }
     }
 
@@ -61,7 +61,7 @@ public:
         auto p = juce::Path();
         p.startNewSubPath(xVals[0], yVals[0]);
         for (int i = 1; i < numPoints; ++i) {
-            p.lineTo(xVals[i], yVals[i]);
+            p.lineTo(xVals[static_cast<size_t>(i)], yVals[static_cast<size_t>(i)]);
         }
         g.setColour(lineColour);
         g.strokePath(p, juce::PathStrokeType(2.f));

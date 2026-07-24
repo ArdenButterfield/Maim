@@ -27,7 +27,7 @@ private:
     const juce::String displayName;
     int nameHeight;
 
-    juce::Font nameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(14.f);
+    juce::Font nameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(14.f);
 };
 
 #endif //MAIM_NAMEDROTARYSLIDER_H

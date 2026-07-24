@@ -49,12 +49,12 @@ void PsychoanalGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropert
     if (property == juce::Identifier("energy")) {
         juce::Array<juce::var>* e = treeWhosePropertyHasChanged[property].getArray();
         for (int i = 0; i < 22; ++i) {
-            energyVals[i] = (float)(*e)[i].operator double();
+            energyVals[static_cast<size_t>(i)] = (float)(*e)[i].operator double();
         }
     } else if (property == juce::Identifier("threshold")) {
         juce::Array<juce::var>* t = treeWhosePropertyHasChanged[property].getArray();
         for (int i = 0; i < 22; ++i) {
-            thresholdVals[i] = (float)(*t)[i].operator double();
+            thresholdVals[static_cast<size_t>(i)] = (float)(*t)[i].operator double();
         }
     }
     

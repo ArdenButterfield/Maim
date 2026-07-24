@@ -16,7 +16,7 @@
 
 class OpusController : public CodecController, public juce::AudioProcessorValueTreeState::Listener {
 public:
-    explicit OpusController(juce::AudioProcessorValueTreeState& _parameters);;
+    explicit OpusController(juce::AudioProcessorValueTreeState& _parameters);
 
     ~OpusController() override;
 
@@ -30,15 +30,15 @@ public:
     void processBlock(juce::AudioBuffer<float>& buffer);
 
     int getBitrate() override { return bitrate; }
-    void setError(float error) override {}
-    void setButterflyBends(float buinbu, float buinbd, float bdinbu, float bdinbd) override {}
-    void setMDCTbandstepBends(bool invert, int step) override {}
-    void setMDCTpostshiftBends(int h_shift, float v_shift) override {}
-    void setMDCTwindowincrBends(int window_incr) override {}
-    void setMDCTBandReassignmentBends(int* order) override {}
-    void setBitrateSquishBends(float squish) override {}
-    void setThresholdBias(float bias) override {}
-    void setMDCTfeedback(float feedback) override {}
+    void setError(float) override {}
+    void setButterflyBends(float, float, float, float) override {}
+    void setMDCTbandstepBends(bool, int) override {}
+    void setMDCTpostshiftBends(int, float) override {}
+    void setMDCTwindowincrBends(int) override {}
+    void setMDCTBandReassignmentBends(int*) override {}
+    void setBitrateSquishBends(float) override {}
+    void setThresholdBias(float) override {}
+    void setMDCTfeedback(float) override {}
 
     float* getPsychoanalThreshold() override {
         return nullptr;
@@ -60,14 +60,14 @@ protected:
         return true;
     }
     void deinit_encoder() override {}
-    int validate_bitrate(int bitrate) override {
-        return bitrate;
+    int validate_bitrate(int newBitrate) override {
+        return newBitrate;
     }
-    int validate_samplerate(int samplerate) override {
-        return getClosest(samplerate,allowed_samplerates);
+    int validate_samplerate(int newSamplerate) override {
+        return getClosest(newSamplerate,allowed_samplerates);
     }
 
-    bool processFrame(float* leftIn, float* rightIn, float* leftOut, float* rightOut) override {
+    bool processFrame(float*, float*, float*, float*) override {
 
         // unused
         return false;

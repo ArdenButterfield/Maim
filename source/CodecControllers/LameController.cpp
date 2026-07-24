@@ -42,14 +42,14 @@ void LameController::deinit_encoder()
     }
 }
 
-int LameController::validate_samplerate(const int samplerate)
+int LameController::validate_samplerate(const int newSamplerate)
 {
-    return getClosest(samplerate, allowed_samplerates);
+    return getClosest(newSamplerate, allowed_samplerates);
 }
 
-int LameController::validate_bitrate(int bitrate)
+int LameController::validate_bitrate(int newBitrate)
 {
-    return getClosest(bitrate, allowed_bitrates);
+    return getClosest(newBitrate, allowed_bitrates);
 }
 
 int LameController::encodesamples (float* left, float* right)

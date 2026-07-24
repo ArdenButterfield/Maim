@@ -38,7 +38,7 @@ private:
     juce::AudioProcessorValueTreeState& parameters;
     Mp3OnlyLabel mp3OnlyLabel;
 
-    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    const juce::Font sectionNameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(20.f);
     juce::Label sectionName;
     juce::Label feedbackName;
 

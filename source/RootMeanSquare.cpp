@@ -10,6 +10,17 @@
 
 #include "RootMeanSquare.h"
 
+namespace {
+    // Exact comparison is intentional here (skip recompute when unchanged);
+    // wrapped to silence -Wfloat-equal without altering the intended behaviour.
+    inline bool floatEquals(float a, float b)
+    {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+        return a == b;
+#pragma GCC diagnostic pop
+    }
+}
 
 RootMeanSquare::RootMeanSquare()
 {
@@ -20,16 +31,16 @@ RootMeanSquare::RootMeanSquare()
 
 int RootMeanSquare::set_decay_time(float num_samples)
 {
-    if (num_samples == decay_time) {
+    if (floatEquals(num_samples, decay_time)) {
         return 0;
     }
     if (num_samples > 0) {
         decay_time = num_samples;
-        
+
         rms_coeff = 1 - std::exp(-2.2 / num_samples);
         return 0;
     }
-    if (num_samples == 0) {
+    if (floatEquals(num_samples, 0.0f)) {
         decay_time = num_samples;
         rms_coeff = 1;
         return 0;

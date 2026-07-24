@@ -13,7 +13,7 @@ class Mp3OnlyLabel : public juce::Label
 public:
     Mp3OnlyLabel() : juce::Label() {
         setColour(juce::Label::textColourId, MaimColours::BEVEL_DARK);
-        setFont(juce::Font(MaimLookAndFeel().main_font).withHeight(15.f));
+        setFont(juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(15.f));
         setText("Section for Lame/\nBlade only", juce::dontSendNotification);
         setJustificationType(juce::Justification::centred);
     }

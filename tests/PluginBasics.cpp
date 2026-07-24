@@ -45,10 +45,10 @@ TEST_CASE("process audio", "[process]")
         *((juce::AudioParameterChoice*)apvts.getParameter("encoder")) = i;
 
         juce::AudioBuffer<float> samples(2,512);
-        for (int i = 0; i < 10; ++i) {
+        for (int j = 0; j < 10; ++j) {
             for (int samp = 0; samp < 512; ++samp) {
-                samples.setSample(0, i, sin(static_cast<float>(samp) / 100.f));
-                samples.setSample(1, i, sin(static_cast<float>(samp) / 100.f));
+                samples.setSample(0, j, sin(static_cast<float>(samp) / 100.f));
+                samples.setSample(1, j, sin(static_cast<float>(samp) / 100.f));
             }
             auto midiBuffer = juce::MidiBuffer();
             testPlugin.processBlock(samples, midiBuffer);
@@ -64,22 +64,21 @@ juce::AudioBuffer<float> makeTestAudioBuffer() {
     auto inputStream = new juce::MemoryInputStream(BinaryData::kyoto10sec_wav, BinaryData::kyoto10sec_wavSize, false);
     juce::WavAudioFormat wavFormat;
     std::unique_ptr<juce::AudioFormatReader> reader(wavFormat.createReaderFor(inputStream, false));
-    juce::AudioBuffer<float> buffer(reader->numChannels, reader->lengthInSamples);
+    juce::AudioBuffer<float> buffer(static_cast<int>(reader->numChannels), static_cast<int>(reader->lengthInSamples));
     reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
     return buffer;
 }
 
 void writeOut(const juce::AudioBuffer<float>& buffer, const juce::String& name) {
     juce::WavAudioFormat format;
-    std::unique_ptr<juce::AudioFormatWriter> writer;
-    writer.reset (format.createWriterFor (
+    std::unique_ptr<juce::OutputStream> outputStream (
         new juce::FileOutputStream (
-            juce::File(juce::File::getCurrentWorkingDirectory().getChildFile(name))),
-        44100.0,
-        buffer.getNumChannels(),
-        24,
-        {},
-        0));
+            juce::File(juce::File::getCurrentWorkingDirectory().getChildFile(name))));
+    auto writer = format.createWriterFor (outputStream,
+        juce::AudioFormatWriterOptions{}
+            .withSampleRate (44100.0)
+            .withNumChannels (buffer.getNumChannels())
+            .withBitsPerSample (24));
     if (writer != nullptr)
         writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
 }
@@ -101,21 +100,21 @@ TEST_CASE("base opus", "[baseopus]")
     opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(50000));
     std::vector<float> interlacedInput;
     std::vector<float> interlacedOutput;
-    interlacedInput.resize(samples_per_frame * 2);
-    interlacedOutput.resize(samples_per_frame * 2);
+    interlacedInput.resize(static_cast<size_t>(samples_per_frame * 2));
+    interlacedOutput.resize(static_cast<size_t>(samples_per_frame * 2));
     std::array<unsigned char, 10000> encoded{};
     for (int i = 0; i < input.getNumSamples() - samples_per_frame; i += samples_per_frame) {
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            interlacedInput[samp * 2] = input.getSample(0, i + samp);
-            interlacedInput[samp * 2 + 1] = input.getSample(1, i + samp);
+            interlacedInput[static_cast<size_t>(samp * 2)] = input.getSample(0, i + samp);
+            interlacedInput[static_cast<size_t>(samp * 2 + 1)] = input.getSample(1, i + samp);
         }
         auto encodeResult = opus_encode_float(opus_encoder, &interlacedInput[0], samples_per_frame, &encoded[0], 10000);
         REQUIRE(encodeResult > 0);
         auto decodeResult = opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
         REQUIRE(decodeResult == samples_per_frame);
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            output.setSample(0, samp + i, interlacedOutput[samp * 2]);
-            output.setSample(1, samp + i, interlacedOutput[samp * 2 + 1]);
+            output.setSample(0, samp + i, interlacedOutput[static_cast<size_t>(samp * 2)]);
+            output.setSample(1, samp + i, interlacedOutput[static_cast<size_t>(samp * 2 + 1)]);
         }
     }
     writeOut(output, "50k_opus.wav");
@@ -138,24 +137,24 @@ TEST_CASE("framedrop opus", "[framedropopus]")
     opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(50000));
     std::vector<float> interlacedInput;
     std::vector<float> interlacedOutput;
-    interlacedInput.resize(samples_per_frame * 2);
-    interlacedOutput.resize(samples_per_frame * 2);
+    interlacedInput.resize(static_cast<size_t>(samples_per_frame * 2));
+    interlacedOutput.resize(static_cast<size_t>(samples_per_frame * 2));
     std::array<unsigned char, 10000> encoded{};
     int framedrop_counter = 0;
     for (int i = 0; i < input.getNumSamples() - samples_per_frame; i += samples_per_frame) {
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            interlacedInput[samp * 2] = input.getSample(0, i + samp);
-            interlacedInput[samp * 2 + 1] = input.getSample(0, i + samp + 1);
+            interlacedInput[static_cast<size_t>(samp * 2)] = input.getSample(0, i + samp);
+            interlacedInput[static_cast<size_t>(samp * 2 + 1)] = input.getSample(0, i + samp + 1);
         }
         auto encodeResult = 0;
         if (framedrop_counter < 1) {
             encodeResult = opus_encode_float(opus_encoder, &interlacedInput[0], samples_per_frame, &encoded[0], 10000);
             REQUIRE(encodeResult > 0);
         }
-        opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
+        [[maybe_unused]] auto decodeResult = opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            output.setSample(0, samp + i, interlacedOutput[samp * 2]);
-            output.setSample(1, samp + i + 1, interlacedOutput[samp * 2 + 1]);
+            output.setSample(0, samp + i, interlacedOutput[static_cast<size_t>(samp * 2)]);
+            output.setSample(1, samp + i + 1, interlacedOutput[static_cast<size_t>(samp * 2 + 1)]);
         }
         framedrop_counter ++;
         framedrop_counter %= 3;
@@ -180,8 +179,8 @@ TEST_CASE("corrupt opus", "[corruptopus]")
     opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(50000));
     std::vector<float> interlacedInput;
     std::vector<float> interlacedOutput;
-    interlacedInput.resize(samples_per_frame * 2);
-    interlacedOutput.resize(samples_per_frame * 2);
+    interlacedInput.resize(static_cast<size_t>(samples_per_frame * 2));
+    interlacedOutput.resize(static_cast<size_t>(samples_per_frame * 2));
     std::array<unsigned char, 10000> encoded{};
     int corrupt_odds = 20;
     auto random = juce::Random();
@@ -189,33 +188,33 @@ TEST_CASE("corrupt opus", "[corruptopus]")
         float maxInputL = 0;
         float maxInputR = 0;
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            interlacedInput[samp * 2] = input.getSample(0, i + samp);
-            maxInputL = std::max(std::abs(interlacedInput[samp * 2]), maxInputL);
-            interlacedInput[samp * 2 + 1] = input.getSample(0, i + samp + 1);
-            maxInputR = std::max(std::abs(interlacedInput[samp * 2 + 1]), maxInputR);
+            interlacedInput[static_cast<size_t>(samp * 2)] = input.getSample(0, i + samp);
+            maxInputL = std::max(std::abs(interlacedInput[static_cast<size_t>(samp * 2)]), maxInputL);
+            interlacedInput[static_cast<size_t>(samp * 2 + 1)] = input.getSample(0, i + samp + 1);
+            maxInputR = std::max(std::abs(interlacedInput[static_cast<size_t>(samp * 2 + 1)]), maxInputR);
         }
         auto encodeResult = 0;
         encodeResult = opus_encode_float(opus_encoder, &interlacedInput[0], samples_per_frame, &encoded[0], 10000);
         REQUIRE(encodeResult > 0);
         for (int samp = 0; samp < encodeResult; ++samp) {
             if (random.nextInt(corrupt_odds) == 0) {
-                encoded[samp] ^= 1;
+                encoded[static_cast<size_t>(samp)] ^= 1;
             }
         }
-        opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
+        [[maybe_unused]] auto decodeResult = opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
 
         auto maxOutputL = 0.f;
         auto maxOutputR = 0.f;
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            maxOutputL = std::max(std::abs(interlacedOutput[samp * 2]), maxOutputL);
-            maxOutputR = std::max(std::abs(interlacedOutput[samp * 2 + 1]), maxOutputR);
+            maxOutputL = std::max(std::abs(interlacedOutput[static_cast<size_t>(samp * 2)]), maxOutputL);
+            maxOutputR = std::max(std::abs(interlacedOutput[static_cast<size_t>(samp * 2 + 1)]), maxOutputR);
         }
         auto scalarL = maxOutputL > maxInputL ? maxInputL / maxOutputL : 1;
         auto scalarR = maxOutputR > maxInputR ? maxInputR / maxOutputR : 1;
 
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            output.setSample(0, samp + i, interlacedOutput[samp * 2] * scalarL);
-            output.setSample(1, samp + i + 1, interlacedOutput[samp * 2 + 1] * scalarR);
+            output.setSample(0, samp + i, interlacedOutput[static_cast<size_t>(samp * 2)] * scalarL);
+            output.setSample(1, samp + i + 1, interlacedOutput[static_cast<size_t>(samp * 2 + 1)] * scalarR);
         }
     }
     writeOut(output, "50k_corrupt_opus.wav");
@@ -238,15 +237,15 @@ TEST_CASE("opus keep decoding same packet" "[opuskeepdecoding]")
     opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(50000));
     std::vector<float> interlacedInput;
     std::vector<float> interlacedOutput;
-    interlacedInput.resize(samples_per_frame * 2);
-    interlacedOutput.resize(samples_per_frame * 2);
+    interlacedInput.resize(static_cast<size_t>(samples_per_frame * 2));
+    interlacedOutput.resize(static_cast<size_t>(samples_per_frame * 2));
     std::array<unsigned char, 10000> encoded{};
     auto encodeResult = 0;
     for (int i = 0; i < input.getNumSamples() - samples_per_frame; i += samples_per_frame) {
         if ((i / samples_per_frame) % 20 < 10) {
             for (int samp = 0; samp < samples_per_frame; ++samp) {
-                interlacedInput[samp * 2] = input.getSample(0, i + samp);
-                interlacedInput[samp * 2 + 1] = input.getSample(1, i + samp);
+                interlacedInput[static_cast<size_t>(samp * 2)] = input.getSample(0, i + samp);
+                interlacedInput[static_cast<size_t>(samp * 2 + 1)] = input.getSample(1, i + samp);
             }
             encodeResult = opus_encode_float(opus_encoder, &interlacedInput[0], samples_per_frame, &encoded[0], 10000);
             REQUIRE(encodeResult > 0);
@@ -254,8 +253,8 @@ TEST_CASE("opus keep decoding same packet" "[opuskeepdecoding]")
         auto decodeResult = opus_decode_float(opus_decoder, &encoded[0], encodeResult, &interlacedOutput[0], samples_per_frame, 0);
         REQUIRE(decodeResult == samples_per_frame);
         for (int samp = 0; samp < samples_per_frame; ++samp) {
-            output.setSample(0, samp + i, interlacedOutput[samp * 2]);
-            output.setSample(1, samp + i, interlacedOutput[samp * 2 + 1]);
+            output.setSample(0, samp + i, interlacedOutput[static_cast<size_t>(samp * 2)]);
+            output.setSample(1, samp + i, interlacedOutput[static_cast<size_t>(samp * 2 + 1)]);
         }
     }
     writeOut(output, "opusStuck.wav");

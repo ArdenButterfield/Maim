@@ -87,7 +87,7 @@ void DragBox::paint (juce::Graphics& g)
     needsRepainting = false;
 }
 
-void DragBox::parameterChanged (const juce::String &parameterID, float newValue)
+void DragBox::parameterChanged (const juce::String &, float)
 {
     needsRepainting = true;
 }
@@ -123,7 +123,7 @@ void DragBox::mouseDrag(const juce::MouseEvent& event)
 }
 
 
-void DragBox::mouseDoubleClick(const juce::MouseEvent& event)
+void DragBox::mouseDoubleClick(const juce::MouseEvent&)
 {
     if (xSlider->isDoubleClickReturnEnabled()) {
         xSlider->setValue(xSlider->getDoubleClickReturnValue());

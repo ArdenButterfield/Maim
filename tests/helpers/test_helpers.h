@@ -23,7 +23,7 @@
 {
     MaimAudioProcessor plugin;
     auto gui = juce::ScopedJuceInitialiser_GUI {};
-    auto editor = plugin.createEditorIfNeeded();
+    auto editor = plugin.createEditorAndMakeActive();
 
     testCode (plugin);
 

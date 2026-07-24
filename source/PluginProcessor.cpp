@@ -45,7 +45,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
         std::stringstream id, name;
         name << "Band order " << i;
-        parameters.push_back(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{BAND_ORDER_PARAM_IDS[i], 1,},name.str(),0,31,i));
+        parameters.push_back(std::make_unique<juce::AudioParameterInt>(juce::ParameterID{BAND_ORDER_PARAM_IDS[static_cast<size_t>(i)], 1,},name.str(),0,31,i));
     }
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
@@ -188,7 +188,7 @@ juce::AudioProcessorValueTreeState& MaimAudioProcessor::getValueTreeState()
     return parameters;
 }
 
-void MaimAudioProcessor::parameterChanged (const juce::String &parameterID, float newValue)
+void MaimAudioProcessor::parameterChanged (const juce::String &, float)
 {
     parametersNeedUpdating = true;
 }
@@ -236,16 +236,16 @@ int MaimAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void MaimAudioProcessor::setCurrentProgram (int index)
+void MaimAudioProcessor::setCurrentProgram (int)
 {
 }
 
-const juce::String MaimAudioProcessor::getProgramName (int index)
+const juce::String MaimAudioProcessor::getProgramName (int)
 {
     return {};
 }
 
-void MaimAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void MaimAudioProcessor::changeProgramName (int, const juce::String&)
 {
 }
 
@@ -257,7 +257,7 @@ void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
     dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
-    int bitrate = Mp3ControllerManager::bitrates[((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex()];
+    int bitrate = Mp3ControllerManager::bitrates[static_cast<size_t>(((juce::AudioParameterChoice*) parameters.getParameter("bitrate"))->getIndex())];
     codecControllerManager.initialize((int)fs, bitrate, samplesPerBlock);
     parametersNeedUpdating = true;
 }
@@ -357,7 +357,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
 }
 
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                       juce::MidiBuffer& midiMessages)
+                                       juce::MidiBuffer&)
 {
     if (parametersNeedUpdating) {
         updateParameters();
@@ -430,21 +430,21 @@ int MaimAudioProcessor::currentLatencySamples()
      */
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                   parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
-    int latencySamples;
+    int computedLatencySamples;
     if (encoder == 0) {
         // Blade
-        latencySamples = BLADELATENCYSAMPLES;
+        computedLatencySamples = BLADELATENCYSAMPLES;
     }
     if (encoder == 1) {
         // lame
-        latencySamples = LAMELATENCYSAMPLES;
+        computedLatencySamples = LAMELATENCYSAMPLES;
     } else {
         // opus
-        latencySamples = 0; // TEST
+        computedLatencySamples = 0; // TEST
     }
-    dryWetMixer.setWetLatency(latencySamples);
+    dryWetMixer.setWetLatency(computedLatencySamples);
 
-    return latencySamples;
+    return computedLatencySamples;
 }
 
 //==============================================================================

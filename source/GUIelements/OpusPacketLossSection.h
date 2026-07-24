@@ -20,7 +20,7 @@ public:
     void paint (juce::Graphics&) override;
 private:
     void parameterChanged (const juce::String &parameterID, float newValue) override;
-    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
+    const juce::Font sectionNameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(20.f);
     juce::Label sectionName;
     PacketLossDragBox packetLossDragBox;
     NamedRotarySlider jitterSlider;

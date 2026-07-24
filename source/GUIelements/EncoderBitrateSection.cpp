@@ -14,12 +14,12 @@
 //==============================================================================
 EncoderBitrateSection::EncoderBitrateSection (juce::AudioProcessorValueTreeState& p)
     : StageWindow(p),
-      psychoanalGraph(p),
       biasSlider(p, THRESHOLD_BIAS_PARAM_ID, "Tilt"),
       encoderSelector(p, ENCODER_PARAM_ID),
       bitrateSlider(p, BITRATE_PARAM_ID, "Bitrate"),
       squishSlider(p, TURBO_PARAM_ID, "Turbo"),
-      errorSlider(p, ERROR_PARAM_ID, "Error")
+      errorSlider(p, ERROR_PARAM_ID, "Error"),
+      psychoanalGraph(p)
 {
     bitrateSlider.slider.setTextValueSuffix(" kb/s");
     bitrateSlider.slider.getProperties().set("drawTickMarks", true);

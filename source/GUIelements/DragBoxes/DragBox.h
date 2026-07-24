@@ -46,11 +46,11 @@ protected:
          float oldMax,
          float newMin,
          float newMax);
-    virtual void drawBackground(juce::Graphics& g, int x, int y) {}
+    virtual void drawBackground(juce::Graphics&, int, int) {}
     virtual void calculationsOnResize() {}
-    virtual juce::Colour getThumbFillColour(int x, int y) {return {};}
-    virtual juce::Colour getOutlineColour(int x, int y) {return {};}
-    virtual juce::Colour getBackgroundColour(int x, int y) {return {};}
+    virtual juce::Colour getThumbFillColour(int, int) {return {};}
+    virtual juce::Colour getOutlineColour(int, int) {return {};}
+    virtual juce::Colour getBackgroundColour(int, int) {return {};}
     void timerCallback() override;
     std::atomic<bool> needsRepainting;
     

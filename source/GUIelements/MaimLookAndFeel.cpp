@@ -198,10 +198,10 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
     int width,
     int height,
     float sliderPos,
-    float minSliderPos,
-    float maxSliderPos,
+    float,
+    float,
     const juce::Slider::SliderStyle style,
-    juce::Slider& s
+    juce::Slider&
 )
 {
     bool focused = false;
@@ -288,7 +288,7 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
 
 }
 
-void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
+void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool, bool) {
 
     const auto bottomOptionSelected = button.getToggleState();
 
@@ -306,7 +306,7 @@ void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& bu
     g.fillRect(inactiveRect);
     g.setColour(MaimColours::BEVEL_BLACK);
     g.drawRect(button.getLocalBounds(), 2);
-    g.setFont(juce::Font(main_font).withHeight(button.getHeight() * 0.4));
+    g.setFont(juce::Font(juce::FontOptions(main_font)).withHeight(button.getHeight() * 0.4));
     g.setColour(bottomOptionSelected ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
     g.drawText(topName, topRect, juce::Justification::centred, false);
     g.setColour(bottomOptionSelected ? MaimColours::BEVEL_BLACK : MaimColours::BEVEL_DARK);
@@ -320,7 +320,7 @@ void MaimLookAndFeel::drawEncoderSelector(juce::Graphics& g, EncoderSelector& se
     const auto bounds = selector.getLocalBounds();
     const auto numOptions = optionNames.size();
 
-    g.setFont(juce::Font(main_font).withHeight(bounds.getHeight() / (float) numOptions * 0.7f));
+    g.setFont(juce::Font(juce::FontOptions(main_font)).withHeight(bounds.getHeight() / (float) numOptions * 0.7f));
 
     for (int i = 0; i < numOptions; ++i) {
         const auto rowTop = bounds.getY() + bounds.getHeight() * i / numOptions;

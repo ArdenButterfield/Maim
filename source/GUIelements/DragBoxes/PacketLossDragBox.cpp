@@ -6,7 +6,7 @@
 #include "../MaimLookAndFeel.h"
 #include "../../parameterIds.h"
 
-PacketLossDragBox::PacketLossDragBox (juce::AudioProcessorValueTreeState& p, const juce::String& xParamID, const juce::String& yParamID) : DragBox(p, xParamID, yParamID) {
+PacketLossDragBox::PacketLossDragBox (juce::AudioProcessorValueTreeState& p, const juce::String& _xParamID, const juce::String& _yParamID) : DragBox(p, _xParamID, _yParamID) {
     parameters.addParameterListener(PACKET_LOSS_JITTER_PARAM_ID, this);
 }
 
@@ -53,17 +53,17 @@ void PacketLossDragBox::drawBackground (juce::Graphics& g, int x, int y)
     }
 }
 
-juce::Colour PacketLossDragBox::getThumbFillColour (int x, int y)
+juce::Colour PacketLossDragBox::getThumbFillColour (int, int)
 {
     return isOrange ? MaimColours::CONTRAST_COLOR_DARK : MaimColours::SPLASH_COLOR_DARK;
 }
 
-juce::Colour PacketLossDragBox::getOutlineColour (int x, int y)
+juce::Colour PacketLossDragBox::getOutlineColour (int, int)
 {
     return isOrange ? MaimColours::CONTRAST_COLOR_LIGHT : MaimColours::SPLASH_COLOR_LIGHT;
 }
 
-juce::Colour PacketLossDragBox::getBackgroundColour (int x, int y)
+juce::Colour PacketLossDragBox::getBackgroundColour (int, int)
 {
     return MaimColours::BEVEL_BLACK;
 }

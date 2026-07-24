@@ -22,9 +22,9 @@ void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int sta
 
 
 Mp3ControllerManager::Mp3ControllerManager(juce::AudioProcessorValueTreeState& p) :
-    parameters(p),
     currentEncoder(lame),
-    currentControllerIndex(0)
+    currentControllerIndex(0),
+    parameters(p)
 {
     parametersNeedUpdating = false;
     
@@ -43,8 +43,8 @@ Mp3ControllerManager::Mp3ControllerManager(juce::AudioProcessorValueTreeState& p
     parameters.addParameterListener(ERROR_PARAM_ID, this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        parameters.addParameterListener(BAND_ORDER_PARAM_IDS[i], this);
-        bandReassignmentParameters[i] = (juce::AudioParameterInt*)parameters.getParameter(BAND_ORDER_PARAM_IDS[i]);
+        parameters.addParameterListener(BAND_ORDER_PARAM_IDS[static_cast<size_t>(i)], this);
+        bandReassignmentParameters[static_cast<size_t>(i)] = (juce::AudioParameterInt*)parameters.getParameter(BAND_ORDER_PARAM_IDS[static_cast<size_t>(i)]);
     }
 }
 
@@ -65,7 +65,7 @@ Mp3ControllerManager::~Mp3ControllerManager()
     parameters.removeParameterListener(ERROR_PARAM_ID, this);
 
     for (int i = 0; i < NUM_REASSIGNMENT_BANDS; ++i) {
-        parameters.removeParameterListener(BAND_ORDER_PARAM_IDS[i], this);
+        parameters.removeParameterListener(BAND_ORDER_PARAM_IDS[static_cast<size_t>(i)], this);
     }
 }
 
@@ -82,9 +82,9 @@ void Mp3ControllerManager::initialize (int _samplerate, int _initialBitrate, int
     bladeControllers[1].name = "blade1";
 
     if (currentEncoder == lame) {
-        currentController = &(lameControllers[currentControllerIndex]);
+        currentController = &(lameControllers[static_cast<size_t>(currentControllerIndex)]);
     } else {
-        currentController = &(bladeControllers[currentControllerIndex]);
+        currentController = &(bladeControllers[static_cast<size_t>(currentControllerIndex)]);
     }
     currentController->init(samplerate, samplesPerBlock, _initialBitrate);
     offController = nullptr;
@@ -106,7 +106,7 @@ void Mp3ControllerManager::initialize (int _samplerate, int _initialBitrate, int
     startTimerHz(30);
 }
 
-void Mp3ControllerManager::parameterChanged (const juce::String &parameterID, float newValue)
+void Mp3ControllerManager::parameterChanged (const juce::String &, float)
 {
     parametersNeedUpdating = true;
 }
@@ -127,10 +127,10 @@ void Mp3ControllerManager::changeController(int bitrate, Encoder encoder)
     
     if (encoder == lame) {
         desiredEncoder = lame;
-        offController = &(lameControllers[offIndex]);
+        offController = &(lameControllers[static_cast<size_t>(offIndex)]);
     } else if (encoder == blade) {
         desiredEncoder = blade;
-        offController = &(bladeControllers[offIndex]);
+        offController = &(bladeControllers[static_cast<size_t>(offIndex)]);
     } else if (encoder == opus) {
         desiredEncoder = opus;
     }
@@ -208,8 +208,8 @@ void Mp3ControllerManager::updateParameters()
 {
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                 parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
-    int bitrate = bitrates[((juce::AudioParameterChoice*)
-                            parameters.getParameter(BITRATE_PARAM_ID))->getIndex()];
+    int bitrate = bitrates[static_cast<size_t>(((juce::AudioParameterChoice*)
+                            parameters.getParameter(BITRATE_PARAM_ID))->getIndex())];
     changeController(bitrate, encoder);
 
     for (auto controller : {offController, currentController}) {
@@ -251,7 +251,7 @@ void Mp3ControllerManager::updateParameters()
         int bandReassign[32];
         int i;
         for (i = 0; i < 20; ++i) {
-            bandReassign[i] = bandReassignmentParameters[i]->get();
+            bandReassign[i] = bandReassignmentParameters[static_cast<size_t>(i)]->get();
         }
         for (; i < 32; ++i) {
             bandReassign[i] = i;

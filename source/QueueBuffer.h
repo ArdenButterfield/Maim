@@ -21,13 +21,13 @@ public:
     QueueBuffer(const int siz, const T blank) {
         null_option = blank;
         max_size = siz;
-        buffer.resize(siz);
+        buffer.resize(static_cast<size_t>(siz));
         read_pos = 0;
         write_pos = 0;
     }
     
     void enqueue(const T input) {
-        buffer[write_pos] = input;
+        buffer[static_cast<size_t>(write_pos)] = input;
         write_pos++;
         write_pos %= max_size;
         
@@ -64,7 +64,7 @@ public:
         if (read_pos == write_pos) {
             return null_option;
         }
-        T result = buffer[read_pos];
+        T result = buffer[static_cast<size_t>(read_pos)];
         read_pos++;
         read_pos %= max_size;
         return result;

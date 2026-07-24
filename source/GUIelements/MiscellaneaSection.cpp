@@ -44,12 +44,12 @@ MiscellaneaSection::~MiscellaneaSection()
     parameters.removeParameterListener(ENCODER_PARAM_ID,this);
 }
 
-void MiscellaneaSection::mouseMove (const juce::MouseEvent& event)
+void MiscellaneaSection::mouseMove (const juce::MouseEvent&)
 {
 
 }
 
-void MiscellaneaSection::mouseUp (const juce::MouseEvent& event)
+void MiscellaneaSection::mouseUp (const juce::MouseEvent&)
 {
 
 }
@@ -88,9 +88,9 @@ void MiscellaneaSection::resized()
     mdctDragBox.setBounds(mdctPart);
 }
 
-void MiscellaneaSection::parameterChanged (const juce::String& parameterID, float newValue)
+void MiscellaneaSection::parameterChanged (const juce::String&, float newValue)
 {
-    bool isLame = (newValue == 1);
+    bool isLame = juce::exactlyEqual(newValue, 1.0f);
     mdctDragBox.setVisible(isLame);
     lameOnlyLabel.setVisible(!isLame);
 }

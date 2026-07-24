@@ -38,24 +38,24 @@ OpusController::~OpusController()
     parameters.removeParameterListener(ERROR_PARAM_ID, this);
 }
 
-bool OpusController::init (int sampleRate, int maxSamplesPerBlock, int bitrate)
+bool OpusController::init (int sampleRate, int, int)
 {
     deInit();
-    auto error = 0;
+    auto initError = 0;
     auto validatedSamplerate = validate_samplerate(sampleRate);
-    opusEncoder = opus_encoder_create(validatedSamplerate, 2, OPUS_APPLICATION_VOIP, &error);
-    if (error) {
+    opusEncoder = opus_encoder_create(validatedSamplerate, 2, OPUS_APPLICATION_VOIP, &initError);
+    if (initError) {
         return false;
     }
-    error = 0;
-    opusDecoder = opus_decoder_create(validatedSamplerate, 2, &error);
-    if (error) {
+    initError = 0;
+    opusDecoder = opus_decoder_create(validatedSamplerate, 2, &initError);
+    if (initError) {
         return false;
     }
     samplesPerFrame = validatedSamplerate * 20 / 1000;
 
-    input.resize(samplesPerFrame * 2);
-    output.resize(samplesPerFrame * 2);
+    input.resize(static_cast<size_t>(samplesPerFrame * 2));
+    output.resize(static_cast<size_t>(samplesPerFrame * 2));
 
     sampleCounter = 0;
     parametersNeedUpdating = true;
@@ -79,12 +79,12 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
         updateParameters();
     }
     for (auto s = 0; s < buffer.getNumSamples(); ++s) {
-        input[sampleCounter * 2] = buffer.getSample(0, s);
-        input[sampleCounter * 2 + 1] = buffer.getSample(1, s);
-        buffer.setSample(0, s, output[sampleCounter * 2]);
-        buffer.setSample(1, s, output[sampleCounter * 2 + 1]);
-        output[sampleCounter * 2] = 0;
-        output[sampleCounter * 2 + 1] = 0;
+        input[static_cast<size_t>(sampleCounter * 2)] = buffer.getSample(0, s);
+        input[static_cast<size_t>(sampleCounter * 2 + 1)] = buffer.getSample(1, s);
+        buffer.setSample(0, s, output[static_cast<size_t>(sampleCounter * 2)]);
+        buffer.setSample(1, s, output[static_cast<size_t>(sampleCounter * 2 + 1)]);
+        output[static_cast<size_t>(sampleCounter * 2)] = 0;
+        output[static_cast<size_t>(sampleCounter * 2 + 1)] = 0;
         sampleCounter++;
         if (sampleCounter == samplesPerFrame) {
             int framesizeDownscaleFactor = std::round(random.nextFloat() * turbo * 3);
@@ -93,7 +93,7 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
             for (int subframe = 0; subframe < framesizeDownscaleFactor; ++subframe) {
                 float maxVolume = 0;
                 for (auto samp = subframe * subframeSize; samp < subframe * subframeSize + subframeSize; ++samp) {
-                    maxVolume = std::max(std::abs(input[samp]), maxVolume);
+                    maxVolume = std::max(std::abs(input[static_cast<size_t>(samp)]), maxVolume);
                 }
                 auto encodeResultWithLoss = encodeResult;
                 if (stickMode && !packetLossModel->processPacket(subframeSize)) {
@@ -105,22 +105,22 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
                         subframeSize, &encoded[0], encoded.size());
                     if (error > 0) {
                         for (auto bit = 0; bit < encodeResult; ++bit) {
-                            encoded[bit] ^= random.nextFloat() < error ? 1 << random.nextInt(8) : 0;
+                            encoded[static_cast<size_t>(bit)] ^= random.nextFloat() < error ? 1 << random.nextInt(8) : 0;
                         }
                     }
                     encodeResultWithLoss = packetLossModel->processPacket(subframeSize) ? encodeResult : 0;
                 }
-                auto decodeResult = opus_decode_float(
+                [[maybe_unused]] auto decodeResult = opus_decode_float(
                     opusDecoder, &encoded[0], encodeResultWithLoss, &output[0] + subframe * subframeSize, subframeSize, 0);
                 float maxOutputVolume = 0;
                 for (auto samp = subframe * subframeSize; samp < subframe * subframeSize + subframeSize; ++samp) {
-                    maxOutputVolume = std::max(std::abs(output[samp]), maxOutputVolume);
+                    maxOutputVolume = std::max(std::abs(output[static_cast<size_t>(samp)]), maxOutputVolume);
                 }
                 auto outputThreshold = std::min(1.0f, maxVolume * 1.5f);
                 if (maxOutputVolume > outputThreshold && maxOutputVolume > 0.0001) {
                     auto gain = outputThreshold / maxOutputVolume;
                     for (auto samp = subframe * subframeSize; samp < subframe * subframeSize + subframeSize; ++samp) {
-                        output[samp] *= gain;
+                        output[static_cast<size_t>(samp)] *= gain;
                     }
                 }
                 // jassert(decodeResult == samplesPerFrame / framesizeDownscaleFactor);
@@ -130,7 +130,7 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
     }
 }
 
-void OpusController::parameterChanged (const juce::String& parameterID, float newValue)
+void OpusController::parameterChanged (const juce::String&, float)
 {
     parametersNeedUpdating = true;
 }
@@ -146,9 +146,9 @@ void OpusController::updateParameters()
     packetLossModel->setParameters(packetLossLength, packetLossPulseWidth, packetLossJitter);
 
     turbo = parameters.getParameter(TURBO_PARAM_ID)->getValue();
-    int bitrate = Mp3ControllerManager::bitrates[((juce::AudioParameterChoice*)
-                                parameters.getParameter(BITRATE_PARAM_ID))->getIndex()];
-    opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(bitrate * 500));
+    int newBitrate = Mp3ControllerManager::bitrates[static_cast<size_t>(((juce::AudioParameterChoice*)
+                                parameters.getParameter(BITRATE_PARAM_ID))->getIndex())];
+    opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(newBitrate * 500));
     stickMode = *((juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
     parametersNeedUpdating = false;
 

@@ -29,7 +29,7 @@ bool MP3Controller::init(const int sampleRate,
     input_buf_size = maxSamplesPerBlock;
     // From LAME api: mp3buf_size in bytes = 1.25*num_samples + 7200
     mp3_buf_size = MP3FRAMESIZE * 1.25 + 7200;
-    mp3Buffer.resize(mp3_buf_size);
+    mp3Buffer.resize(static_cast<size_t>(mp3_buf_size));
     std::fill(mp3Buffer.begin(), mp3Buffer.end(), 0);
 
     outputBufferL = std::make_unique<QueueBuffer<float>>(1152 * 4 + maxSamplesPerBlock, 0.f);
@@ -61,7 +61,7 @@ void MP3Controller::flushEncoder()
         auto encResult = encodesamples(left, right);
         decResult = hip_decode(lame_dec_handler,
             (unsigned char*)&mp3Buffer[0],
-            encResult,
+            static_cast<size_t>(encResult),
             decodedLeftChannel.data(),
             decodedRightChannel.data());
 
@@ -98,7 +98,7 @@ bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut,
 
     int decResult = hip_decode(lame_dec_handler,
         (unsigned char*)&mp3Buffer[0],
-        encResult,
+        static_cast<size_t>(encResult),
         decodedLeftChannel.data(),
         decodedRightChannel.data());
     if (decResult != 1152) {
@@ -107,12 +107,12 @@ bool MP3Controller::processFrame (float* leftIn, float* rightIn, float* leftOut,
     }
     if (leftOut != nullptr) {
         for (int i = 0; i < decResult; ++i) {
-            leftOut[i] = pcmConvert(decodedLeftChannel[i]);
+            leftOut[i] = pcmConvert(decodedLeftChannel[static_cast<size_t>(i)]);
         }
     }
     if (rightOut != nullptr) {
         for (int i = 0; i < decResult; ++i) {
-            rightOut[i] = pcmConvert(decodedRightChannel[i]);
+            rightOut[i] = pcmConvert(decodedRightChannel[static_cast<size_t>(i)]);
         }
     }
     return true;

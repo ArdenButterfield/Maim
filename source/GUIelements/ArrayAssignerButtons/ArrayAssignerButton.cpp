@@ -8,7 +8,7 @@
 void ArrayAssignerButton::drawPattern(juce::Graphics &g, juce::Rectangle<int> bounds, const std::array<char, buttonPixelDims * buttonPixelDims>& arr) {
     for (int r = 0; r < buttonPixelDims; ++r) {
         for (int c = 0; c < buttonPixelDims; ++c) {
-            if (arr[r * buttonPixelDims + c]) {
+            if (arr[static_cast<size_t>(r * buttonPixelDims + c)]) {
                 g.fillRect(bounds.getX() + c * buttonPixelSize,
                     bounds.getY() + r * buttonPixelSize,
                     buttonPixelSize,
@@ -28,7 +28,7 @@ void ArrayAssignerButton::drawResetShape(juce::Graphics &g, juce::Rectangle<int>
     drawPattern(g, bounds, resetShape);
 }
 void ArrayAssignerButton::drawRandomShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
-    drawPattern(g, bounds, randomShapes[randomShapeIndex]);
+    drawPattern(g, bounds, randomShapes[static_cast<size_t>(randomShapeIndex)]);
 }
 void ArrayAssignerButton::drawShiftUpShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
     drawPattern(g, bounds, shiftUpShape);

@@ -49,15 +49,15 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
     upButton.addListener(this);
     downButton.addListener(this);
     
-    parameters.resize(numItems);
-    for (unsigned i = 0; i < numItems; ++i) {
-        pTree.addParameterListener(BAND_ORDER_PARAM_IDS[i], this);
-        parameters[i] = (juce::AudioParameterInt*)pTree.getParameter(BAND_ORDER_PARAM_IDS[i]);
+    parameters.resize(static_cast<size_t>(numItems));
+    for (int i = 0; i < numItems; ++i) {
+        pTree.addParameterListener(BAND_ORDER_PARAM_IDS[static_cast<size_t>(i)], this);
+        parameters[static_cast<size_t>(i)] = (juce::AudioParameterInt*)pTree.getParameter(BAND_ORDER_PARAM_IDS[static_cast<size_t>(i)]);
     }
-    itemVals.resize(numItems);
-    
-    for (unsigned i = 0; i < numItems; ++i) {
-        itemVals[i] = parameters[i]->get();
+    itemVals.resize(static_cast<size_t>(numItems));
+
+    for (int i = 0; i < numItems; ++i) {
+        itemVals[static_cast<size_t>(i)] = parameters[static_cast<size_t>(i)]->get();
     }
     steps = s;
 
@@ -82,16 +82,16 @@ ReassignmentSection::~ReassignmentSection()
 
 void ReassignmentSection::setValue(const int index, const int newVal)
 {
-    if ((index < 0) || (index >= itemVals.size())) {
+    if ((index < 0) || (index >= static_cast<int>(itemVals.size()))) {
         return;
     }
-    itemVals[index] = juce::jmax(0, juce::jmin(newVal, steps - 1));
-    (*parameters[index]) = newVal;
+    itemVals[static_cast<size_t>(index)] = juce::jmax(0, juce::jmin(newVal, steps - 1));
+    (*parameters[static_cast<size_t>(index)]) = newVal;
 }
 
 void ReassignmentSection::resetGraph()
 {
-    for (int i = 0; i < itemVals.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
         setValue(i, i);
     }
     repaint();
@@ -99,8 +99,8 @@ void ReassignmentSection::resetGraph()
 
 void ReassignmentSection::randomizeGraph()
 {
-    for (int i = 0; i < itemVals.size(); ++i) {
-        setValue(i, random.nextInt(itemVals.size()));
+    for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
+        setValue(i, random.nextInt(static_cast<int>(itemVals.size())));
     }
     repaint();
 }
@@ -108,8 +108,8 @@ void ReassignmentSection::randomizeGraph()
 void ReassignmentSection::shiftGraph(bool up)
 {
     int inc = up ? 1 : -1;
-    for (int i = 0; i < itemVals.size(); ++i) {
-        setValue(i, itemVals[i] + inc);
+    for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
+        setValue(i, itemVals[static_cast<size_t>(i)] + inc);
     }
     repaint();
 }
@@ -163,7 +163,7 @@ void ReassignmentSection::mouseWheelMove(const juce::MouseEvent &event, const ju
 
     int i = (event.position.getX() - activeArea.getX()) * itemVals.size() / activeArea.getWidth();
 
-    setValue(i, itemVals[i] + inc);
+    setValue(i, itemVals[static_cast<size_t>(i)] + inc);
 }
 
 
@@ -194,11 +194,11 @@ void ReassignmentSection::paint (juce::Graphics& g)
     for (int row = 0; row < steps + 1; ++row) {
         g.drawHorizontalLine(getValScreenY(row), activeArea.getX(), activeArea.getRight());
     }
-    for (int col = 0; col < itemVals.size() + 1; ++col) {
+    for (int col = 0; col < static_cast<int>(itemVals.size()) + 1; ++col) {
         g.drawVerticalLine(activeArea.getX() + singleLineWidth * col, activeArea.getY(), activeArea.getBottom());
     }
     g.setColour(MaimColours::PANEL_BACKGROUND_COLOR);
-    for (int i = 0; i < itemVals.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
         int left = activeArea.getX() + singleLineWidth * i;
         int right = activeArea.getX() + singleLineWidth * (i + 1);
         int top = getValScreenY(i + 1);
@@ -207,11 +207,11 @@ void ReassignmentSection::paint (juce::Graphics& g)
     }
 
     g.setColour(MaimColours::SPLASH_COLOR_DARK.withAlpha(0.7f));
-    for (int i = 0; i < itemVals.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
         int left = activeArea.getX() + singleLineWidth * i;
         int right = activeArea.getX() + singleLineWidth * (i + 1);
-        int top = getValScreenY(itemVals[i] + 1);
-        int bottom = getValScreenY(itemVals[i]);
+        int top = getValScreenY(itemVals[static_cast<size_t>(i)] + 1);
+        int bottom = getValScreenY(itemVals[static_cast<size_t>(i)]);
         g.fillRect(left, top, right - left, bottom - top);
     }
     needsRepainting = false;
@@ -246,7 +246,7 @@ void ReassignmentSection::resized()
 
 }
 
-void ReassignmentSection::parameterChanged (const juce::String &parameterID, float newValue)
+void ReassignmentSection::parameterChanged (const juce::String &, float)
 {
     buildItemValsFromParams();
 
@@ -263,8 +263,8 @@ void ReassignmentSection::parameterChanged (const juce::String &parameterID, flo
 
 void ReassignmentSection::buildItemValsFromParams()
 {
-    for (int i = 0; i < itemVals.size(); ++i) {
-        setValue(i, parameters[i]->get());
+    for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
+        setValue(i, parameters[static_cast<size_t>(i)]->get());
     }
 }
 
@@ -287,6 +287,6 @@ void ReassignmentSection::buttonClicked (juce::Button * b)
         shiftGraph(false);
     }
 }
-void ReassignmentSection::buttonStateChanged (juce::Button * b)
+void ReassignmentSection::buttonStateChanged (juce::Button *)
 {
 }

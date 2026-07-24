@@ -16,8 +16,8 @@
 PostSection::PostSection(juce::AudioProcessorValueTreeState& p) :
         StageWindow(p),
         driveSlider(p, DRIVE_PARAM_ID, "Drive"),
-        hiSlider(p, HI_CUT_PARAM_ID, "High"),
         loSlider(p, LO_CUT_PARAM_ID, "Low"),
+        hiSlider(p, HI_CUT_PARAM_ID, "High"),
         makeupSlider(p, MAKEUP_GAIN_PARAM_ID, "Makeup gain"),
         mixSlider(p, MIX_PARAM_ID,"Dry/Wet")
 {
@@ -55,11 +55,11 @@ void PostSection::paint (juce::Graphics& g)
 void PostSection::resized()
 {
     setUsableBounds();
-    int used_space = 0;
 
-    auto littleSection = usable_bounds.getHeight() / sliders.size();
+    auto numSliders = static_cast<int>(sliders.size());
+    auto littleSection = usable_bounds.getHeight() / numSliders;
 
-    for (int i = 0; i < sliders.size(); ++i) {
-        sliders[i]->setBounds(usable_bounds.withHeight(littleSection).withY(usable_bounds.getY() + i * littleSection));
+    for (int i = 0; i < numSliders; ++i) {
+        sliders[static_cast<size_t>(i)]->setBounds(usable_bounds.withHeight(littleSection).withY(usable_bounds.getY() + i * littleSection));
     }
 }

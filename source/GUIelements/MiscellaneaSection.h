@@ -34,8 +34,8 @@ private:
     void mouseMove (const juce::MouseEvent& event) override;
     void mouseUp (const juce::MouseEvent& event) override;
 
-    const juce::Font sectionNameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(20.f);
-    const juce::Font lameLabelFont = juce::Font(MaimLookAndFeel().main_font).withHeight(10.f);
+    const juce::Font sectionNameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(20.f);
+    const juce::Font lameLabelFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(10.f);
     juce::Label sectionName;
     juce::Label lameOnlyLabel;
     juce::Label butterflyLabel;

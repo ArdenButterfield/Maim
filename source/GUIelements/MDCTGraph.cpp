@@ -42,12 +42,12 @@ void MDCTGraph::valueTreePropertyChanged(juce::ValueTree &treeWhosePropertyHasCh
     if (property == juce::Identifier("pre")) {
         juce::Array<juce::var>* e = treeWhosePropertyHasChanged[property].getArray();
         for (int i = 0; i < numSamples; ++i) {
-            preSamples[i] = (*e)[i].operator double();
+            preSamples[static_cast<size_t>(i)] = (*e)[i].operator double();
         }
     } else if (property == juce::Identifier("post")) {
         juce::Array<juce::var>* t = treeWhosePropertyHasChanged[property].getArray();
         for (int i = 0; i < numSamples; ++i) {
-            postSamples[i] = (*t)[i].operator double();
+            postSamples[static_cast<size_t>(i)] = (*t)[i].operator double();
         }
     }
 

@@ -32,5 +32,5 @@ void NamedRotarySlider::paint(juce::Graphics &g)
 }
 void NamedRotarySlider::setFontSize (float size)
 {
-    nameFont = juce::Font(MaimLookAndFeel().main_font).withHeight(size);
+    nameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(size);
 }

@@ -12,7 +12,7 @@
 
 //==============================================================================
 MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
-: StageWindow(p), mdctGraph(p), parameters(p)
+: StageWindow(p), parameters(p), mdctGraph(p)
 {
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
@@ -71,13 +71,13 @@ void MDCTGraphSection::resized()
 
 }
 
-void MDCTGraphSection::mouseEnter(const juce::MouseEvent& e) {
+void MDCTGraphSection::mouseEnter(const juce::MouseEvent&) {
 
 }
-void MDCTGraphSection::mouseExit(const juce::MouseEvent& e) {
+void MDCTGraphSection::mouseExit(const juce::MouseEvent&) {
 
 }
-void MDCTGraphSection::parameterChanged (const juce::String& parameterID, float newValue)
+void MDCTGraphSection::parameterChanged (const juce::String&, float)
 {
     bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
     mdctGraph.setVisible(!isOpus);

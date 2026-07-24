@@ -4,7 +4,7 @@
 
 #include "DemureSlider.h"
 
-void DemureSlider::mouseEnter(const juce::MouseEvent& e) {
+void DemureSlider::mouseEnter(const juce::MouseEvent&) {
     setAlpha(1.0f);
     if (label != nullptr) {
         label->setAlpha(1.0f);
@@ -13,7 +13,7 @@ void DemureSlider::mouseEnter(const juce::MouseEvent& e) {
     }
 }
 
-void DemureSlider::mouseExit(const juce::MouseEvent& e) {
+void DemureSlider::mouseExit(const juce::MouseEvent&) {
     setAlpha(0.3f);
     if (label != nullptr) {
         label->setAlpha(0.3f);
