@@ -18,16 +18,18 @@
 #include "MiscellaneaSection.h"
 #include "OpusPacketLossSection.h"
 #include "PostSection.h"
+#include "PresetsSection.h"
 #include "ReassignmentSection.h"
 #include "StageWindow.h"
 #include "TitlePanel.h"
+#include "../PluginProcessor.h"
 //==============================================================================
 /*
 */
 class MainArea  : public juce::Component, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-    MainArea(juce::AudioProcessorValueTreeState& p);
+    MainArea(MaimAudioProcessor& processor);
     ~MainArea() override;
 
     void paint (juce::Graphics&) override;
@@ -40,6 +42,7 @@ private:
     MiscellaneaSection miscellaneaSection;
     MDCTGraphSection mdctGraphSection;
     PostSection postSection;
+    PresetsSection presetsSection;
     TitlePanel titlePanel;
     ReassignmentSection reassignmentSection;
     OpusPacketLossSection opusPacketLossSection;

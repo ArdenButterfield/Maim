@@ -11,15 +11,16 @@
 #include "MainArea.h"
 
 //==============================================================================
-MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
-    psychoacousticSection(p),
-    miscellaneaSection (p),
-    mdctGraphSection (p),
-    postSection(p),
-    titlePanel (p),
-    reassignmentSection (p, 20, 20),
-    opusPacketLossSection(p),
-    parameters(p)
+MainArea::MainArea(MaimAudioProcessor& processor) :
+    psychoacousticSection(processor.getValueTreeState()),
+    miscellaneaSection (processor.getValueTreeState()),
+    mdctGraphSection (processor.getValueTreeState()),
+    postSection(processor.getValueTreeState()),
+    presetsSection(processor),
+    titlePanel (processor.getValueTreeState()),
+    reassignmentSection (processor.getValueTreeState(), 20, 20),
+    opusPacketLossSection(processor.getValueTreeState()),
+    parameters(processor.getValueTreeState())
 
 {
     addAndMakeVisible(psychoacousticSection);
@@ -27,6 +28,7 @@ MainArea::MainArea(juce::AudioProcessorValueTreeState& p) :
     addAndMakeVisible(mdctGraphSection);
     addAndMakeVisible(reassignmentSection);
     addAndMakeVisible(postSection);
+    addAndMakeVisible(presetsSection);
     addAndMakeVisible(titlePanel);
     addAndMakeVisible(opusPacketLossSection);
 
@@ -63,6 +65,7 @@ void MainArea::resized()
 {
     int margin = 10;
     int postSectionWidth = 100;
+    int presetsSectionHeight = 60;
 
     auto activeArea = getLocalBounds()
         .withTrimmedTop(margin)
@@ -71,13 +74,25 @@ void MainArea::resized()
         .withTrimmedBottom(margin);
 
     auto tilesArea = activeArea.withTrimmedRight(postSectionWidth + margin);
-    postSection.setBounds(activeArea.withWidth(postSectionWidth).withRightX(activeArea.getRight()));
 
     auto topRow = tilesArea.withHeight(230);
     auto bottomRow = tilesArea.withTrimmedTop(topRow.getHeight() + margin);
 
     titlePanel.setBounds(topRow.withWidth(150));
-    psychoacousticSection.setBounds(topRow.withTrimmedLeft(titlePanel.getWidth() + margin));
+
+    auto encoderColumn = topRow.withTrimmedLeft(titlePanel.getWidth() + margin);
+
+    presetsSection.setBounds(juce::Rectangle<int>(
+        encoderColumn.getX(),
+        activeArea.getY(),
+        activeArea.getRight() - encoderColumn.getX(),
+        presetsSectionHeight));
+
+    psychoacousticSection.setBounds(encoderColumn.withTrimmedTop(presetsSectionHeight + margin));
+
+    postSection.setBounds(activeArea.withWidth(postSectionWidth)
+                               .withRightX(activeArea.getRight())
+                               .withTrimmedTop(presetsSectionHeight + margin));
 
     reassignmentSection.setBounds(bottomRow.withWidth(220));
     mdctGraphSection.setBounds(bottomRow.withTrimmedLeft(reassignmentSection.getWidth() + margin).withWidth(290));

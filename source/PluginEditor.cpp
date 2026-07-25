@@ -13,7 +13,7 @@
 MaimAudioProcessorEditor::MaimAudioProcessorEditor (MaimAudioProcessor& p) :
         AudioProcessorEditor (&p),
         audioProcessor (p),
-        mainArea(p.getValueTreeState())
+        mainArea(p)
 {
     addAndMakeVisible(mainArea);
     setLookAndFeel(&maimLookAndFeel);

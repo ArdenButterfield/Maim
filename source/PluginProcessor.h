@@ -16,6 +16,7 @@
 #include <string>
 
 #include "CodecControllerManager.h"
+#include "PresetManager.h"
 
 //==============================================================================
 
@@ -69,6 +70,8 @@ public:
     juce::AudioProcessorValueTreeState& getValueTreeState();
     void parameterChanged (const juce::String &parameterID, float newValue) override;
 
+    PresetManager& getPresetManager();
+
 private:
     juce::AudioProcessorValueTreeState parameters;
     void processBlockStereo(juce::AudioBuffer<float>& buffer);
@@ -88,7 +91,8 @@ private:
     std::atomic<bool> parametersNeedUpdating;
 
     CodecControllerManager codecControllerManager;
-        
+    PresetManager presetManager;
+
     std::array<juce::IIRFilter, 2> postFilterLo;
     std::array<juce::IIRFilter, 2> postFilterHi;
 

@@ -102,6 +102,7 @@ MaimAudioProcessor::MaimAudioProcessor()
 #endif
     parameters(*this, nullptr, juce::Identifier("Maim"), makeParameters()),
       codecControllerManager(parameters),
+      presetManager(*this),
       dryWetMixer(std::max(BLADELATENCYSAMPLES, LAMELATENCYSAMPLES))
 {
     oldPreGain = 1;
@@ -193,6 +194,11 @@ void MaimAudioProcessor::parameterChanged (const juce::String &, float)
     parametersNeedUpdating = true;
 }
 
+PresetManager& MaimAudioProcessor::getPresetManager()
+{
+    return presetManager;
+}
+
 bool MaimAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
@@ -252,6 +258,7 @@ void MaimAudioProcessor::changeProgramName (int, const juce::String&)
 //==============================================================================
 void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
+    PresetManager::createPresetDirectories();
 
     setLatencySamples(currentLatencySamples());
     dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});

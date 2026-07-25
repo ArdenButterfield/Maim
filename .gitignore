@@ -3,6 +3,7 @@ Builds/
 cmake-build-*/
 packaging/build/
 packaging/plugins/
+build/
 
 # IDE
 .idea/
