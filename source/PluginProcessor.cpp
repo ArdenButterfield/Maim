@@ -65,6 +65,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID{PACKET_LOSS_STICK_PARAM_ID, 1}, "Packet loss/stick", false
         ));
 
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID{PACKET_LOSS_MIDI_GATE_PARAM_ID, 1}, "Packet loss MIDI gate", false
+        ));
+
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID{ERROR_PARAM_ID, 1}, "Error", 0, 1, 0
         ));
@@ -333,7 +337,7 @@ void MaimAudioProcessor::updateParameters()
     setLatencySamples(currentLatencySamples());
 }
 
-void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
+void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer, const juce::MidiBuffer& midiMessages)
 {
     dryWetMixer.pushDrySamples(buffer);
 
@@ -345,7 +349,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
     }
 
     if (buffer.getNumSamples() <= estimatedSamplesPerBlock) {
-        codecControllerManager.processBlock(buffer);
+        codecControllerManager.processBlock(buffer, midiMessages);
     }
 
     for (unsigned i = 0; i < 2; ++i) {
@@ -364,7 +368,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
 }
 
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                       juce::MidiBuffer&)
+                                       juce::MidiBuffer& midiMessages)
 {
     if (parametersNeedUpdating) {
         updateParameters();
@@ -376,12 +380,12 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = std::min(totalNumInputChannels,2); i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     if (totalNumInputChannels >= 2 && buffer.getNumChannels() >= 2) {
-        processBlockStereo(buffer);
+        processBlockStereo(buffer, midiMessages);
     } else if (totalNumInputChannels >= 1 && buffer.getNumChannels() >= 1) {
         juce::AudioBuffer<float> stereoBuffer(2, buffer.getNumSamples());
         stereoBuffer.copyFrom(0,0,buffer,0,0,buffer.getNumSamples());
         stereoBuffer.copyFrom(1,0,buffer,0,0,buffer.getNumSamples());
-        processBlockStereo(stereoBuffer);
+        processBlockStereo(stereoBuffer, midiMessages);
         buffer.copyFrom(0,0,stereoBuffer,0,0,buffer.getNumSamples());
     }
 }

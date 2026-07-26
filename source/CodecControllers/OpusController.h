@@ -27,7 +27,7 @@ public:
 
     void deInit() override;
 
-    void processBlock(juce::AudioBuffer<float>& buffer);
+    void processBlock(juce::AudioBuffer<float>& buffer, const juce::MidiBuffer& midiMessages);
 
     int getBitrate() override { return bitrate; }
     void setError(float) override {}
@@ -102,6 +102,8 @@ protected:
     juce::Random random;
     std::unique_ptr<PacketLossModel> packetLossModel;
     bool stickMode{};
+    bool midiGateEnabled{};
+    int heldNoteCount{};
     int encodeResult{};
     float error{};
 };

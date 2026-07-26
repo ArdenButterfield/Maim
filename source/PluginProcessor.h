@@ -74,7 +74,7 @@ public:
 
 private:
     juce::AudioProcessorValueTreeState parameters;
-    void processBlockStereo(juce::AudioBuffer<float>& buffer);
+    void processBlockStereo(juce::AudioBuffer<float>& buffer, const juce::MidiBuffer& midiMessages);
     void addPsychoanalStateToParameters();
     void addMdctSamplesToParameters();
     int currentLatencySamples();

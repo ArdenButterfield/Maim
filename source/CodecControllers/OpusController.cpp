@@ -21,6 +21,7 @@ OpusController::OpusController (juce::AudioProcessorValueTreeState& _parameters)
     parameters.addParameterListener(PACKET_LOSS_BEAT_SYNC_PARAM_ID, this);
     parameters.addParameterListener(PACKET_LOSS_JITTER_PARAM_ID, this);
     parameters.addParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+    parameters.addParameterListener(PACKET_LOSS_MIDI_GATE_PARAM_ID, this);
     parameters.addParameterListener(ERROR_PARAM_ID, this);
     parametersNeedUpdating = true;
 }
@@ -35,6 +36,7 @@ OpusController::~OpusController()
     parameters.removeParameterListener(PACKET_LOSS_BEAT_SYNC_PARAM_ID, this);
     parameters.removeParameterListener(PACKET_LOSS_JITTER_PARAM_ID, this);
     parameters.removeParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+    parameters.removeParameterListener(PACKET_LOSS_MIDI_GATE_PARAM_ID, this);
     parameters.removeParameterListener(ERROR_PARAM_ID, this);
 }
 
@@ -73,11 +75,22 @@ void OpusController::deInit()
     }
 }
 
-void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
+void OpusController::processBlock (juce::AudioBuffer<float>& buffer, const juce::MidiBuffer& midiMessages)
 {
     if (parametersNeedUpdating) {
         updateParameters();
     }
+    for (const auto metadata : midiMessages) {
+        const auto message = metadata.getMessage();
+        if (message.isNoteOn()) {
+            ++heldNoteCount;
+        } else if (message.isNoteOff()) {
+            heldNoteCount = std::max(0, heldNoteCount - 1);
+        } else if (message.isAllNotesOff() || message.isAllSoundOff()) {
+            heldNoteCount = 0;
+        }
+    }
+    const bool applyPacketLoss = !midiGateEnabled || heldNoteCount > 0;
     for (auto s = 0; s < buffer.getNumSamples(); ++s) {
         input[static_cast<size_t>(sampleCounter * 2)] = buffer.getSample(0, s);
         input[static_cast<size_t>(sampleCounter * 2 + 1)] = buffer.getSample(1, s);
@@ -96,7 +109,7 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
                     maxVolume = std::max(std::abs(input[static_cast<size_t>(samp)]), maxVolume);
                 }
                 auto encodeResultWithLoss = encodeResult;
-                if (stickMode && !packetLossModel->processPacket(subframeSize)) {
+                if (applyPacketLoss && stickMode && !packetLossModel->processPacket(subframeSize)) {
                     // do not encode.
                 } else {
 
@@ -108,7 +121,7 @@ void OpusController::processBlock (juce::AudioBuffer<float>& buffer)
                             encoded[static_cast<size_t>(bit)] ^= random.nextFloat() < error ? 1 << random.nextInt(8) : 0;
                         }
                     }
-                    encodeResultWithLoss = packetLossModel->processPacket(subframeSize) ? encodeResult : 0;
+                    encodeResultWithLoss = (applyPacketLoss && !packetLossModel->processPacket(subframeSize)) ? 0 : encodeResult;
                 }
                 [[maybe_unused]] auto decodeResult = opus_decode_float(
                     opusDecoder, &encoded[0], encodeResultWithLoss, &output[0] + subframe * subframeSize, subframeSize, 0);
@@ -150,6 +163,7 @@ void OpusController::updateParameters()
                                 parameters.getParameter(BITRATE_PARAM_ID))->getIndex())];
     opus_encoder_ctl(opusEncoder, OPUS_SET_BITRATE(newBitrate * 500));
     stickMode = *((juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
+    midiGateEnabled = *((juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_MIDI_GATE_PARAM_ID));
     parametersNeedUpdating = false;
 
     error = *((juce::AudioParameterFloat*)parameters.getParameter(ERROR_PARAM_ID));

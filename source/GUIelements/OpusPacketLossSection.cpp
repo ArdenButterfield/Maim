@@ -8,12 +8,15 @@
 OpusPacketLossSection::OpusPacketLossSection (juce::AudioProcessorValueTreeState& p)
     : StageWindow (p), packetLossDragBox(p, PACKET_LOSS_RATE_PARAM_ID, PACKET_LOSS_PULSE_WIDTH_PARAM_ID),
       jitterSlider(p, PACKET_LOSS_JITTER_PARAM_ID, "Jitter"), lossStickToggle("LOSS|STICK"),
-      lossStickAttachment(p, PACKET_LOSS_STICK_PARAM_ID, lossStickToggle)
+      lossStickAttachment(p, PACKET_LOSS_STICK_PARAM_ID, lossStickToggle),
+      midiGateToggle("MIDI GATE|MIDI GATE"),
+      midiGateAttachment(p, PACKET_LOSS_MIDI_GATE_PARAM_ID, midiGateToggle)
 {
     jitterSlider.slider.getProperties().set("drawGrayArc", true);
     jitterSlider.slider.setRepaintsOnMouseActivity(true);
 
     lossStickToggle.setButtonText("LOSS|STICK");
+    midiGateToggle.setButtonText("MIDI GATE");
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Packet loss", juce::dontSendNotification);
@@ -23,6 +26,7 @@ OpusPacketLossSection::OpusPacketLossSection (juce::AudioProcessorValueTreeState
     addAndMakeVisible(packetLossDragBox);
     addAndMakeVisible(jitterSlider);
     addAndMakeVisible(lossStickToggle);
+    addAndMakeVisible(midiGateToggle);
 
     parameters.addParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
 
@@ -49,7 +53,12 @@ void OpusPacketLossSection::resized()
     auto dragboxPart = mainPart.withHeight(mainPart.getHeight() / 2);
     packetLossDragBox.setBounds(dragboxPart);
     jitterSlider.setBounds(mainPart.withTop(dragboxPart.getBottom()).withWidth(mainPart.getWidth() / 2));
-    lossStickToggle.setBounds(jitterSlider.getBounds().withRightX(mainPart.getRight()).withTrimmedTop(10).withHeight(40));
+
+    auto toggleColumn = jitterSlider.getBounds().withRightX(mainPart.getRight()).withTrimmedTop(10);
+    const int toggleHeight = 40;
+    const int toggleGap = 6;
+    lossStickToggle.setBounds(toggleColumn.withHeight(toggleHeight));
+    midiGateToggle.setBounds(toggleColumn.withY(lossStickToggle.getBottom() + toggleGap).withHeight(toggleHeight));
 }
 
 void OpusPacketLossSection::paint (juce::Graphics& g)

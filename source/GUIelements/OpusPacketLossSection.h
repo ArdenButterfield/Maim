@@ -27,6 +27,9 @@ private:
 
     juce::ToggleButton lossStickToggle;
     juce::AudioProcessorValueTreeState::ButtonAttachment lossStickAttachment;
+
+    juce::ToggleButton midiGateToggle;
+    juce::AudioProcessorValueTreeState::ButtonAttachment midiGateAttachment;
 };
 
 #endif //MAIM_OPUSPACKETLOSSSECTION_H
