@@ -15,9 +15,11 @@ public:
     void paint (juce::Graphics& g) override;
     void resized() override;
 private:
-
     juce::HyperlinkButton manualLink;
 
+    juce::Colour textColour;
+    juce::Colour firstGradientColour;
+    juce::Colour secondGradientColour;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TitlePanel)
 };
 

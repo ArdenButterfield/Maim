@@ -4,6 +4,8 @@
 
 #include "TitlePanel.h"
 
+#include "../parameterIds.h"
+
 TitlePanel::TitlePanel (juce::AudioProcessorValueTreeState& p) : StageWindow(p)
 {
     manualLink.setButtonText("Manual");
@@ -11,7 +13,6 @@ TitlePanel::TitlePanel (juce::AudioProcessorValueTreeState& p) : StageWindow(p)
     manualLink.setFont(tooltip_font, false, juce::Justification::bottomLeft);
     addAndMakeVisible(manualLink);
     manualLink.setColour(juce::HyperlinkButton::textColourId, MaimColours::BEVEL_BLACK);
-
 }
 
 TitlePanel::~TitlePanel()
@@ -24,13 +25,13 @@ void TitlePanel::paint (juce::Graphics& g)
     auto inner_rect = draw_beveled_rectangle(g, getLocalBounds(), true);
     auto textRect = inner_rect;
     auto gradient = juce::ColourGradient::vertical(
-        MaimColours::SPLASH_COLOR_DARK,
-        MaimColours::SPLASH_COLOR_LIGHT,
+        themeDarkColour,
+        themeLightColour,
         inner_rect);
     g.setGradientFill(gradient);
     g.fillRect(inner_rect);
 
-    g.setColour (MaimColours::CONTRAST_COLOR_LIGHT);
+    g.setColour (contrastDarkColour);
     g.setFont(title_font);
     g.drawText ("MAIM", textRect.withTrimmedRight(4).withTrimmedTop(4),
         juce::Justification::centredTop, true);
@@ -43,4 +44,3 @@ void TitlePanel::resized()
 {
     manualLink.setBounds(getLocalBounds().withTrimmedLeft(6).withHeight(13).withBottomY(getHeight() - (6 + 13)));
 }
-

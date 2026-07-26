@@ -15,6 +15,7 @@
 #include "StageWindow.h"
 #include "../PluginProcessor.h"
 #include "../PresetManager.h"
+#include "ArrayAssignerButtons/ArrayAssignerButton.h"
 
 //==============================================================================
 /*
@@ -36,8 +37,8 @@ private:
 
     juce::Label sectionName;
     juce::ComboBox presetBox;
-    juce::TextButton previousPresetButton {"<"};
-    juce::TextButton nextPresetButton {">"};
+    ArrayAssignerButton previousPresetButton {"previous", ARROW_LEFT};
+    ArrayAssignerButton nextPresetButton {"next", ARROW_RIGHT};
     juce::TextButton saveButton {"Save"};
 
     juce::Array<juce::File> presetFiles;

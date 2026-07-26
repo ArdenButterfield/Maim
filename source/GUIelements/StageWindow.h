@@ -17,10 +17,13 @@
 //==============================================================================
 /*
 */
-class StageWindow  : public juce::Component
+class StageWindow  : public juce::Component, public juce::Timer
 {
 public:
-    StageWindow(juce::AudioProcessorValueTreeState& p) : parameters(p) {}
+    StageWindow(juce::AudioProcessorValueTreeState& p) : parameters(p)
+    {
+        startTimerHz (60);
+    }
 //    virtual ~StageWindow();
 
 
@@ -41,6 +44,11 @@ public:
     const juce::Colour TEXT_COLOR = juce::Colours::black;
     const juce::Colour BORDER_COLOR = juce::Colours::darkblue;
 
+    juce::Colour themeDarkColour;
+    juce::Colour themeLightColour;
+    juce::Colour contrastDarkColour;
+    juce::Colour contrastLightColour;
+
     void prepare_background(juce::Graphics& g);
     juce::Rectangle<int> draw_beveled_rectangle(juce::Graphics& g, juce::Rectangle<int> rect, bool raised);
 
@@ -53,4 +61,6 @@ protected:
     const int LINE_WIDTH = 2; // For bevel
 
     juce::AudioProcessorValueTreeState& parameters;
+private:
+    void timerCallback() override;
 };

@@ -12,7 +12,9 @@ enum ButtonDesigns {
     RESET,
     RANDOM,
     SHIFT_UP,
-    SHIFT_DOWN
+    SHIFT_DOWN,
+    ARROW_LEFT,
+    ARROW_RIGHT
 };
 
 class ArrayAssignerButton : public juce::Button
@@ -31,6 +33,8 @@ private:
     void drawRandomShape(juce::Graphics &g, juce::Rectangle<int> bounds);
     void drawShiftUpShape(juce::Graphics &g, juce::Rectangle<int> bounds);
     void drawShiftDownShape(juce::Graphics &g, juce::Rectangle<int> bounds);
+    void drawArrowLeftShape(juce::Graphics &g, juce::Rectangle<int> bounds);
+    void drawArrowRightShape(juce::Graphics &g, juce::Rectangle<int> bounds);
 
     void mouseUp (const juce::MouseEvent &) override;
 
@@ -154,6 +158,29 @@ private:
         0, 0, 0, 1, 0, 1, 0, 0, 0,
         0, 0, 0, 0, 1, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0
+    };
+
+    const std::array<char, buttonPixelDims * buttonPixelDims> arrowLeftShape {
+        0, 0, 0, 0, 0, 1, 0, 0, 0,
+        0, 0, 0, 0, 1, 0, 0, 0, 0,
+        0, 0, 0, 1, 0, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 1, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0
+    };
+    const std::array<char, buttonPixelDims * buttonPixelDims> arrowRightShape {
+        0, 0, 0, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 1, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 1, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 0,
+        0, 0, 0, 0, 0, 0, 1, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0,
+        0, 0, 0, 0, 1, 0, 0, 0, 0,
+        0, 0, 0, 1, 0, 0, 0, 0, 0
     };
 
 };

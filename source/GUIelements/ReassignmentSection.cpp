@@ -60,10 +60,6 @@ ReassignmentSection::ReassignmentSection (juce::AudioProcessorValueTreeState& p,
         itemVals[static_cast<size_t>(i)] = parameters[static_cast<size_t>(i)]->get();
     }
     steps = s;
-
-    startTimerHz(30);
-    needsRepainting = false;
-    
 }
 
 ReassignmentSection::~ReassignmentSection()
@@ -206,7 +202,7 @@ void ReassignmentSection::paint (juce::Graphics& g)
         g.fillRect(left, top, right - left, bottom - top);
     }
 
-    g.setColour(MaimColours::SPLASH_COLOR_DARK.withAlpha(0.7f));
+    g.setColour(themeDarkColour.withAlpha(0.7f));
     for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
         int left = activeArea.getX() + singleLineWidth * i;
         int right = activeArea.getX() + singleLineWidth * (i + 1);
@@ -214,7 +210,6 @@ void ReassignmentSection::paint (juce::Graphics& g)
         int bottom = getValScreenY(itemVals[static_cast<size_t>(i)]);
         g.fillRect(left, top, right - left, bottom - top);
     }
-    needsRepainting = false;
 }
 
 void ReassignmentSection::resized()
@@ -256,22 +251,12 @@ void ReassignmentSection::parameterChanged (const juce::String &, float)
     upButton.setVisible(!isOpus);
     downButton.setVisible(!isOpus);
     mp3OnlyLabel.setVisible(isOpus);
-
-
-    needsRepainting = true;
 }
 
 void ReassignmentSection::buildItemValsFromParams()
 {
     for (int i = 0; i < static_cast<int>(itemVals.size()); ++i) {
         setValue(i, parameters[static_cast<size_t>(i)]->get());
-    }
-}
-
-void ReassignmentSection::timerCallback()
-{
-    if (needsRepainting) {
-        repaint();
     }
 }
 

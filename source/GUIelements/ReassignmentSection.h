@@ -26,7 +26,6 @@
 */
 class ReassignmentSection :
         public StageWindow,
-        public juce::Timer,
         public juce::AudioProcessorValueTreeState::Listener,
         public juce::Button::Listener
 {
@@ -66,7 +65,6 @@ private:
     
     void parameterChanged (const juce::String &parameterID, float newValue) override;
     void buildItemValsFromParams();
-    void timerCallback() override;
 
     juce::Rectangle<int> activeAreaBorder;
     juce::Rectangle<int> activeArea;
@@ -77,8 +75,6 @@ private:
     void setValue(const int index, const int newVal);
     std::vector<int> itemVals;
 
-
-    std::atomic<bool> needsRepainting;
     int steps;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReassignmentSection)
 };

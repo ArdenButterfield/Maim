@@ -38,6 +38,12 @@ void ArrayAssignerButton::drawShiftDownShape(juce::Graphics &g, juce::Rectangle<
     drawPattern(g, bounds, shiftDownShape);
 
 }
+void ArrayAssignerButton::drawArrowLeftShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
+    drawPattern(g, bounds, arrowLeftShape);
+}
+void ArrayAssignerButton::drawArrowRightShape(juce::Graphics &g, juce::Rectangle<int> bounds) {
+    drawPattern(g, bounds, arrowRightShape);
+}
 
 
 void ArrayAssignerButton::paintButton (juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) {
@@ -80,6 +86,12 @@ void ArrayAssignerButton::paintButton (juce::Graphics& g, bool shouldDrawButtonA
             break;
         case SHIFT_DOWN:
             drawShiftDownShape(g, bounds);
+            break;
+        case ARROW_LEFT:
+            drawArrowLeftShape(g, bounds);
+            break;
+        case ARROW_RIGHT:
+            drawArrowRightShape(g, bounds);
             break;
     }
 }

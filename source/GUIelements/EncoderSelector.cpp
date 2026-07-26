@@ -30,15 +30,12 @@ void EncoderSelector::paint (juce::Graphics& g)
         lnf->drawEncoderSelector (g, *this);
 }
 
-void EncoderSelector::mouseUp (const juce::MouseEvent& e)
+void EncoderSelector::mouseUp (const juce::MouseEvent&)
 {
     const auto numOptions = optionNames.size();
-    if (numOptions == 0 || getHeight() <= 0)
+    if (numOptions == 0)
         return;
 
-    const auto row = juce::jlimit (0, numOptions - 1,
-        static_cast<int> ((static_cast<float> (e.y) / static_cast<float> (getHeight())) * (float) numOptions));
-
-    if (row != selectedIndex)
-        attachment->setValueAsCompleteGesture ((float) row);
+    const auto nextIndex = (selectedIndex + 1) % numOptions;
+    attachment->setValueAsCompleteGesture ((float) nextIndex);
 }

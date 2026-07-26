@@ -327,8 +327,8 @@ void MaimLookAndFeel::drawEncoderSelector(juce::Graphics& g, EncoderSelector& se
         const auto rowBottom = bounds.getY() + bounds.getHeight() * (i + 1) / numOptions;
         const auto row = bounds.withY(rowTop).withBottom(rowBottom);
         const auto selected = (i == selectedIndex);
-
-        g.setColour(selected ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::BEVEL_LIGHT);
+        const auto colour = (i == 0) ? MaimColours::CONTRAST_COLOR_LIGHT.withLightness (0.65) : (i == 1) ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::OPUS_COLOR_LIGHT;
+        g.setColour(selected ? colour : MaimColours::BEVEL_LIGHT);
         g.fillRect(row);
         g.setColour(selected ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
         g.drawText(optionNames[i], row, juce::Justification::centred, false);

@@ -10,6 +10,8 @@
 
 #include "StageWindow.h"
 
+#include "../parameterIds.h"
+
 //==============================================================================
 void StageWindow::setUsableBounds()
 {
@@ -67,4 +69,29 @@ void StageWindow::prepare_background(juce::Graphics& g)
 void StageWindow::paint (juce::Graphics& g)
 {
     prepare_background(g);
+}
+
+void StageWindow::timerCallback()
+{
+    auto p = parameters.getParameter(ENCODER_PARAM_ID)->getValue();
+    if (p < 0.3) // blade
+    {
+        themeDarkColour = MaimColours::CONTRAST_COLOR_DARK;
+        themeLightColour = MaimColours::CONTRAST_COLOR_LIGHT.withLightness (0.9f);
+        contrastLightColour = MaimColours::SPLASH_COLOR_LIGHT;
+        contrastDarkColour = MaimColours::SPLASH_COLOR_DARK;
+    } else if (p < 0.6) // lame
+    {
+        themeDarkColour = MaimColours::SPLASH_COLOR_DARK;
+        themeLightColour = MaimColours::SPLASH_COLOR_LIGHT;
+        contrastLightColour = MaimColours::CONTRAST_COLOR_LIGHT;
+        contrastDarkColour = MaimColours::CONTRAST_COLOR_DARK;
+    } else // opus
+    {
+        themeDarkColour = MaimColours::OPUS_COLOR_DARK;
+        themeLightColour = MaimColours::OPUS_COLOR_LIGHT;
+        contrastLightColour = MaimColours::CONTRAST_COLOR_LIGHT;
+        contrastDarkColour = MaimColours::BEVEL_WHITE;
+    }
+    repaint();
 }

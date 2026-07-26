@@ -18,6 +18,8 @@ namespace MaimColours {
     const juce::Colour SPLASH_COLOR_LIGHT = juce::Colours::lightblue;
     const juce::Colour CONTRAST_COLOR_DARK = juce::Colours::darkorange;
     const juce::Colour CONTRAST_COLOR_LIGHT = juce::Colours::orange;
+    const juce::Colour OPUS_COLOR_DARK = juce::Colours::purple;
+    const juce::Colour OPUS_COLOR_LIGHT = juce::Colours::purple.withLightness ( 0.8f);
 };
 
 #endif //MAIM_MAIMCOLOURS_H
