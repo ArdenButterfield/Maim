@@ -65,8 +65,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout makeParameters()
         juce::ParameterID{PACKET_LOSS_STICK_PARAM_ID, 1}, "Packet loss/stick", false
         ));
 
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-        juce::ParameterID{PACKET_LOSS_MIDI_GATE_PARAM_ID, 1}, "Packet loss MIDI gate", false
+    parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{PACKET_LOSS_MODE_PARAM_ID, 1}, "Packet loss mode", juce::StringArray {"Off", "Pulse", "On"}, 1
         ));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
@@ -337,7 +337,7 @@ void MaimAudioProcessor::updateParameters()
     setLatencySamples(currentLatencySamples());
 }
 
-void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer, const juce::MidiBuffer& midiMessages)
+void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
 {
     dryWetMixer.pushDrySamples(buffer);
 
@@ -349,7 +349,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer, c
     }
 
     if (buffer.getNumSamples() <= estimatedSamplesPerBlock) {
-        codecControllerManager.processBlock(buffer, midiMessages);
+        codecControllerManager.processBlock(buffer);
     }
 
     for (unsigned i = 0; i < 2; ++i) {
@@ -370,6 +370,7 @@ void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer, c
 void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                        juce::MidiBuffer& midiMessages)
 {
+    juce::ignoreUnused (midiMessages);
     if (parametersNeedUpdating) {
         updateParameters();
     }
@@ -380,12 +381,12 @@ void MaimAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = std::min(totalNumInputChannels,2); i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     if (totalNumInputChannels >= 2 && buffer.getNumChannels() >= 2) {
-        processBlockStereo(buffer, midiMessages);
+        processBlockStereo(buffer);
     } else if (totalNumInputChannels >= 1 && buffer.getNumChannels() >= 1) {
         juce::AudioBuffer<float> stereoBuffer(2, buffer.getNumSamples());
         stereoBuffer.copyFrom(0,0,buffer,0,0,buffer.getNumSamples());
         stereoBuffer.copyFrom(1,0,buffer,0,0,buffer.getNumSamples());
-        processBlockStereo(stereoBuffer, midiMessages);
+        processBlockStereo(stereoBuffer);
         buffer.copyFrom(0,0,stereoBuffer,0,0,buffer.getNumSamples());
     }
 }

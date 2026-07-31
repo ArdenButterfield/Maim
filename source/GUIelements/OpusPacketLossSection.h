@@ -11,6 +11,7 @@
 #include "StageWindow.h"
 #include "DragBoxes/PacketLossDragBox.h"
 #include "NamedRotarySlider.h"
+#include "EncoderSelector.h"
 class OpusPacketLossSection : public StageWindow, public juce::AudioProcessorValueTreeState::Listener
 {
 public:
@@ -28,8 +29,7 @@ private:
     juce::ToggleButton lossStickToggle;
     juce::AudioProcessorValueTreeState::ButtonAttachment lossStickAttachment;
 
-    juce::ToggleButton midiGateToggle;
-    juce::AudioProcessorValueTreeState::ButtonAttachment midiGateAttachment;
+    EncoderSelector packetLossModeSelector;
 };
 
 #endif //MAIM_OPUSPACKETLOSSSECTION_H

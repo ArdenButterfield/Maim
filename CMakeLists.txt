@@ -62,7 +62,7 @@ juce_add_plugin("${PROJECT_NAME}"
         BUNDLE_ID "${BUNDLE_ID}"
 
         IS_SYNTH FALSE                       # Is this a synth or an effect?
-        NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+        NEEDS_MIDI_INPUT FALSE               # Does the plugin need midi input?
         NEEDS_MIDI_OUTPUT FALSE              # Does the plugin need midi output?
         IS_MIDI_EFFECT FALSE                 # Is this plugin a MIDI effect?
 

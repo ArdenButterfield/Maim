@@ -19,6 +19,11 @@ public:
         isOrange = orange;
         repaint();
     }
+    enum class PacketLossMode { off, pulse, on };
+    void setPacketLossMode(int modeIndex) {
+        packetLossMode = static_cast<PacketLossMode>(modeIndex);
+        repaint();
+    }
 private:
     void drawBackground(juce::Graphics& g, int x, int y) override;
     juce::Colour getThumbFillColour(int x, int y) override;
@@ -33,6 +38,7 @@ private:
     }
     
     bool isOrange;
+    PacketLossMode packetLossMode{PacketLossMode::pulse};
 
 };
 

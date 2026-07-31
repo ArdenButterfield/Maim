@@ -22,7 +22,6 @@ void PacketLossDragBox::drawBackground (juce::Graphics& g, int x, int y)
     } else {
         g.setColour(getOutlineColour(x,y));
     }
-    auto jitter = parameters.getParameter(PACKET_LOSS_JITTER_PARAM_ID)->getValue();
     auto radius = rescaleRange(xSlider->getValue(),
         xSlider->getMinimum(),
         xSlider->getMaximum(),
@@ -33,6 +32,19 @@ void PacketLossDragBox::drawBackground (juce::Graphics& g, int x, int y)
         .withWidth(radius * 2).withHeight(radius * 2)
         .withCentre({getWidth() * 0.5f, getHeight() * 0.5f});
     g.drawEllipse(circleBounds, 2);
+
+    if (packetLossMode == PacketLossMode::off) {
+        return;
+    }
+
+    if (packetLossMode == PacketLossMode::on) {
+        auto fullCircle = juce::Path();
+        fullCircle.addPieSegment(circleBounds, 0, juce::MathConstants<float>::twoPi, 0);
+        g.fillPath(fullCircle);
+        return;
+    }
+
+    auto jitter = parameters.getParameter(PACKET_LOSS_JITTER_PARAM_ID)->getValue();
     auto pieSlice = juce::Path();
     auto rads = rescaleRange(ySlider->getValue(),
         ySlider->getMinimum(),

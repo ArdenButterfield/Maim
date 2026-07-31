@@ -24,12 +24,17 @@ IndicatorLight::~IndicatorLight()
 void IndicatorLight::triggerLight()
 {
     isOn = true;
-    
+
+}
+
+void IndicatorLight::setSource(std::function<bool()> newSource)
+{
+    source = std::move(newSource);
 }
 
 void IndicatorLight::timerCallback()
 {
-    isOn = false;
+    isOn = source ? source() : false;
     repaint();
 }
 

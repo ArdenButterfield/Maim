@@ -290,6 +290,25 @@ void MaimLookAndFeel::drawLinearSlider(juce::Graphics& g,
 
 void MaimLookAndFeel::drawToggleButton(juce::Graphics& g, juce::ToggleButton& button, bool, bool) {
 
+    if (!button.getName().containsChar('|'))
+    {
+        const auto toggledOn = button.getToggleState();
+        const auto bounds = button.getLocalBounds();
+
+        g.setColour(toggledOn ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::BEVEL_LIGHT);
+        g.fillRect(bounds);
+        g.setColour(MaimColours::BEVEL_BLACK);
+        g.drawRect(bounds, 2);
+
+        const auto topRect = bounds.withHeight(bounds.getHeight() / 2);
+        const auto bottomRect = topRect.withBottomY(bounds.getHeight());
+        g.setFont(juce::Font(juce::FontOptions(main_font)).withHeight(button.getHeight() * 0.4));
+        g.setColour(toggledOn ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
+        g.drawText(button.getName().upToFirstOccurrenceOf(" ", false, false), topRect, juce::Justification::centred, false);
+        g.drawText(button.getName().fromFirstOccurrenceOf(" ", false, false), bottomRect, juce::Justification::centred, false);
+        return;
+    }
+
     const auto bottomOptionSelected = button.getToggleState();
 
     const auto topRect = button.getLocalBounds().withHeight(button.getHeight() / 2);
@@ -327,8 +346,7 @@ void MaimLookAndFeel::drawEncoderSelector(juce::Graphics& g, EncoderSelector& se
         const auto rowBottom = bounds.getY() + bounds.getHeight() * (i + 1) / numOptions;
         const auto row = bounds.withY(rowTop).withBottom(rowBottom);
         const auto selected = (i == selectedIndex);
-        const auto colour = (i == 0) ? MaimColours::CONTRAST_COLOR_LIGHT.withLightness (0.65) : (i == 1) ? MaimColours::SPLASH_COLOR_LIGHT : MaimColours::OPUS_COLOR_LIGHT;
-        g.setColour(selected ? colour : MaimColours::BEVEL_LIGHT);
+        g.setColour(selected ? selector.optionColours[static_cast<size_t>(i)] : MaimColours::BEVEL_LIGHT);
         g.fillRect(row);
         g.setColour(selected ? MaimColours::BEVEL_DARK : MaimColours::BEVEL_BLACK);
         g.drawText(optionNames[i], row, juce::Justification::centred, false);

@@ -34,9 +34,9 @@ public:
         mp3ControllerManager.initialize(samplerate, initialBitrate, samplesPerBlock);
     }
     
-    void processBlock(juce::AudioBuffer<float>& block, const juce::MidiBuffer& midiMessages) {
+    void processBlock(juce::AudioBuffer<float>& block) {
         if (encoderType == use_opus) {
-            opusController.processBlock(block, midiMessages);
+            opusController.processBlock(block);
         } else {
             mp3ControllerManager.processBlock(block);
         }

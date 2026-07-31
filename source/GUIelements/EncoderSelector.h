@@ -11,17 +11,24 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_graphics/juce_graphics.h>
+#include "MaimColours.h"
+#include <vector>
 
 //==============================================================================
 /*
-    A 3-row selector for the encoder choice parameter (Blade / Lame / Opus),
-    styled to match the encoderButton ToggleButton look, drawn by
-    MaimLookAndFeel::drawEncoderSelector.
+    A vertical, multi-row selector for a choice parameter (e.g. the
+    Blade / Lame / Opus encoder choice), styled to match the encoderButton
+    ToggleButton look, drawn by MaimLookAndFeel::drawEncoderSelector.
 */
 class EncoderSelector  : public juce::Component
 {
 public:
-    EncoderSelector (juce::AudioProcessorValueTreeState& p, const juce::String& parameterID);
+    EncoderSelector (juce::AudioProcessorValueTreeState& p, const juce::String& parameterID,
+        juce::StringArray optionNames = {"Blade", "Lame", "Opus"},
+        std::vector<juce::Colour> optionColours = {
+            MaimColours::CONTRAST_COLOR_LIGHT.withLightness (0.65),
+            MaimColours::SPLASH_COLOR_LIGHT,
+            MaimColours::OPUS_COLOR_LIGHT});
     ~EncoderSelector() override;
 
     void paint (juce::Graphics&) override;
@@ -29,7 +36,8 @@ public:
 
     int getSelectedIndex() const noexcept { return selectedIndex; }
 
-    const juce::StringArray optionNames {"Blade", "Lame", "Opus"};
+    const juce::StringArray optionNames;
+    const std::vector<juce::Colour> optionColours;
 
 private:
     juce::RangedAudioParameter& parameter;

@@ -9,14 +9,13 @@ OpusPacketLossSection::OpusPacketLossSection (juce::AudioProcessorValueTreeState
     : StageWindow (p), packetLossDragBox(p, PACKET_LOSS_RATE_PARAM_ID, PACKET_LOSS_PULSE_WIDTH_PARAM_ID),
       jitterSlider(p, PACKET_LOSS_JITTER_PARAM_ID, "Jitter"), lossStickToggle("LOSS|STICK"),
       lossStickAttachment(p, PACKET_LOSS_STICK_PARAM_ID, lossStickToggle),
-      midiGateToggle("MIDI GATE|MIDI GATE"),
-      midiGateAttachment(p, PACKET_LOSS_MIDI_GATE_PARAM_ID, midiGateToggle)
+      packetLossModeSelector(p, PACKET_LOSS_MODE_PARAM_ID, {"Off", "Pulse", "On"},
+          {MaimColours::OPUS_COLOR_LIGHT, MaimColours::OPUS_COLOR_LIGHT, MaimColours::OPUS_COLOR_LIGHT})
 {
     jitterSlider.slider.getProperties().set("drawGrayArc", true);
     jitterSlider.slider.setRepaintsOnMouseActivity(true);
 
     lossStickToggle.setButtonText("LOSS|STICK");
-    midiGateToggle.setButtonText("MIDI GATE");
     sectionName.setColour(sectionName.textColourId, MaimColours::BEVEL_BLACK);
     sectionName.setFont(sectionNameFont);
     sectionName.setText("Packet loss", juce::dontSendNotification);
@@ -26,16 +25,18 @@ OpusPacketLossSection::OpusPacketLossSection (juce::AudioProcessorValueTreeState
     addAndMakeVisible(packetLossDragBox);
     addAndMakeVisible(jitterSlider);
     addAndMakeVisible(lossStickToggle);
-    addAndMakeVisible(midiGateToggle);
+    addAndMakeVisible(packetLossModeSelector);
 
     parameters.addParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
+    parameters.addParameterListener(PACKET_LOSS_MODE_PARAM_ID, this);
 
     packetLossDragBox.setColourScheme(!*(juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
+    packetLossDragBox.setPacketLossMode(((juce::AudioParameterChoice*)parameters.getParameter(PACKET_LOSS_MODE_PARAM_ID))->getIndex());
 }
 
 OpusPacketLossSection::~OpusPacketLossSection() {
     parameters.removeParameterListener(PACKET_LOSS_STICK_PARAM_ID, this);
-
+    parameters.removeParameterListener(PACKET_LOSS_MODE_PARAM_ID, this);
 }
 
 void OpusPacketLossSection::resized()
@@ -58,7 +59,7 @@ void OpusPacketLossSection::resized()
     const int toggleHeight = 40;
     const int toggleGap = 6;
     lossStickToggle.setBounds(toggleColumn.withHeight(toggleHeight));
-    midiGateToggle.setBounds(toggleColumn.withY(lossStickToggle.getBottom() + toggleGap).withHeight(toggleHeight));
+    packetLossModeSelector.setBounds(toggleColumn.withY(lossStickToggle.getBottom() + toggleGap).withHeight(toggleHeight));
 }
 
 void OpusPacketLossSection::paint (juce::Graphics& g)
@@ -70,4 +71,5 @@ void OpusPacketLossSection::paint (juce::Graphics& g)
 void OpusPacketLossSection::parameterChanged (const juce::String&, float)
 {
     packetLossDragBox.setColourScheme(!*(juce::AudioParameterBool*)parameters.getParameter(PACKET_LOSS_STICK_PARAM_ID));
+    packetLossDragBox.setPacketLossMode(((juce::AudioParameterChoice*)parameters.getParameter(PACKET_LOSS_MODE_PARAM_ID))->getIndex());
 }

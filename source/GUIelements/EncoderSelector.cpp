@@ -10,8 +10,11 @@
 #include "EncoderSelector.h"
 #include "MaimLookAndFeel.h"
 
-EncoderSelector::EncoderSelector (juce::AudioProcessorValueTreeState& p, const juce::String& parameterID)
-    : parameter (*p.getParameter (parameterID))
+EncoderSelector::EncoderSelector (juce::AudioProcessorValueTreeState& p, const juce::String& parameterID,
+    juce::StringArray _optionNames, std::vector<juce::Colour> _optionColours)
+    : optionNames (std::move (_optionNames)),
+      optionColours (std::move (_optionColours)),
+      parameter (*p.getParameter (parameterID))
 {
     attachment = std::make_unique<juce::ParameterAttachment> (parameter,
         [this] (float newValue)
