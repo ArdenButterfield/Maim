@@ -264,7 +264,7 @@ void MaimAudioProcessor::prepareToPlay (double fs, int samplesPerBlock)
 {
     PresetManager::createPresetDirectories();
 
-    setLatencySamples(currentLatencySamples());
+    setLatencySamples(currentLatencySamples(fs));
     dryWetMixer.prepare({fs, static_cast<uint32_t>(samplesPerBlock), 2});
     sampleRate = fs;
     estimatedSamplesPerBlock = samplesPerBlock;
@@ -334,7 +334,7 @@ void MaimAudioProcessor::updateParameters()
     postGain = juce::Decibels::decibelsToGain(makeupDB);
     
     parametersNeedUpdating = false;
-    setLatencySamples(currentLatencySamples());
+    setLatencySamples(currentLatencySamples(sampleRate));
 }
 
 void MaimAudioProcessor::processBlockStereo (juce::AudioBuffer<float>& buffer)
@@ -430,15 +430,20 @@ void MaimAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
         }
     }
 }
-int MaimAudioProcessor::currentLatencySamples()
+int MaimAudioProcessor::currentLatencySamples(double hostSampleRate)
 {
-    /* Currently, the number of samples of latency is determined experimentally,
+    /* For Blade and Lame, the number of samples of latency is determined experimentally,
      * using pluginval and an impulse response testing program. These experiments showed that
      * the impulse response held consistent across samplerates, bitrates, and block sizes; however,
      * Blade had an impulse response of silence at low bitrates, so some other response may be
      * needed for a more reliable test. I would like to try to get these numbers lower, which
      * I suspect may be possible, and also to have an actual proof of the latency, rather than
      * determining it experimentally.
+     *
+     * Opus's latency is instead computed directly: OpusController buffers a full 20ms frame
+     * of host samples before it can encode/decode it (see OpusController::processBlock), so
+     * that framing delay - at whichever Opus-native sample rate hostSampleRate snaps to -
+     * is the dominant, exactly-known component of its latency.
      */
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                   parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
@@ -446,13 +451,12 @@ int MaimAudioProcessor::currentLatencySamples()
     if (encoder == 0) {
         // Blade
         computedLatencySamples = BLADELATENCYSAMPLES;
-    }
-    if (encoder == 1) {
+    } else if (encoder == 1) {
         // lame
         computedLatencySamples = LAMELATENCYSAMPLES;
     } else {
         // opus
-        computedLatencySamples = 0; // TEST
+        computedLatencySamples = OpusController::computeLatencySamples(hostSampleRate);
     }
     dryWetMixer.setWetLatency(computedLatencySamples);
 

@@ -77,7 +77,7 @@ private:
     void processBlockStereo(juce::AudioBuffer<float>& buffer);
     void addPsychoanalStateToParameters();
     void addMdctSamplesToParameters();
-    int currentLatencySamples();
+    int currentLatencySamples(double hostSampleRate);
     float preGain;
     float postGain;
     

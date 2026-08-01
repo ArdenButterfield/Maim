@@ -33,6 +33,13 @@ public:
     void processBlock(juce::AudioBuffer<float>& buffer);
 
     int getBitrate() override { return bitrate; }
+
+    // The number of host samples of buffering delay Opus encoding/decoding introduces at
+    // sampleRate: one full 20ms frame, at whichever Opus-native rate sampleRate snaps to (see
+    // validate_samplerate()). Usable without an initialized instance, so PluginProcessor can
+    // call it to report latency to the host before/without an OpusController existing.
+    static int computeLatencySamples(double sampleRate);
+
     void setError(float) override {}
     void setButterflyBends(float, float, float, float) override {}
     void setMDCTbandstepBends(bool, int) override {}
@@ -111,7 +118,7 @@ protected:
     };
     float turbo{};
 
-    const std::vector<int> allowed_samplerates {
+    static inline const std::vector<int> allowed_samplerates {
         8000, 12000, 16000, 24000, 48000
     };
 

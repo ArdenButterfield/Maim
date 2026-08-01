@@ -95,6 +95,12 @@ bool OpusController::init (int sampleRate, int, int)
     return true;
 }
 
+int OpusController::computeLatencySamples(double sampleRate)
+{
+    auto validatedSamplerate = getClosest(static_cast<int>(std::lround(sampleRate)), allowed_samplerates);
+    return validatedSamplerate * 20 / 1000;
+}
+
 void OpusController::deInit()
 {
     if (opusEncoder != nullptr) {
