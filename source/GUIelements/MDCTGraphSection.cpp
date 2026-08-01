@@ -30,16 +30,6 @@ MDCTGraphSection::MDCTGraphSection (juce::AudioProcessorValueTreeState& p)
     addAndMakeVisible(MDCTfeedbackSlider);
     addAndMakeVisible(sectionName);
     addAndMakeVisible(feedbackName);
-    addAndMakeVisible(mp3OnlyLabel);
-
-    parameters.addParameterListener(ENCODER_PARAM_ID, this);
-    bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
-    mdctGraph.setVisible(!isOpus);
-    mdctPostPitchShiftSlider.setVisible(!isOpus);
-    mdctPostAmpShiftSlider.setVisible(!isOpus);
-    MDCTfeedbackSlider.setVisible(!isOpus);
-    feedbackName.setVisible(!isOpus);
-    mp3OnlyLabel.setVisible(isOpus);
 
     float alpha = 0.3f;
     mdctPostAmpShiftSlider.setAlpha(alpha);
@@ -60,7 +50,6 @@ void MDCTGraphSection::resized()
                          .withTrimmedBottom(standardMargin);
     sectionName.setBounds(graphArea.withHeight(headerHeight));
     graphArea = graphArea.withTrimmedTop( headerHeight);
-    mp3OnlyLabel.setBounds(getLocalBounds().withTrimmedTop(20));
 
     mdctGraph.setBounds(graphArea);
     auto feedbackSliderBounds =getLocalBounds().withWidth(70).withHeight(80).withRightX(graphArea.getRight()).withY(graphArea.getY());
@@ -76,14 +65,4 @@ void MDCTGraphSection::mouseEnter(const juce::MouseEvent&) {
 }
 void MDCTGraphSection::mouseExit(const juce::MouseEvent&) {
 
-}
-void MDCTGraphSection::parameterChanged (const juce::String&, float)
-{
-    bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
-    mdctGraph.setVisible(!isOpus);
-    mdctPostPitchShiftSlider.setVisible(!isOpus);
-    mdctPostAmpShiftSlider.setVisible(!isOpus);
-    MDCTfeedbackSlider.setVisible(!isOpus);
-    feedbackName.setVisible(!isOpus);
-    mp3OnlyLabel.setVisible(isOpus);
 }

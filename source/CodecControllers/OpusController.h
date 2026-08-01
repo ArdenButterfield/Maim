@@ -8,13 +8,16 @@
 #include "CodecController.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_processors/juce_audio_processors.h"
+#include "juce_dsp/juce_dsp.h"
 #include "opus.h"
 #include <array>
+#include <complex>
 #include <vector>
 #include "../QueueBuffer.h"
 #include "PacketLossModel.h"
+#include "OpusBendFlags.h"
 
-class OpusController : public CodecController, public juce::AudioProcessorValueTreeState::Listener {
+class OpusController : public CodecController, public juce::AudioProcessorValueTreeState::Listener, public juce::Timer {
 public:
     explicit OpusController(juce::AudioProcessorValueTreeState& _parameters);
 
@@ -33,12 +36,27 @@ public:
     void setError(float) override {}
     void setButterflyBends(float, float, float, float) override {}
     void setMDCTbandstepBends(bool, int) override {}
-    void setMDCTpostshiftBends(int, float) override {}
     void setMDCTwindowincrBends(int) override {}
-    void setMDCTBandReassignmentBends(int*) override {}
     void setBitrateSquishBends(float) override {}
     void setThresholdBias(float) override {}
-    void setMDCTfeedback(float) override {}
+
+    void setMDCTpostshiftBends(int h_shift, float v_shift) override
+    {
+        bendFlags.mdctPostHShift = h_shift;
+        bendFlags.mdctPostVShift = v_shift;
+    }
+
+    void setMDCTBandReassignmentBends(int* order) override
+    {
+        for (int i = 0; i < OpusBendFlags::numReassignmentBands; ++i) {
+            bendFlags.mdctBandReassignment[static_cast<size_t>(i)] = order[i];
+        }
+    }
+
+    void setMDCTfeedback(float feedback) override
+    {
+        bendFlags.mdctFeedback = feedback;
+    }
 
     float* getPsychoanalThreshold() override {
         return nullptr;
@@ -47,10 +65,10 @@ public:
         return nullptr;
     }
     float* getMDCTpreBend() override {
-        return nullptr;
+        return mdctPreBend.data();
     }
     float* getMDCTpostBend() override {
-        return nullptr;
+        return mdctPostBend.data();
     }
     int getShortBlockStatus() override {
         return 0;
@@ -73,6 +91,14 @@ protected:
         return false;
     }
 
+    static constexpr int mdctDisplaySize = 576;
+
+    void applyFrequencyBends();
+    void applyBandReassignment(std::complex<float>* bins, int numBins);
+    void applyPostShift(std::complex<float>* bins, int numBins);
+    void applyFeedback(std::complex<float>* bins, int numBins, int channel);
+    void accumulateSpectrumSnapshot(const std::complex<float>* bins, int numBins, std::array<float, mdctDisplaySize>& target) const;
+    void timerCallback() override;
 
     bool bInitialized;
     OpusEncoder* opusEncoder;
@@ -106,6 +132,16 @@ protected:
     PacketLossMode packetLossMode{PacketLossMode::pulse};
     int encodeResult{};
     float error{};
+
+    OpusBendFlags bendFlags;
+    std::unique_ptr<juce::dsp::FFT> fft;
+    int fftOrder{};
+    int fftSize{};
+    std::array<std::vector<float>, 2> fftBuffers;
+    std::vector<std::complex<float>> reassignmentScratch;
+    std::array<std::vector<std::complex<float>>, 2> feedbackSpectrum;
+    std::array<float, mdctDisplaySize> mdctPreBend{};
+    std::array<float, mdctDisplaySize> mdctPostBend{};
 };
 
 #endif //MAIM_OPUSCONTROLLER_H

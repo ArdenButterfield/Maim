@@ -10,6 +10,7 @@
 
 #include "Mp3ControllerManager.h"
 #include "parameterIds.h"
+#include "SpectrumRescale.h"
 
 void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int startFadeFrom) {
     // NOTE: should potentially be an equal-power crossfade, to prevent a dip in volume.
@@ -290,19 +291,16 @@ float rescalePsychoanal(const float a) {
     return log10(a > 1 ? a : 1) / 14;
 }
 
-float rescaleMDCT(const float a) {
-    // mdct is 0 to 1(+), rescale to 0 to 1 but log scale
-    if (a < (pow(10.f, -10.f))) {
-        return 0;
-    } else if (a > 1) {
-        return 1;
-    } else {
-        return log10(a) / 10 + 1;
-    }
-}
-
 void Mp3ControllerManager::timerCallback()
 {
+    // Opus doesn't route through this class at all (see CodecControllerManager), but
+    // OpusController pushes to the same "mdct" ValueTree node while it's the active encoder -
+    // stay out of its way so the two don't fight over the property.
+    bool isOpus = (((juce::AudioParameterChoice*)parameters.getParameter(ENCODER_PARAM_ID))->getIndex() == 2);
+    if (isOpus) {
+        return;
+    }
+
     float* energy = getPsychoanalEnergy();
     float* threshold = getPsychoanalThreshold();
     

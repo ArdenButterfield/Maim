@@ -17,26 +17,20 @@
 #include "MDCTGraph.h"
 #include "ReassignmentSection.h"
 #include "StageWindow.h"
-#include "Mp3OnlyLabel.h"
 #include "../parameterIds.h"
 //==============================================================================
 /*
 */
-class MDCTGraphSection : public StageWindow, public juce::AudioProcessorValueTreeState::Listener
+class MDCTGraphSection : public StageWindow
 {
 public:
     explicit MDCTGraphSection (juce::AudioProcessorValueTreeState& p);
-    ~MDCTGraphSection() override {
-        parameters.removeParameterListener(ENCODER_PARAM_ID, this);
-    }
-    void parameterChanged(const juce::String &parameterID, float newValue) override;
     void mouseEnter(const juce::MouseEvent& e) override;
     void mouseExit(const juce::MouseEvent& e) override;
     void resized() override;
 
 private:
     juce::AudioProcessorValueTreeState& parameters;
-    Mp3OnlyLabel mp3OnlyLabel;
 
     const juce::Font sectionNameFont = juce::Font(juce::FontOptions(MaimLookAndFeel().main_font)).withHeight(20.f);
     juce::Label sectionName;

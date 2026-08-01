@@ -19,7 +19,6 @@
 #include "StageWindow.h"
 
 #include "ArrayAssignerButtons/ArrayAssignerButton.h"
-#include "Mp3OnlyLabel.h"
 
 //==============================================================================
 /*
@@ -50,8 +49,6 @@ private:
     ArrayAssignerButton randomButton;
     ArrayAssignerButton upButton;
     ArrayAssignerButton downButton;
-
-    Mp3OnlyLabel mp3OnlyLabel;
 
     juce::Random random;
     
