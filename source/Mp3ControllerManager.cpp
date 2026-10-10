@@ -24,6 +24,7 @@ void fadeTowards(float* currentBuffer, float* newBuffer, int numSamples, int sta
 
 Mp3ControllerManager::Mp3ControllerManager(juce::AudioProcessorValueTreeState& p) :
     currentEncoder(lame),
+    desiredEncoder(lame),
     currentControllerIndex(0),
     parameters(p)
 {

@@ -47,8 +47,8 @@ TEST_CASE("process audio", "[process]")
         juce::AudioBuffer<float> samples(2,512);
         for (int j = 0; j < 10; ++j) {
             for (int samp = 0; samp < 512; ++samp) {
-                samples.setSample(0, j, sin(static_cast<float>(samp) / 100.f));
-                samples.setSample(1, j, sin(static_cast<float>(samp) / 100.f));
+                samples.setSample(0, samp, sin(static_cast<float>(samp) / 100.f));
+                samples.setSample(1, samp, sin(static_cast<float>(samp) / 100.f));
             }
             auto midiBuffer = juce::MidiBuffer();
             testPlugin.processBlock(samples, midiBuffer);
