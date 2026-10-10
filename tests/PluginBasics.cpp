@@ -83,6 +83,19 @@ void writeOut(const juce::AudioBuffer<float>& buffer, const juce::String& name) 
         writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
 }
 
+void writeOutToFile(const juce::AudioBuffer<float>& buffer, const juce::File& file, double sampleRate) {
+    file.deleteFile();
+    juce::WavAudioFormat format;
+    std::unique_ptr<juce::OutputStream> outputStream (new juce::FileOutputStream (file));
+    auto writer = format.createWriterFor (outputStream,
+        juce::AudioFormatWriterOptions{}
+            .withSampleRate (sampleRate)
+            .withNumChannels (buffer.getNumChannels())
+            .withBitsPerSample (24));
+    if (writer != nullptr)
+        writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples());
+}
+
 TEST_CASE("base opus", "[baseopus]")
 {
     auto input = makeTestAudioBuffer();
@@ -313,6 +326,72 @@ TEST_CASE("turbo and packet repeat", "[turboandpacketrepeat]")
     }
 }
 
+
+TEST_CASE("process every test audio file through every encoder at 32kbps", "[testaudio]")
+{
+    // This lets us use JUCE's MessageManager without leaking.
+    auto gui = juce::ScopedJuceInitialiser_GUI {};
+
+    juce::File inputDir (TESTAUDIO_DIR);
+    juce::File outputDir (TESTAUDIO_OUT_DIR);
+    REQUIRE (inputDir.isDirectory());
+    outputDir.createDirectory();
+
+    const std::array<std::pair<int, const char*>, 3> encoders {{
+        {0, "blade"},
+        {1, "lame"},
+        {2, "opus"},
+    }};
+    constexpr int bitrate32Index = 3; // choice list is "8","16","24","32",... so 32kbps is index 3
+    constexpr int blockSize = 512;
+
+    juce::WavAudioFormat wavFormat;
+    auto inputFiles = inputDir.findChildFiles (juce::File::findFiles, false, "*.wav");
+    REQUIRE (inputFiles.size() > 0);
+
+    for (auto& inputFile : inputFiles) {
+        std::unique_ptr<juce::AudioFormatReader> reader (
+            wavFormat.createReaderFor (new juce::FileInputStream (inputFile), true));
+        REQUIRE (reader != nullptr);
+
+        juce::AudioBuffer<float> input (static_cast<int> (reader->numChannels),
+            static_cast<int> (reader->lengthInSamples));
+        reader->read (&input, 0, input.getNumSamples(), 0, true, true);
+
+        for (auto& [encoderIndex, encoderName] : encoders) {
+            MaimAudioProcessor plugin;
+            auto& apvts = plugin.getValueTreeState();
+            *((juce::AudioParameterChoice*) apvts.getParameter (ENCODER_PARAM_ID)) = encoderIndex;
+            *((juce::AudioParameterChoice*) apvts.getParameter (BITRATE_PARAM_ID)) = bitrate32Index;
+
+            plugin.prepareToPlay (reader->sampleRate, blockSize);
+
+            juce::AudioBuffer<float> output (input.getNumChannels(), input.getNumSamples());
+            output.clear();
+
+            int sampleIndex = 0;
+            while (sampleIndex < input.getNumSamples()) {
+                int thisBlock = std::min (blockSize, input.getNumSamples() - sampleIndex);
+                juce::AudioBuffer<float> block (input.getNumChannels(), thisBlock);
+                for (int ch = 0; ch < input.getNumChannels(); ++ch)
+                    block.copyFrom (ch, 0, input, ch, sampleIndex, thisBlock);
+
+                auto midi = juce::MidiBuffer();
+                plugin.processBlock (block, midi);
+
+                for (int ch = 0; ch < input.getNumChannels(); ++ch)
+                    output.copyFrom (ch, sampleIndex, block, ch, 0, thisBlock);
+
+                sampleIndex += thisBlock;
+            }
+
+            auto outputFile = outputDir.getChildFile (
+                inputFile.getFileNameWithoutExtension() + "_" + encoderName + "_32.wav");
+            writeOutToFile (output, outputFile, reader->sampleRate);
+            REQUIRE (outputFile.existsAsFile());
+        }
+    }
+}
 
 #ifdef PAMPLEJUCE_IPP
     #include <ipp.h>

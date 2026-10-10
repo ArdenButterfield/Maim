@@ -199,6 +199,12 @@ include(PamplejuceIPP)
 # Everything related to the tests target
 include(Tests)
 
+# Let test code find the test audio fixtures regardless of the working directory it's run from
+target_compile_definitions(Tests PRIVATE
+    TESTAUDIO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/testaudio"
+    TESTAUDIO_OUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/testaudio_out"
+)
+
 # A separate target keeps the Tests target fast!
 include(Benchmarks)
 

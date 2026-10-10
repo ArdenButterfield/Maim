@@ -5,6 +5,8 @@ packaging/build/
 packaging/plugins/
 build/
 
+tests/testaudio_out/*.wav
+
 # IDE
 .idea/
 
