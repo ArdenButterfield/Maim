@@ -447,7 +447,7 @@ typedef struct loop_flags_and_data_struct {
 	int						mark_tab_s[SFB_SMAX*3*2];	/* changed (sfb,b)-s         */
 
 	int						lo_quant_l [SFB_LMAX];
-	int						hi_quant_l [SBMAX_l];
+	int						hi_quant_l [SFB_LMAX];
 
 	int						lo_quant_s [SFB_SMAX][3];
 	int						hi_quant_s [SFB_SMAX][3];

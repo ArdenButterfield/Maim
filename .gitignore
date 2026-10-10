@@ -18,6 +18,8 @@ tests/testaudio_out/*.wav
 **/*.mp3
 **/*.flac
 !assets/*.wav
+!tests/testaudio/*.wav
+
 
 # Compiled files
 *.d
