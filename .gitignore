@@ -20,6 +20,8 @@ tests/testaudio_out/*.wav
 !assets/*.wav
 !tests/testaudio/*.wav
 
+.venv
+.claude
 
 # Compiled files
 *.d
