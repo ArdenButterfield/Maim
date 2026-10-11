@@ -19,6 +19,7 @@ tests/testaudio_out/*.wav
 **/*.flac
 !assets/*.wav
 !tests/testaudio/*.wav
+!tests/testaudio_out/*.wav
 
 .venv
 .claude
