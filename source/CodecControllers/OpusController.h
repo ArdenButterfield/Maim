@@ -34,10 +34,14 @@ public:
 
     int getBitrate() override { return bitrate; }
 
-    // The number of host samples of buffering delay Opus encoding/decoding introduces at
-    // sampleRate: one full 20ms frame, at whichever Opus-native rate sampleRate snaps to (see
-    // validate_samplerate()). Usable without an initialized instance, so PluginProcessor can
-    // call it to report latency to the host before/without an OpusController existing.
+    // The number of host samples in one 20ms Opus frame, at whichever Opus-native rate
+    // sampleRate snaps to (see validate_samplerate()).
+    static int computeFrameSizeSamples(double sampleRate);
+
+    // The number of host samples of delay Opus encoding/decoding introduces at sampleRate:
+    // one full frame of buffering (see computeFrameSizeSamples()) plus the encoder's 6.5ms
+    // lookahead. Usable without an initialized instance, so PluginProcessor can call it to
+    // report latency to the host before/without an OpusController existing.
     static int computeLatencySamples(double sampleRate);
 
     void setError(float) override {}

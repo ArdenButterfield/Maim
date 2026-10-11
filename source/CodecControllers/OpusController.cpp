@@ -68,7 +68,7 @@ bool OpusController::init (int sampleRate, int, int)
     if (initError) {
         return false;
     }
-    samplesPerFrame = validatedSamplerate * 20 / 1000;
+    samplesPerFrame = computeFrameSizeSamples(sampleRate);
 
     input.resize(static_cast<size_t>(samplesPerFrame * 2));
     output.resize(static_cast<size_t>(samplesPerFrame * 2));
@@ -95,10 +95,19 @@ bool OpusController::init (int sampleRate, int, int)
     return true;
 }
 
-int OpusController::computeLatencySamples(double sampleRate)
+int OpusController::computeFrameSizeSamples(double sampleRate)
 {
     auto validatedSamplerate = getClosest(static_cast<int>(std::lround(sampleRate)), allowed_samplerates);
     return validatedSamplerate * 20 / 1000;
+}
+
+int OpusController::computeLatencySamples(double sampleRate)
+{
+    auto validatedSamplerate = getClosest(static_cast<int>(std::lround(sampleRate)), allowed_samplerates);
+    // The encoder's own lookahead (what OPUS_GET_LOOKAHEAD reports for OPUS_APPLICATION_VOIP):
+    // 6.5ms, which is a whole number of samples at every Opus-native rate.
+    auto lookaheadSamples = validatedSamplerate * 13 / 2000;
+    return computeFrameSizeSamples(sampleRate) + lookaheadSamples;
 }
 
 void OpusController::deInit()

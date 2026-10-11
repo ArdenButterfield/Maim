@@ -366,24 +366,38 @@ TEST_CASE("process every test audio file through every encoder at 32kbps", "[tes
 
             plugin.prepareToPlay (reader->sampleRate, blockSize);
 
-            juce::AudioBuffer<float> output (input.getNumChannels(), input.getNumSamples());
-            output.clear();
+            // Run the input followed by latencySamples of silence, then drop the first
+            // latencySamples of output, so each output file lines up with its input
+            // and keeps the same length.
+            const int latencySamples = plugin.getLatencySamples();
+            const int totalSamples = input.getNumSamples() + latencySamples;
+
+            juce::AudioBuffer<float> processed (input.getNumChannels(), totalSamples);
+            processed.clear();
 
             int sampleIndex = 0;
-            while (sampleIndex < input.getNumSamples()) {
-                int thisBlock = std::min (blockSize, input.getNumSamples() - sampleIndex);
+            while (sampleIndex < totalSamples) {
+                int thisBlock = std::min (blockSize, totalSamples - sampleIndex);
+                int inputSamplesThisBlock = std::min (thisBlock, input.getNumSamples() - sampleIndex);
                 juce::AudioBuffer<float> block (input.getNumChannels(), thisBlock);
-                for (int ch = 0; ch < input.getNumChannels(); ++ch)
-                    block.copyFrom (ch, 0, input, ch, sampleIndex, thisBlock);
+                block.clear();
+                if (inputSamplesThisBlock > 0)
+                    for (int ch = 0; ch < input.getNumChannels(); ++ch)
+                        block.copyFrom (ch, 0, input, ch, sampleIndex, inputSamplesThisBlock);
 
                 auto midi = juce::MidiBuffer();
                 plugin.processBlock (block, midi);
 
                 for (int ch = 0; ch < input.getNumChannels(); ++ch)
-                    output.copyFrom (ch, sampleIndex, block, ch, 0, thisBlock);
+                    processed.copyFrom (ch, sampleIndex, block, ch, 0, thisBlock);
 
                 sampleIndex += thisBlock;
             }
+            REQUIRE (plugin.getLatencySamples() == latencySamples);
+
+            juce::AudioBuffer<float> output (input.getNumChannels(), input.getNumSamples());
+            for (int ch = 0; ch < input.getNumChannels(); ++ch)
+                output.copyFrom (ch, 0, processed, ch, latencySamples, input.getNumSamples());
 
             auto outputFile = outputDir.getChildFile (
                 inputFile.getFileNameWithoutExtension() + "_" + encoderName + "_32.wav");

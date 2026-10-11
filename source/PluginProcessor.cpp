@@ -441,9 +441,9 @@ int MaimAudioProcessor::currentLatencySamples(double hostSampleRate)
      * determining it experimentally.
      *
      * Opus's latency is instead computed directly: OpusController buffers a full 20ms frame
-     * of host samples before it can encode/decode it (see OpusController::processBlock), so
-     * that framing delay - at whichever Opus-native sample rate hostSampleRate snaps to -
-     * is the dominant, exactly-known component of its latency.
+     * of host samples before it can encode/decode it (see OpusController::processBlock), and
+     * the encoder adds 6.5ms of lookahead on top of that - both at whichever Opus-native
+     * sample rate hostSampleRate snaps to.
      */
     auto encoder = (Encoder)((juce::AudioParameterChoice*)
                                   parameters.getParameter(ENCODER_PARAM_ID))->getIndex();
